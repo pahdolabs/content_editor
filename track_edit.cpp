@@ -333,7 +333,6 @@ void TrackEdit::_notification(int p_what) {
 		// When the mouse cursor exits the track, we're no longer hovering any keyframe.
 		hovering_key_idx = -1;
 		update();
-		[[fallthrough]];
 	case NOTIFICATION_DRAG_END: {
 		cancel_drop();
 	} break;

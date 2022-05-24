@@ -930,6 +930,7 @@ void PlayerEditorControl::_unhandled_key_input(const Ref<InputEvent> &p_ev) {
 
 void PlayerEditorControl::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_node_removed"), &PlayerEditorControl::_node_removed);
+	ClassDB::bind_method(D_METHOD("set_undo_redo", "undo_redo"), &PlayerEditorControl::set_undo_redo);
 	ClassDB::bind_method(D_METHOD("_animation_new"), &PlayerEditorControl::_animation_new);
 	ClassDB::bind_method(D_METHOD("_animation_rename"), &PlayerEditorControl::_animation_rename);
 	ClassDB::bind_method(D_METHOD("_animation_name_edited"), &PlayerEditorControl::_animation_name_edited);
