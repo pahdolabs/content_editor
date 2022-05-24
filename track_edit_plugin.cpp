@@ -1,4 +1,5 @@
 #include "track_edit_plugin.h"
+#include "track_edit.h"
 
 #include <core/script_language.h>
 

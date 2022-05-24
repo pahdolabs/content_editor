@@ -55,7 +55,7 @@ class TimelineEdit : public Range {
 	float dragging_hsize_from;
 	float dragging_hsize_at;
 
-	virtual void gui_input(const Ref<InputEvent>& p_event) override;
+	void _gui_input(const Ref<InputEvent>& p_event);
 	void _track_added(int p_track);
 
 protected:
