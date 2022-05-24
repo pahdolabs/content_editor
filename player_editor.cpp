@@ -1,34 +1,6 @@
-/*************************************************************************/
-/*  animation_player_editor_plugin.cpp                                   */
-/*************************************************************************/
-/*                       This file is part of:                           */
-/*                           GODOT ENGINE                                */
-/*                      https://godotengine.org                          */
-/*************************************************************************/
-/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
-/*                                                                       */
-/* Permission is hereby granted, free of charge, to any person obtaining */
-/* a copy of this software and associated documentation files (the       */
-/* "Software"), to deal in the Software without restriction, including   */
-/* without limitation the rights to use, copy, modify, merge, publish,   */
-/* distribute, sublicense, and/or sell copies of the Software, and to    */
-/* permit persons to whom the Software is furnished to do so, subject to */
-/* the following conditions:                                             */
-/*                                                                       */
-/* The above copyright notice and this permission notice shall be        */
-/* included in all copies or substantial portions of the Software.       */
-/*                                                                       */
-/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
-/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
-/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
-/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
-/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
-/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
-/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
-/*************************************************************************/
+// Ported from Godot 4, code largely by Juan Linietsky and Godot contributors
 
-#include "animation_player_editor.h"
+#include "player_editor.h"
 
 #include "core/os/input.h"
 #include "core/os/keyboard.h"
@@ -96,8 +68,6 @@ void PlayerEditor::_notification(int p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			tool_anim->get_popup()->connect("id_pressed", this, "_animation_tool_menu");
 
-			onion_skinning->get_popup()->connect("id_pressed", this, "_onion_skinning_menu");
-
 			blend_editor.next->connect("item_selected", this, "_blend_editor_next_changed");
 
 			get_tree()->connect("node_removed", this, "_node_removed");
@@ -133,11 +103,6 @@ void PlayerEditor::_notification(int p_what) {
 				autoplay_reset_icon->create_from_image(autoplay_reset_img);
 			}
 			stop->set_icon(get_icon("Stop", "EditorIcons"));
-
-			onion_toggle->set_icon(get_icon("Onion", "EditorIcons"));
-			onion_skinning->set_icon(get_icon("GuiTabMenuHl", "EditorIcons"));
-
-			pin->set_icon(get_icon("Pin", "EditorIcons"));
 
 			tool_anim->add_style_override("normal", get_stylebox("normal", "Button"));
 			track_editor->get_edit_menu()->add_style_override("normal", get_stylebox("normal", "Button"));
@@ -588,10 +553,6 @@ void PlayerEditor::_blend_edited() {
 }
 
 void PlayerEditor::ensure_visibility() {
-	if (player && pin->is_pressed()) {
-		return; // another player is pinned, don't reset
-	}
-
 	_animation_edit();
 }
 
@@ -728,9 +689,6 @@ void PlayerEditor::_update_player() {
 	animation->set_disabled(no_anims_found);
 	autoplay->set_disabled(no_anims_found);
 	tool_anim->set_disabled(player == nullptr);
-	onion_toggle->set_disabled(no_anims_found);
-	onion_skinning->set_disabled(no_anims_found);
-	pin->set_disabled(player == nullptr);
 
 	_update_animation_list_icons();
 
@@ -784,28 +742,13 @@ void PlayerEditor::_update_animation_list_icons() {
 }
 
 void PlayerEditor::edit(AnimationPlayer *p_player) {
-	if (player && pin->is_pressed()) {
-		return; // Ignore, pinned.
-	}
 	player = p_player;
 
 	if (player) {
 		_update_player();
-
-		if (onion.enabled) {
-			if (animation->get_item_count()) {
-				_start_onion_skinning();
-			} else {
-				_stop_onion_skinning();
-			}
-		}
-
+		
 		track_editor->show_select_node_warning(false);
 	} else {
-		if (onion.enabled) {
-			_stop_onion_skinning();
-		}
-
 		track_editor->show_select_node_warning(true);
 	}
 }
@@ -814,12 +757,7 @@ void PlayerEditor::forward_force_draw_over_viewport(Control *p_overlay) {
 	if (!onion.can_overlay) {
 		return;
 	}
-
-	// Can happen on viewport resize, at least.
-	if (!_are_onion_layers_valid()) {
-		return;
-	}
-
+	
 	RID ci = p_overlay->get_canvas_item();
 	Rect2 src_rect = p_overlay->get_global_rect();
 	// Re-flip since captures are already flipped.
@@ -1010,55 +948,6 @@ void PlayerEditor::_animation_tool_menu(int p_option) {
 	}
 }
 
-void PlayerEditor::_onion_skinning_menu(int p_option) {
-	PopupMenu *menu = onion_skinning->get_popup();
-	int idx = menu->get_item_index(p_option);
-
-	switch (p_option) {
-		case ONION_SKINNING_ENABLE: {
-			onion.enabled = !onion.enabled;
-
-			if (onion.enabled) {
-				_start_onion_skinning();
-			} else {
-				_stop_onion_skinning();
-			}
-
-		} break;
-		case ONION_SKINNING_PAST: {
-			// Ensure at least one of past/future is checked.
-			onion.past = onion.future ? !onion.past : true;
-			menu->set_item_checked(idx, onion.past);
-		} break;
-		case ONION_SKINNING_FUTURE: {
-			// Ensure at least one of past/future is checked.
-			onion.future = onion.past ? !onion.future : true;
-			menu->set_item_checked(idx, onion.future);
-		} break;
-		case ONION_SKINNING_1_STEP: // Fall-through.
-		case ONION_SKINNING_2_STEPS:
-		case ONION_SKINNING_3_STEPS: {
-			onion.steps = (p_option - ONION_SKINNING_1_STEP) + 1;
-			int one_frame_idx = menu->get_item_index(ONION_SKINNING_1_STEP);
-			for (int i = 0; i <= ONION_SKINNING_LAST_STEPS_OPTION - ONION_SKINNING_1_STEP; i++) {
-				menu->set_item_checked(one_frame_idx + i, onion.steps == i + 1);
-			}
-		} break;
-		case ONION_SKINNING_DIFFERENCES_ONLY: {
-			onion.differences_only = !onion.differences_only;
-			menu->set_item_checked(idx, onion.differences_only);
-		} break;
-		case ONION_SKINNING_FORCE_WHITE_MODULATE: {
-			onion.force_white_modulate = !onion.force_white_modulate;
-			menu->set_item_checked(idx, onion.force_white_modulate);
-		} break;
-		case ONION_SKINNING_INCLUDE_GIZMOS: {
-			onion.include_gizmos = !onion.include_gizmos;
-			menu->set_item_checked(idx, onion.include_gizmos);
-		} break;
-	}
-}
-
 void PlayerEditor::_unhandled_key_input(const Ref<InputEvent> &p_ev) {
 	ERR_FAIL_COND(p_ev.is_null());
 
@@ -1089,44 +978,6 @@ void PlayerEditor::_unhandled_key_input(const Ref<InputEvent> &p_ev) {
 				break;
 		}
 	}
-}
-
-void PlayerEditor::_editor_visibility_changed() {
-	if (is_visible() && animation->get_item_count()) {
-		_start_onion_skinning();
-	}
-}
-
-bool PlayerEditor::_are_onion_layers_valid() {
-	return false;
-}
-
-void PlayerEditor::_allocate_onion_layers() {
-	return;
-}
-
-void PlayerEditor::_prepare_onion_layers_1() {
-	return;
-}
-
-void PlayerEditor::_prepare_onion_layers_1_deferred() {
-	call_deferred("_prepare_onion_layers_1");
-}
-
-void PlayerEditor::_prepare_onion_layers_2() {
-	return;
-}
-
-void PlayerEditor::_start_onion_skinning() {
-	return;
-}
-
-void PlayerEditor::_stop_onion_skinning() {
-	return;
-}
-
-void PlayerEditor::_pin_pressed() {
-	//SceneTreeDock::get_singleton()->get_tree_editor()->update_tree();
 }
 
 void PlayerEditor::_bind_methods() {
@@ -1240,42 +1091,9 @@ PlayerEditor::PlayerEditor() {
 	track_editor = memnew(AnimationTrackEditor);
 
 	hb->add_child(track_editor->get_edit_menu());
-
+	
 	hb->add_child(memnew(VSeparator));
-
-	onion_toggle = memnew(Button);
-	onion_toggle->set_flat(true);
-	onion_toggle->set_toggle_mode(true);
-	onion_toggle->set_tooltip(TTR("Enable Onion Skinning"));
-	onion_toggle->connect("pressed", this, "_onion_skinning_menu"), varray(ONION_SKINNING_ENABLE);
-	hb->add_child(onion_toggle);
-
-	onion_skinning = memnew(MenuButton);
-	onion_skinning->set_tooltip(TTR("Onion Skinning Options"));
-	onion_skinning->get_popup()->add_separator(TTR("Directions"));
-	onion_skinning->get_popup()->add_check_item(TTR("Past"), ONION_SKINNING_PAST);
-	onion_skinning->get_popup()->set_item_checked(-1, true);
-	onion_skinning->get_popup()->add_check_item(TTR("Future"), ONION_SKINNING_FUTURE);
-	onion_skinning->get_popup()->add_separator(TTR("Depth"));
-	onion_skinning->get_popup()->add_radio_check_item(TTR("1 step"), ONION_SKINNING_1_STEP);
-	onion_skinning->get_popup()->set_item_checked(-1, true);
-	onion_skinning->get_popup()->add_radio_check_item(TTR("2 steps"), ONION_SKINNING_2_STEPS);
-	onion_skinning->get_popup()->add_radio_check_item(TTR("3 steps"), ONION_SKINNING_3_STEPS);
-	onion_skinning->get_popup()->add_separator();
-	onion_skinning->get_popup()->add_check_item(TTR("Differences Only"), ONION_SKINNING_DIFFERENCES_ONLY);
-	onion_skinning->get_popup()->add_check_item(TTR("Force White Modulate"), ONION_SKINNING_FORCE_WHITE_MODULATE);
-	onion_skinning->get_popup()->add_check_item(TTR("Include Gizmos (3D)"), ONION_SKINNING_INCLUDE_GIZMOS);
-	hb->add_child(onion_skinning);
-
-	hb->add_child(memnew(VSeparator));
-
-	pin = memnew(Button);
-	pin->set_flat(true);
-	pin->set_toggle_mode(true);
-	pin->set_tooltip(TTR("Pin AnimationPlayer"));
-	hb->add_child(pin);
-	pin->connect("pressed", this, "_pin_pressed");
-
+	
 	file = memnew(EditorFileDialog);
 	add_child(file);
 

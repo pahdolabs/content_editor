@@ -2,11 +2,9 @@
 #define ANIMATION_PLAYER_EDITOR_H
 
 #include "editor/animation_track_editor.h"
-#include "editor/editor_plugin.h"
 #include "scene/animation/animation_player.h"
 #include "scene/gui/dialogs.h"
 #include "scene/gui/spin_box.h"
-#include "scene/gui/texture_button.h"
 #include "scene/gui/tree.h"
 
 class PlayerEditor : public VBoxContainer {
@@ -22,19 +20,6 @@ class PlayerEditor : public VBoxContainer {
 		TOOL_EDIT_TRANSITIONS,
 		TOOL_REMOVE_ANIM,
 		TOOL_EDIT_RESOURCE
-	};
-
-	enum {
-		ONION_SKINNING_ENABLE,
-		ONION_SKINNING_PAST,
-		ONION_SKINNING_FUTURE,
-		ONION_SKINNING_1_STEP,
-		ONION_SKINNING_2_STEPS,
-		ONION_SKINNING_3_STEPS,
-		ONION_SKINNING_LAST_STEPS_OPTION = ONION_SKINNING_3_STEPS,
-		ONION_SKINNING_DIFFERENCES_ONLY,
-		ONION_SKINNING_FORCE_WHITE_MODULATE,
-		ONION_SKINNING_INCLUDE_GIZMOS,
 	};
 
 	enum {
@@ -57,9 +42,6 @@ class PlayerEditor : public VBoxContainer {
 	Button *autoplay = nullptr;
 
 	MenuButton *tool_anim = nullptr;
-	Button *onion_toggle = nullptr;
-	MenuButton *onion_skinning = nullptr;
-	Button *pin = nullptr;
 	SpinBox *frame = nullptr;
 	LineEdit *scale = nullptr;
 	LineEdit *name = nullptr;
@@ -162,16 +144,6 @@ class PlayerEditor : public VBoxContainer {
 	void _animation_tool_menu(int p_option);
 	void _onion_skinning_menu(int p_option);
 
-	void _editor_visibility_changed();
-	bool _are_onion_layers_valid();
-	void _allocate_onion_layers();
-	void _free_onion_layers();
-	void _prepare_onion_layers_1();
-	void _prepare_onion_layers_1_deferred();
-	void _prepare_onion_layers_2();
-	void _start_onion_skinning();
-	void _stop_onion_skinning();
-
 	void _pin_pressed();
 	String _get_current() const;
 
@@ -186,9 +158,6 @@ public:
 	AnimationPlayer *get_player() const;
 
 	static PlayerEditor *get_singleton() { return singleton; }
-
-	bool is_pinned() const { return pin->is_pressed(); }
-	void unpin() { pin->set_pressed(false); }
 	AnimationTrackEditor *get_track_editor() { return track_editor; }
 	Dictionary get_state() const;
 	void set_state(const Dictionary &p_state);
