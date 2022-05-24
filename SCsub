@@ -2,3 +2,7 @@
 
 Import("env")
 Import("env_modules")
+
+content_editor_env = env.Clone()
+
+content_editor_env.add_source_files(env.modules_sources, "*.cpp")
