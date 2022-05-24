@@ -1892,7 +1892,7 @@ void TrackEditor::_anim_duplicate_keys(bool transpose) {
 
 void TrackEditor::_edit_menu_about_to_popup() {
 	AnimationPlayer* player = PlayerEditorControl::get_singleton()->get_player();
-	edit->get_popup()->set_item_disabled(edit->get_popup()->get_item_index(EDIT_APPLY_RESET), !player->has_animation("RESET") || player->get_assigned_animation() != "RESET");
+	//edit->get_popup()->set_item_disabled(edit->get_popup()->get_item_index(EDIT_APPLY_RESET), !player->has_animation("RESET") || player->get_assigned_animation() != "RESET");
 }
 
 void TrackEditor::goto_prev_step(bool p_from_mouse_event) {
