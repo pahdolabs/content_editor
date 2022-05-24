@@ -2715,7 +2715,7 @@ TrackEditor::TrackEditor() {
 	edit->get_popup()->add_item(TTR("Clean-Up Animation"), EDIT_CLEAN_UP_ANIMATION);
 
 	edit->get_popup()->connect("id_pressed", this, "_edit_menu_pressed");
-	edit->get_popup()->connect("about_to_popup", this, "_edit_menu_about_to_popup");
+	edit->get_popup()->connect("about_to_show", this, "_edit_menu_about_to_popup");
 
 	/*pick_track = memnew(SceneTreeDialog);
 	add_child(pick_track);
