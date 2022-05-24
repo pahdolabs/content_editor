@@ -1,10 +1,9 @@
 #ifndef TRACK_EDITOR_H
 #define TRACK_EDITOR_H
 
-#include "editor/editor_data.h"
-#include "editor/editor_spin_slider.h"
-#include "editor/property_editor.h"
-#include "editor/property_selector.h"
+#include <scene/gui/box_container.h>
+#include <scene/gui/check_box.h>
+#include <scene/gui/dialogs.h>
 
 #include "scene/gui/control.h"
 #include "scene/gui/menu_button.h"
@@ -14,6 +13,12 @@
 #include "scene/gui/texture_rect.h"
 #include "scene/resources/animation.h"
 
+class UndoRedo;
+class TreeItem;
+class Tree;
+class OptionButton;
+class ScrollContainer;
+class PanelContainer;
 class TimelineEdit;
 class TrackEdit;
 class ViewPanner;
@@ -74,9 +79,9 @@ class TrackEditor : public VBoxContainer {
 
 	void _update_step_spinbox();
 
-	PropertySelector* prop_selector = nullptr;
-	PropertySelector* method_selector = nullptr;
-	SceneTreeDialog* pick_track = nullptr;
+	/*PropertySelector* prop_selector = nullptr;
+	PropertySelector* method_selector = nullptr;*/
+	//SceneTreeDialog* pick_track = nullptr;
 	int adding_track_type;
 	NodePath adding_track_path;
 

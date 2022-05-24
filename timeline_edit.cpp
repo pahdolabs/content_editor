@@ -1,6 +1,6 @@
 #include "timeline_edit.h"
 
-#include <editor/editor_scale.h>
+#include <core/undo_redo.h>
 
 #include "track_edit.h"
 #include "track_editor.h"
@@ -65,7 +65,7 @@ int TimelineEdit::get_buttons_width() const {
 	Ref<Texture> down_icon = get_icon("select_arrow", "Tree");
 
 	int total_w = interp_mode->get_width() + interp_type->get_width() + loop_type->get_width() + remove_icon->get_width();
-	total_w += (down_icon->get_width() + 4 * EDSCALE) * 4;
+	total_w += (down_icon->get_width() + 4 * 1) * 4;
 
 	return total_w;
 }
@@ -84,7 +84,7 @@ void TimelineEdit::_notification(int p_what) {
 	switch (p_what) {
 	case NOTIFICATION_ENTER_TREE:
 	case NOTIFICATION_THEME_CHANGED: {
-		panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/animation_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EditorSettings::get_singleton()->get("editors/panning/simple_panning")));
+		//panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/animation_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EditorSettings::get_singleton()->get("editors/panning/simple_panning")));
 		add_track->set_icon(get_icon("Add", "EditorIcons"));
 		loop->set_icon(get_icon("Loop", "EditorIcons"));
 		time_icon->set_texture(get_icon("Time", "EditorIcons"));
@@ -101,9 +101,9 @@ void TimelineEdit::_notification(int p_what) {
 		add_track->get_popup()->add_icon_item(get_icon("KeyAnimation", "EditorIcons"), TTR("Animation Playback Track"));
 	} break;
 
-	case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
+	/*case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
 		panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/animation_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EditorSettings::get_singleton()->get("editors/panning/simple_panning")));
-	} break;
+	} break;*/
 
 	case NOTIFICATION_RESIZED: {
 		len_hb->set_position(Vector2(get_size().width - get_buttons_width(), 0));
@@ -130,7 +130,7 @@ void TimelineEdit::_notification(int p_what) {
 		}
 
 		Ref<Texture> hsize_icon = get_icon("Hsize", "EditorIcons");
-		hsize_rect = Rect2(get_name_limit() - hsize_icon->get_width() - 2 * EDSCALE, (get_size().height - hsize_icon->get_height()) / 2, hsize_icon->get_width(), hsize_icon->get_height());
+		hsize_rect = Rect2(get_name_limit() - hsize_icon->get_width() - 2 * 1, (get_size().height - hsize_icon->get_height()) / 2, hsize_icon->get_width(), hsize_icon->get_height());
 		draw_texture(hsize_icon, hsize_rect.position);
 
 		{
@@ -250,10 +250,10 @@ void TimelineEdit::_notification(int p_what) {
 					bool sub = Math::floor(prev) == Math::floor(pos);
 
 					if (frame != prev_frame && i >= prev_frame_ofs) {
-						draw_line(Point2(get_name_limit() + i, 0), Point2(get_name_limit() + i, h), linecolor, Math::round(EDSCALE));
+						draw_line(Point2(get_name_limit() + i, 0), Point2(get_name_limit() + i, h), linecolor, Math::round(1.0));
 
-						draw_string(font, Point2(get_name_limit() + i + 3 * EDSCALE, (h - font->get_height()) / 2 + font->get_ascent()).floor(), itos(frame), sub ? color_time_dec : color_time_sec);
-						prev_frame_ofs = i + font->get_string_size(itos(frame)).x + 5 * EDSCALE;
+						draw_string(font, Point2(get_name_limit() + i + 3 * 1, (h - font->get_height()) / 2 + font->get_ascent()).floor(), itos(frame), sub ? color_time_dec : color_time_sec);
+						prev_frame_ofs = i + font->get_string_size(itos(frame)).x + 5 * 1;
 					}
 				}
 			}
@@ -270,13 +270,13 @@ void TimelineEdit::_notification(int p_what) {
 
 				if ((sc / step) != (prev_sc / step) || (prev_sc < 0 && sc >= 0)) {
 					int scd = sc < 0 ? prev_sc : sc;
-					draw_line(Point2(get_name_limit() + i, 0), Point2(get_name_limit() + i, h), linecolor, Math::round(EDSCALE));
+					draw_line(Point2(get_name_limit() + i, 0), Point2(get_name_limit() + i, h), linecolor, Math::round(1.0));
 					draw_string(font, Point2(get_name_limit() + i + 3, (h - font->get_height()) / 2 + font->get_ascent()).floor(), String::num((scd - (scd % step)) / double(SC_ADJ), decimals), sub ? color_time_dec : color_time_sec);
 				}
 			}
 		}
 
-		draw_line(Vector2(0, get_size().height), get_size(), linecolor, Math::round(EDSCALE));
+		draw_line(Vector2(0, get_size().height), get_size(), linecolor, Math::round(1.0));
 	} break;
 	}
 }
@@ -374,7 +374,7 @@ void TimelineEdit::_play_position_draw() {
 
 	if (px >= get_name_limit() && px < (play_position->get_size().width - get_buttons_width())) {
 		Color color = get_color("accent_color", "Editor");
-		play_position->draw_line(Point2(px, 0), Point2(px, h), color, Math::round(2 * EDSCALE));
+		play_position->draw_line(Point2(px, 0), Point2(px, h), color, Math::round(2 * 1.0));
 		play_position->draw_texture(
 			get_icon("TimelineIndicator", "EditorIcons"),
 			Point2(px - get_icon("TimelineIndicator", "EditorIcons")->get_width() * 0.5, 0),
@@ -506,7 +506,7 @@ void TimelineEdit::_bind_methods() {
 }
 
 TimelineEdit::TimelineEdit() {
-	name_limit = 150 * EDSCALE;
+	name_limit = 150 * 1.0;
 	zoom = nullptr;
 	track_edit = nullptr;
 
@@ -531,13 +531,13 @@ TimelineEdit::TimelineEdit() {
 	time_icon->set_v_size_flags(SIZE_SHRINK_CENTER);
 	time_icon->set_tooltip(TTR("Animation length (seconds)"));
 	len_hb->add_child(time_icon);
-	length = memnew(EditorSpinSlider);
+	length = memnew(SpinBox);
 	length->set_min(0.001);
 	length->set_max(36000);
 	length->set_step(0.001);
 	length->set_allow_greater(true);
-	length->set_custom_minimum_size(Vector2(70 * EDSCALE, 0));
-	length->set_hide_slider(true);
+	length->set_custom_minimum_size(Vector2(70 * 1.0, 0));
+	//length->set_hide_slider(true);
 	length->set_tooltip(TTR("Animation length (seconds)"));
 	length->connect("value_changed", this, "_anim_length_changed");
 	len_hb->add_child(length);

@@ -2,7 +2,6 @@
 #define TRACK_KEY_EDIT_H
 
 #include <core/object.h>
-#include <editor/editor_node.h>
 #include <scene/main/viewport.h>
 #include <servers/audio/audio_stream.h>
 
@@ -35,7 +34,8 @@ public:
 			return;
 		}
 
-		Viewport* root = EditorNode::get_singleton()->get_tree()->get_root();
+		
+		Viewport* root = SceneTree::get_singleton()->get_root();
 
 		Node* np_node = root->get_node(np);
 		ERR_FAIL_COND(!np_node);
@@ -485,7 +485,7 @@ public:
 			return;
 		}
 
-		Node* root = EditorNode::get_singleton()->get_tree()->get_root();
+		Node* root = SceneTree::get_singleton()->get_root();
 
 		Node* np_node = root->get_node(np);
 		ERR_FAIL_COND(!np_node);

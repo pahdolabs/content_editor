@@ -1,11 +1,16 @@
 #ifndef ANIMATION_PLAYER_EDITOR_H
 #define ANIMATION_PLAYER_EDITOR_H
 
-#include "editor/animation_track_editor.h"
+#include <core/undo_redo.h>
+#include <scene/gui/file_dialog.h>
+#include <scene/gui/option_button.h>
+
 #include "scene/animation/animation_player.h"
 #include "scene/gui/dialogs.h"
 #include "scene/gui/spin_box.h"
 #include "scene/gui/tree.h"
+
+class TrackEditor;
 
 class PlayerEditorControl : public VBoxContainer {
 	GDCLASS(PlayerEditorControl, VBoxContainer);
@@ -55,7 +60,7 @@ class PlayerEditorControl : public VBoxContainer {
 	bool last_active;
 	float timeline_position;
 
-	EditorFileDialog *file = nullptr;
+	FileDialog *file = nullptr;
 	ConfirmationDialog *delete_dialog = nullptr;
 
 	struct BlendEditor {
@@ -72,7 +77,7 @@ class PlayerEditorControl : public VBoxContainer {
 	bool updating;
 	bool updating_blends;
 
-	AnimationTrackEditor *track_editor = nullptr;
+	TrackEditor *track_editor = nullptr;
 	static PlayerEditorControl *singleton;
 
 	// Onion skinning.
@@ -156,7 +161,7 @@ public:
 	AnimationPlayer *get_player() const;
 
 	static PlayerEditorControl*get_singleton() { return singleton; }
-	AnimationTrackEditor *get_track_editor() { return track_editor; }
+	TrackEditor *get_track_editor() { return track_editor; }
 	Dictionary get_state() const;
 	void set_state(const Dictionary &p_state);
 

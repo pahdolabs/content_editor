@@ -5,7 +5,9 @@
 #include <scene/animation/animation_player.h>
 #include <scene/main/viewport.h>
 #include <core/os/keyboard.h>
-#include <editor/editor_scale.h>
+#include <scene/gui/scroll_container.h>
+#include <scene/gui/panel_container.h>
+#include <scene/gui/separator.h>
 
 #include "player_editor_control.h"
 #include "track_edit.h"
@@ -302,7 +304,7 @@ void TrackEditor::commit_insert_queue() {
 		}
 	}
 
-	if (bool(EDITOR_GET("editors/animation/confirm_insert_track")) && num_tracks > 0) {
+	if (num_tracks > 0) {
 		// Potentially a new key, does not exist.
 		if (num_tracks == 1) {
 			// TRANSLATORS: %s will be replaced by a phrase describing the target of track.
@@ -319,7 +321,7 @@ void TrackEditor::commit_insert_queue() {
 		insert_confirm->popup_centered();
 	}
 	else {
-		_insert_track(reset_allowed && EDITOR_GET("editors/animation/default_create_reset_tracks"), all_bezier && EDITOR_GET("editors/animation/default_create_bezier_tracks"));
+		_insert_track(reset_allowed, all_bezier);
 	}
 
 	insert_queue = false;
@@ -1141,12 +1143,8 @@ MenuButton* TrackEditor::get_edit_menu() {
 
 void TrackEditor::_notification(int p_what) {
 	switch (p_what) {
-	case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
-		panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/animation_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EditorSettings::get_singleton()->get("editors/panning/simple_panning")));
-	} break;
-
 	case NOTIFICATION_ENTER_TREE: {
-		panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/animation_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EditorSettings::get_singleton()->get("editors/panning/simple_panning")));
+		//panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/animation_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EditorSettings::get_singleton()->get("editors/panning/simple_panning")));
 	}
 	case NOTIFICATION_THEME_CHANGED: {
 		zoom_icon->set_texture(get_icon("Zoom", "EditorIcons"));
@@ -1160,7 +1158,7 @@ void TrackEditor::_notification(int p_what) {
 	} break;
 
 	case NOTIFICATION_READY: {
-		EditorNode::get_singleton()->get_editor_selection()->connect("selection_changed", this, "_selection_changed");
+		//EditorNode::get_singleton()->get_editor_selection()->connect("selection_changed", this, "_selection_changed");
 	} break;
 
 	case NOTIFICATION_VISIBILITY_CHANGED: {
@@ -1220,13 +1218,13 @@ void TrackEditor::_new_track_node_selected(NodePath p_path) {
 	switch (adding_track_type) {
 	case Animation::TYPE_VALUE: {
 		adding_track_path = path_to;
-		prop_selector->set_type_filter(Vector<Variant::Type>());
-		prop_selector->select_property_from_instance(node);
+		//prop_selector->set_type_filter(Vector<Variant::Type>());
+		//prop_selector->select_property_from_instance(node);
 	} break;
 	
 	case Animation::TYPE_AUDIO: {
 		if (!node->is_class("AudioStreamPlayer") && !node->is_class("AudioStreamPlayer2D") && !node->is_class("AudioStreamPlayer3D")) {
-			EditorNode::get_singleton()->show_warning(TTR("Audio tracks can only point to nodes of type:\n-AudioStreamPlayer\n-AudioStreamPlayer2D\n-AudioStreamPlayer3D"));
+			//EditorNode::get_singleton()->show_warning(TTR("Audio tracks can only point to nodes of type:\n-AudioStreamPlayer\n-AudioStreamPlayer2D\n-AudioStreamPlayer3D"));
 			return;
 		}
 
@@ -1239,12 +1237,12 @@ void TrackEditor::_new_track_node_selected(NodePath p_path) {
 	} break;
 	case Animation::TYPE_ANIMATION: {
 		if (!node->is_class("AnimationPlayer")) {
-			EditorNode::get_singleton()->show_warning(TTR("Animation tracks can only point to AnimationPlayer nodes."));
+			//EditorNode::get_singleton()->show_warning(TTR("Animation tracks can only point to AnimationPlayer nodes."));
 			return;
 		}
 
 		if (node == PlayerEditorControl::get_singleton()->get_player()) {
-			EditorNode::get_singleton()->show_warning(TTR("AnimationPlayer can't animate itself, only other players."));
+			//EditorNode::get_singleton()->show_warning(TTR("AnimationPlayer can't animate itself, only other players."));
 			return;
 		}
 
@@ -1260,13 +1258,13 @@ void TrackEditor::_new_track_node_selected(NodePath p_path) {
 
 void TrackEditor::_add_track(int p_type) {
 	if (!root) {
-		EditorNode::get_singleton()->show_warning(TTR("Not possible to add a new track without a root"));
+		//EditorNode::get_singleton()->show_warning(TTR("Not possible to add a new track without a root"));
 		return;
 	}
 	adding_track_type = p_type;
-	pick_track->popup_centered();
+	/*pick_track->popup_centered();
 	pick_track->get_filter_line_edit()->clear();
-	pick_track->get_filter_line_edit()->grab_focus();
+	pick_track->get_filter_line_edit()->grab_focus();*/
 }
 
 void TrackEditor::_new_track_property_selected(String p_name) {
@@ -1318,7 +1316,7 @@ void TrackEditor::_new_track_property_selected(String p_name) {
 			bool valid;
 			subindices = _get_bezier_subindices_for_type(h.type, &valid);
 			if (!valid) {
-				EditorNode::get_singleton()->show_warning(TTR("Invalid track for Bezier (no suitable sub-properties)"));
+				//EditorNode::get_singleton()->show_warning(TTR("Invalid track for Bezier (no suitable sub-properties)"));
 				return;
 			}
 		}
@@ -1378,12 +1376,12 @@ void TrackEditor::_insert_key_from_track(float p_ofs, int p_track) {
 	} break;
 	case Animation::TYPE_METHOD: {
 		if (!root->has_node(animation->track_get_path(p_track))) {
-			EditorNode::get_singleton()->show_warning(TTR("Track path is invalid, so can't add a method key."));
+			//EditorNode::get_singleton()->show_warning(TTR("Track path is invalid, so can't add a method key."));
 			return;
 		}
 		Node* base = root->get_node(animation->track_get_path(p_track));
 
-		method_selector->select_method_from_instance(base);
+		//method_selector->select_method_from_instance(base);
 
 		insert_key_from_track_call_ofs = p_ofs;
 		insert_key_from_track_call_track = p_track;
@@ -1546,7 +1544,7 @@ void TrackEditor::_update_key_edit() {
 		key_edit->undo_redo = undo_redo;
 		key_edit->base = np;
 
-		EditorNode::get_singleton()->push_item(key_edit);
+		//EditorNode::get_singleton()->push_item(key_edit);
 	}
 	else if (selection.size() > 1) {
 		multi_key_edit = memnew(MultiTrackKeyEdit);
@@ -1578,7 +1576,7 @@ void TrackEditor::_update_key_edit() {
 
 		multi_key_edit->undo_redo = undo_redo;
 
-		EditorNode::get_singleton()->push_item(multi_key_edit);
+		//EditorNode::get_singleton()->push_item(multi_key_edit);
 	}
 }
 
@@ -1704,7 +1702,7 @@ float TrackEditor::get_moving_selection_offset() const {
 void TrackEditor::_box_selection_draw() {
 	const Rect2 selection_rect = Rect2(Point2(), box_selection->get_size());
 	box_selection->draw_rect(selection_rect, get_color("box_selection_fill_color", "Editor"));
-	box_selection->draw_rect(selection_rect, get_color("box_selection_stroke_color", "Editor"), false, Math::round(EDSCALE));
+	box_selection->draw_rect(selection_rect, get_color("box_selection_stroke_color", "Editor"), false, Math::round(1.0));
 }
 
 void TrackEditor::_scroll_input(const Ref<InputEvent>& p_event) {
@@ -2023,7 +2021,7 @@ void TrackEditor::_edit_menu_pressed(int p_option) {
 			it->set_metadata(0, md);
 		}
 
-		track_copy_dialog->popup_centered(Size2(350, 500) * EDSCALE);
+		track_copy_dialog->popup_centered(Size2(350, 500) * 1.0);
 	} break;
 	case EDIT_COPY_TRACKS_CONFIRM: {
 		track_clipboard.clear();
@@ -2059,7 +2057,7 @@ void TrackEditor::_edit_menu_pressed(int p_option) {
 	} break;
 	case EDIT_PASTE_TRACKS: {
 		if (track_clipboard.size() == 0) {
-			EditorNode::get_singleton()->show_warning(TTR("Clipboard is empty!"));
+			//EditorNode::get_singleton()->show_warning(TTR("Clipboard is empty!"));
 			break;
 		}
 
@@ -2100,7 +2098,7 @@ void TrackEditor::_edit_menu_pressed(int p_option) {
 
 	case EDIT_SCALE_SELECTION:
 	case EDIT_SCALE_FROM_CURSOR: {
-		scale_dialog->popup_centered(Size2(200, 100) * EDSCALE);
+		scale_dialog->popup_centered(Size2(200, 100) * 1.0);
 	} break;
 	case EDIT_SCALE_CONFIRM: {
 		if (selection.empty()) {
@@ -2288,7 +2286,7 @@ void TrackEditor::_edit_menu_pressed(int p_option) {
 
 	} break;
 	case EDIT_OPTIMIZE_ANIMATION: {
-		optimize_dialog->popup_centered(Size2(250, 180) * EDSCALE);
+		optimize_dialog->popup_centered(Size2(250, 180) * 1.0);
 
 	} break;
 	case EDIT_OPTIMIZE_ANIMATION_CONFIRM: {
@@ -2298,7 +2296,7 @@ void TrackEditor::_edit_menu_pressed(int p_option) {
 
 	} break;
 	case EDIT_CLEAN_UP_ANIMATION: {
-		cleanup_dialog->popup_centered(Size2(300, 0) * EDSCALE);
+		cleanup_dialog->popup_centered(Size2(300, 0) * 1.0);
 
 	} break;
 	case EDIT_CLEAN_UP_ANIMATION_CONFIRM: {
@@ -2422,8 +2420,8 @@ float TrackEditor::snap_time(float p_value, bool p_relative) {
 
 void TrackEditor::_show_imported_anim_warning() {
 	// It looks terrible on a single line but the TTR extractor doesn't support line breaks yet.
-	EditorNode::get_singleton()->show_warning(TTR("This animation belongs to an imported scene, so changes to imported tracks will not be saved.\n\nTo enable the ability to add custom tracks, navigate to the scene's import settings and set\n\"Animation > Storage\" to \"Files\", enable \"Animation > Keep Custom Tracks\", then re-import.\nAlternatively, use an import preset that imports animations to separate files."),
-		TTR("Warning: Editing imported animation"));
+	//EditorNode::get_singleton()->show_warning(TTR("This animation belongs to an imported scene, so changes to imported tracks will not be saved.\n\nTo enable the ability to add custom tracks, navigate to the scene's import settings and set\n\"Animation > Storage\" to \"Files\", enable \"Animation > Keep Custom Tracks\", then re-import.\nAlternatively, use an import preset that imports animations to separate files."),
+		//TTR("Warning: Editing imported animation"));
 }
 
 void TrackEditor::_select_all_tracks_for_copy() {
@@ -2466,7 +2464,7 @@ void TrackEditor::_bind_methods() {
 }
 
 void TrackEditor::_pick_track_filter_text_changed(const String& p_newtext) {
-	TreeItem* root_item = pick_track->get_scene_tree()->get_scene_tree()->get_root();
+	/*TreeItem* root_item = pick_track->get_scene_tree()->get_scene_tree()->get_root();
 
 	Vector<Node*> select_candidates;
 	Node* to_select = nullptr;
@@ -2490,7 +2488,7 @@ void TrackEditor::_pick_track_filter_text_changed(const String& p_newtext) {
 		}
 	}
 
-	pick_track->get_scene_tree()->set_selected(to_select);
+	pick_track->get_scene_tree()->set_selected(to_select);*/
 }
 
 void TrackEditor::_pick_track_select_recursive(TreeItem* p_item, const String& p_filter, Vector<Node*>& p_select_candidates) {
@@ -2534,7 +2532,7 @@ void TrackEditor::_pick_track_filter_input(const Ref<InputEvent>& p_ie) {
 TrackEditor::TrackEditor() {
 	root = nullptr;
 
-	undo_redo = EditorNode::get_singleton()->get_undo_redo();
+	undo_redo = memnew(UndoRedo); // EditorNode::get_singleton()->get_undo_redo();
 
 	main_panel = memnew(PanelContainer);
 	main_panel->set_focus_mode(FOCUS_ALL); // Allow panel to have focus so that shortcuts work as expected.
@@ -2555,8 +2553,8 @@ TrackEditor::TrackEditor() {
 	info_message->set_valign(Label::VALIGN_CENTER);
 	info_message->set_align(Label::ALIGN_CENTER);
 	info_message->set_autowrap(true);
-	info_message->set_custom_minimum_size(Size2(100 * EDSCALE, 0));
-	info_message->set_anchors_and_margins_preset(PRESET_WIDE, PRESET_MODE_KEEP_SIZE, 8 * EDSCALE);
+	info_message->set_custom_minimum_size(Size2(100 * 1.0, 0));
+	info_message->set_anchors_and_margins_preset(PRESET_WIDE, PRESET_MODE_KEEP_SIZE, 8 * 1.0);
 	main_panel->add_child(info_message);
 
 	timeline = memnew(TimelineEdit);
@@ -2581,7 +2579,7 @@ TrackEditor::TrackEditor() {
 	scroll->connect("gui_input", this, "_scroll_input");
 	scroll->connect("focus_exited", panner.ptr(), "release_pan_key");
 
-	timeline_vbox->set_custom_minimum_size(Size2(0, 150) * EDSCALE);
+	timeline_vbox->set_custom_minimum_size(Size2(0, 150) * 1.0);
 
 	hscroll = memnew(HScrollBar);
 	hscroll->share(timeline);
@@ -2646,7 +2644,7 @@ TrackEditor::TrackEditor() {
 	step->set_max(1000000);
 	step->set_step(0.001);
 	//step->set_hide_slider(true);
-	step->set_custom_minimum_size(Size2(100, 0) * EDSCALE);
+	step->set_custom_minimum_size(Size2(100, 0) * 1.0);
 	step->set_tooltip(TTR("Animation step value."));
 	bottom_hb->add_child(step);
 	step->connect("value_changed", this, "_update_step");
@@ -2669,7 +2667,7 @@ TrackEditor::TrackEditor() {
 	zoom->set_min(0.0);
 	zoom->set_max(2.0);
 	zoom->set_value(1.0);
-	zoom->set_custom_minimum_size(Size2(200, 0) * EDSCALE);
+	zoom->set_custom_minimum_size(Size2(200, 0) * 1.0);
 	zoom->set_v_size_flags(SIZE_SHRINK_CENTER);
 	bottom_hb->add_child(zoom);
 	timeline->set_zoom(zoom);
@@ -2686,17 +2684,17 @@ TrackEditor::TrackEditor() {
 	edit->get_popup()->add_item(TTR("Scale Selection"), EDIT_SCALE_SELECTION);
 	edit->get_popup()->add_item(TTR("Scale From Cursor"), EDIT_SCALE_FROM_CURSOR);
 	edit->get_popup()->add_separator();
-	edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/duplicate_selection", TTR("Duplicate Selection"), KeyModifierMask::KEY_MASK_CMD | KEY_D), EDIT_DUPLICATE_SELECTION);
-	edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/duplicate_selection_transposed", TTR("Duplicate Transposed"), KeyModifierMask::KEY_MASK_SHIFT | KeyModifierMask::KEY_MASK_CMD | KEY_D), EDIT_DUPLICATE_TRANSPOSED);
-	edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/add_reset_value", TTR("Add RESET Value(s)")));
+	//edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/duplicate_selection", TTR("Duplicate Selection"), KeyModifierMask::KEY_MASK_CMD | KEY_D), EDIT_DUPLICATE_SELECTION);
+	//edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/duplicate_selection_transposed", TTR("Duplicate Transposed"), KeyModifierMask::KEY_MASK_SHIFT | KeyModifierMask::KEY_MASK_CMD | KEY_D), EDIT_DUPLICATE_TRANSPOSED);
+	//edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/add_reset_value", TTR("Add RESET Value(s)")));
 	edit->get_popup()->add_separator();
-	edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/delete_selection", TTR("Delete Selection"), KEY_DELETE), EDIT_DELETE_SELECTION);
+	//edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/delete_selection", TTR("Delete Selection"), KEY_DELETE), EDIT_DELETE_SELECTION);
 
 	edit->get_popup()->add_separator();
-	edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/goto_next_step", TTR("Go to Next Step"), KeyModifierMask::KEY_MASK_CMD | KEY_RIGHT), EDIT_GOTO_NEXT_STEP);
-	edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/goto_prev_step", TTR("Go to Previous Step"), KeyModifierMask::KEY_MASK_CMD | KEY_LEFT), EDIT_GOTO_PREV_STEP);
+	//edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/goto_next_step", TTR("Go to Next Step"), KeyModifierMask::KEY_MASK_CMD | KEY_RIGHT), EDIT_GOTO_NEXT_STEP);
+	//edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/goto_prev_step", TTR("Go to Previous Step"), KeyModifierMask::KEY_MASK_CMD | KEY_LEFT), EDIT_GOTO_PREV_STEP);
 	edit->get_popup()->add_separator();
-	edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/apply_reset", TTR("Apply Reset")), EDIT_APPLY_RESET);
+	//edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/apply_reset", TTR("Apply Reset")), EDIT_APPLY_RESET);
 	edit->get_popup()->add_separator();
 	edit->get_popup()->add_item(TTR("Optimize Animation"), EDIT_OPTIMIZE_ANIMATION);
 	edit->get_popup()->add_item(TTR("Clean-Up Animation"), EDIT_CLEAN_UP_ANIMATION);
@@ -2704,21 +2702,21 @@ TrackEditor::TrackEditor() {
 	edit->get_popup()->connect("id_pressed", this, "_edit_menu_pressed");
 	edit->get_popup()->connect("about_to_popup", this, "_edit_menu_about_to_popup");
 
-	pick_track = memnew(SceneTreeDialog);
+	/*pick_track = memnew(SceneTreeDialog);
 	add_child(pick_track);
 	pick_track->register_text_enter(pick_track->get_filter_line_edit());
 	pick_track->set_title(TTR("Pick a node to animate:"));
 	pick_track->connect("selected", this, "_new_track_node_selected");
 	pick_track->get_filter_line_edit()->connect("text_changed", this, "_pick_track_filter_text_changed");
-	pick_track->get_filter_line_edit()->connect("gui_input", this, "_pick_track_filter_input");
+	pick_track->get_filter_line_edit()->connect("gui_input", this, "_pick_track_filter_input");*/
 
-	prop_selector = memnew(PropertySelector);
+	/*prop_selector = memnew(PropertySelector);
 	add_child(prop_selector);
 	prop_selector->connect("selected", this, "_new_track_property_selected");
 
 	method_selector = memnew(PropertySelector);
 	add_child(method_selector);
-	method_selector->connect("selected", this, "_add_method_key");
+	method_selector->connect("selected", this, "_add_method_key");*/
 
 	insert_confirm = memnew(ConfirmationDialog);
 	add_child(insert_confirm);
@@ -2731,11 +2729,11 @@ TrackEditor::TrackEditor() {
 	icvb->add_child(ichb);
 	insert_confirm_bezier = memnew(CheckBox);
 	insert_confirm_bezier->set_text(TTR("Use Bezier Curves"));
-	insert_confirm_bezier->set_pressed(EDITOR_GET("editors/animation/default_create_bezier_tracks"));
+	//insert_confirm_bezier->set_pressed(EDITOR_GET("editors/animation/default_create_bezier_tracks"));
 	ichb->add_child(insert_confirm_bezier);
 	insert_confirm_reset = memnew(CheckBox);
 	insert_confirm_reset->set_text(TTR("Create RESET Track(s)"));
-	insert_confirm_reset->set_pressed(EDITOR_GET("editors/animation/default_create_reset_tracks"));
+	//insert_confirm_reset->set_pressed(EDITOR_GET("editors/animation/default_create_reset_tracks"));
 	ichb->add_child(insert_confirm_reset);
 	key_edit = nullptr;
 	multi_key_edit = nullptr;
@@ -2845,6 +2843,9 @@ TrackEditor::TrackEditor() {
 }
 
 TrackEditor::~TrackEditor() {
+	if(undo_redo) {
+		memdelete(undo_redo);
+	}
 	if (key_edit) {
 		memdelete(key_edit);
 	}

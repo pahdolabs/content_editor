@@ -2,14 +2,11 @@
 
 #include "player_editor_control.h"
 
+#include <scene/gui/separator.h>
+
+#include "track_editor.h"
 #include "core/os/input.h"
 #include "core/os/keyboard.h"
-#include "editor/editor_file_dialog.h"
-#include "editor/editor_node.h"
-#include "editor/editor_scale.h"
-#include "editor/editor_settings.h"
-#include "editor/plugins/canvas_item_editor_plugin.h" // For onion skinning.
-#include "editor/scene_tree_dock.h"
 #include "scene/main/viewport.h"
 #include "scene/resources/animation.h"
 #include "scene/scene_string_names.h"
@@ -72,12 +69,12 @@ void PlayerEditorControl::_notification(int p_what) {
 
 			get_tree()->connect("node_removed", this, "_node_removed");
 
-			add_style_override("panel", EditorNode::get_singleton()->get_gui_base()->get_stylebox("panel", "Panel"));
+			//add_style_override("panel", EditorNode::get_singleton()->get_gui_base()->get_stylebox("panel", "Panel"));
 		} break;
 
-		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
-			add_style_override("panel", EditorNode::get_singleton()->get_gui_base()->get_stylebox("panel", "Panel"));
-		} break;
+		//case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
+		//	//add_style_override("panel", EditorNode::get_singleton()->get_gui_base()->get_stylebox("panel", "Panel"));
+		//} break;
 
 		case NOTIFICATION_TRANSLATION_CHANGED:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -478,7 +475,7 @@ void PlayerEditorControl::_animation_blend() {
 
 	String current = animation->get_item_text(animation->get_selected());
 
-	blend_editor.dialog->popup_centered(Size2(400, 400) * EDSCALE);
+	blend_editor.dialog->popup_centered(Size2(400, 400) * 1);
 
 	blend_editor.tree->set_hide_root(true);
 	blend_editor.tree->set_column_min_width(0, 10);
@@ -560,8 +557,8 @@ Dictionary PlayerEditorControl::get_state() const {
 	Dictionary d;
 
 	d["visible"] = is_visible_in_tree();
-	if (EditorNode::get_singleton()->get_edited_scene() && is_visible_in_tree() && player) {
-		d["player"] = EditorNode::get_singleton()->get_edited_scene()->get_path_to(player);
+	if (is_visible_in_tree() && player) {
+		d["player"] = get_tree()->get_current_scene()->get_path_to(player);
 		d["animation"] = player->get_assigned_animation();
 		d["track_editor_state"] = track_editor->get_state();
 	}
@@ -573,16 +570,12 @@ void PlayerEditorControl::set_state(const Dictionary &p_state) {
 	if (!p_state.has("visible") || !p_state["visible"]) {
 		return;
 	}
-	if (!EditorNode::get_singleton()->get_edited_scene()) {
-		return;
-	}
 
 	if (p_state.has("player")) {
-		Node *n = EditorNode::get_singleton()->get_edited_scene()->get_node(p_state["player"]);
-		if (Object::cast_to<AnimationPlayer>(n) && EditorNode::get_singleton()->get_editor_selection()->is_selected(n)) {
+		Node *n = get_tree()->get_current_scene()->get_node(p_state["player"]);
+		if (Object::cast_to<AnimationPlayer>(n)) {
 			player = Object::cast_to<AnimationPlayer>(n);
 			_update_player();
-			EditorNode::get_singleton()->make_bottom_panel_item_visible(this);
 			set_process(true);
 			ensure_visibility();
 
@@ -605,7 +598,7 @@ void PlayerEditorControl::_animation_resource_edit() {
 	String current = _get_current();
 	if (current != String()) {
 		Ref<Animation> anim = player->get_animation(current);
-		EditorNode::get_singleton()->edit_resource(anim);
+		//EditorNode::get_singleton()->edit_resource(anim);
 	}
 }
 
@@ -942,7 +935,7 @@ void PlayerEditorControl::_animation_tool_menu(int p_option) {
 		} break;
 		case TOOL_EDIT_RESOURCE: {
 			if (anim.is_valid()) {
-				EditorNode::get_singleton()->edit_resource(anim);
+				//EditorNode::get_singleton()->edit_resource(anim);
 			}
 		} break;
 	}
@@ -1061,17 +1054,17 @@ PlayerEditorControl::PlayerEditorControl() {
 	tool_anim->set_flat(false);
 	tool_anim->set_tooltip(TTR("Animation Tools"));
 	tool_anim->set_text(TTR("Animation"));
-	tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/new_animation", TTR("New")), TOOL_NEW_ANIM);
+	//tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/new_animation", TTR("New")), TOOL_NEW_ANIM);
 	tool_anim->get_popup()->add_separator();
-	tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/animation_libraries", TTR("Manage Animations...")), TOOL_ANIM_LIBRARY);
+	//tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/animation_libraries", TTR("Manage Animations...")), TOOL_ANIM_LIBRARY);
 	tool_anim->get_popup()->add_separator();
-	tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/duplicate_animation", TTR("Duplicate...")), TOOL_DUPLICATE_ANIM);
+	//tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/duplicate_animation", TTR("Duplicate...")), TOOL_DUPLICATE_ANIM);
 	tool_anim->get_popup()->add_separator();
-	tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/rename_animation", TTR("Rename...")), TOOL_RENAME_ANIM);
-	tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/edit_transitions", TTR("Edit Transitions...")), TOOL_EDIT_TRANSITIONS);
-	tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/open_animation_in_inspector", TTR("Open in Inspector")), TOOL_EDIT_RESOURCE);
+	//tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/rename_animation", TTR("Rename...")), TOOL_RENAME_ANIM);
+	//tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/edit_transitions", TTR("Edit Transitions...")), TOOL_EDIT_TRANSITIONS);
+	//tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/open_animation_in_inspector", TTR("Open in Inspector")), TOOL_EDIT_RESOURCE);
 	tool_anim->get_popup()->add_separator();
-	tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/remove_animation", TTR("Remove")), TOOL_REMOVE_ANIM);
+	//tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/remove_animation", TTR("Remove")), TOOL_REMOVE_ANIM);
 	tool_anim->set_disabled(true);
 	hb->add_child(tool_anim);
 
@@ -1088,13 +1081,13 @@ PlayerEditorControl::PlayerEditorControl() {
 
 	hb->add_child(memnew(VSeparator));
 
-	track_editor = memnew(AnimationTrackEditor);
+	track_editor = memnew(TrackEditor);
 
 	hb->add_child(track_editor->get_edit_menu());
 	
 	hb->add_child(memnew(VSeparator));
 	
-	file = memnew(EditorFileDialog);
+	file = memnew(FileDialog);
 	add_child(file);
 
 	name_dialog = memnew(ConfirmationDialog);

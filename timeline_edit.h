@@ -1,17 +1,15 @@
 #ifndef TIMELINE_EDIT_H
 #define TIMELINE_EDIT_H
 
-#include "editor/editor_data.h"
-#include "editor/editor_spin_slider.h"
-#include "editor/property_editor.h"
-#include "editor/property_selector.h"
-
 #include "scene/gui/control.h"
 #include "scene/gui/menu_button.h"
 #include "scene/gui/scroll_bar.h"
 #include "scene/gui/texture_rect.h"
 #include "scene/resources/animation.h"
 
+class UndoRedo;
+class SpinBox;
+class HBoxContainer;
 class TrackEdit;
 class ViewPanner;
 
@@ -26,7 +24,7 @@ class TimelineEdit : public Range {
 	float play_position_pos;
 
 	HBoxContainer* len_hb = nullptr;
-	EditorSpinSlider* length = nullptr;
+	SpinBox* length = nullptr;
 	Button* loop = nullptr;
 	TextureRect* time_icon = nullptr;
 

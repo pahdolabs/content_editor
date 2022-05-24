@@ -2,14 +2,13 @@
 
 #include "track_editor.h"
 #include "timeline_edit.h"
+#include <core/undo_redo.h>
 #include <core/os/input_event.h>
-#include <editor/plugins/canvas_item_editor_plugin.h>
 #include <servers/audio/audio_stream.h>
-#include <editor/audio_stream_preview.h>
-#include <editor/editor_scale.h>
 #include <scene/2d/sprite.h>
 #include <scene/2d/animated_sprite.h>
 #include <scene/3d/sprite_3d.h>
+#include <scene/animation/animation_player.h>
 
 /// BOOL ///
 int TrackEditBool::get_key_height() const {
@@ -194,8 +193,8 @@ Rect2 TrackEditAudio::get_key_rect(int p_index, float p_pixels_sec) {
 		float len = stream->get_length();
 
 		if (len == 0) {
-			Ref<AudioStreamPreview> preview = AudioStreamPreviewGenerator::get_singleton()->generate_preview(stream);
-			len = preview->get_length();
+			//Ref<AudioStreamPreview> preview = AudioStreamPreviewGenerator::get_singleton()->generate_preview(stream);
+			//len = preview->get_length();
 		}
 
 		if (get_animation()->track_get_key_count(get_track()) > p_index + 1) {
@@ -234,9 +233,10 @@ void TrackEditAudio::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_s
 	if (play) {
 		float len = stream->get_length();
 
-		Ref<AudioStreamPreview> preview = AudioStreamPreviewGenerator::get_singleton()->generate_preview(stream);
+		//Ref<AudioStreamPreview> preview = AudioStreamPreviewGenerator::get_singleton()->generate_preview(stream);
 
-		float preview_len = preview->get_length();
+		//float preview_len = preview->get_length();
+		float preview_len = 0.0;
 
 		if (len == 0) {
 			len = preview_len;
@@ -275,13 +275,13 @@ void TrackEditAudio::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_s
 
 		Vector<Vector2> lines;
 		lines.resize((to_x - from_x + 1) * 2);
-		preview_len = preview->get_length();
+		//preview_len = preview->get_length();
 
 		for (int i = from_x; i < to_x; i++) {
 			float ofs = (i - pixel_begin) * preview_len / pixel_len;
 			float ofs_n = ((i + 1) - pixel_begin) * preview_len / pixel_len;
-			float max = preview->get_max(ofs, ofs_n) * 0.5 + 0.5;
-			float min = preview->get_min(ofs, ofs_n) * 0.5 + 0.5;
+			float max = 0.0;// preview->get_max(ofs, ofs_n) * 0.5 + 0.5;
+			float min = 0.0; // preview->get_min(ofs, ofs_n) * 0.5 + 0.5;
 
 			int idx = i - from_x;
 			lines.write[idx * 2 + 0] = Vector2(i, rect.position.y + min * rect.size.y);
@@ -321,7 +321,7 @@ void TrackEditAudio::_bind_methods() {
 }
 
 TrackEditAudio::TrackEditAudio() {
-	AudioStreamPreviewGenerator::get_singleton()->connect("preview_updated", this, "_preview_changed");
+	//AudioStreamPreviewGenerator::get_singleton()->connect("preview_updated", this, "_preview_changed");
 }
 
 /// SPRITE FRAME / FRAME_COORDS ///
@@ -787,8 +787,8 @@ Rect2 TrackEditTypeAudio::get_key_rect(int p_index, float p_pixels_sec) {
 	float len = stream->get_length();
 
 	if (len == 0) {
-		Ref<AudioStreamPreview> preview = AudioStreamPreviewGenerator::get_singleton()->generate_preview(stream);
-		len = preview->get_length();
+		//Ref<AudioStreamPreview> preview = AudioStreamPreviewGenerator::get_singleton()->generate_preview(stream);
+		//len = preview->get_length();
 	}
 
 	len -= end_ofs;
@@ -840,9 +840,9 @@ void TrackEditTypeAudio::draw_key(int p_index, float p_pixels_sec, int p_x, bool
 
 	float len = stream->get_length();
 
-	Ref<AudioStreamPreview> preview = AudioStreamPreviewGenerator::get_singleton()->generate_preview(stream);
+	//Ref<AudioStreamPreview> preview = AudioStreamPreviewGenerator::get_singleton()->generate_preview(stream);
 
-	float preview_len = preview->get_length();
+	float preview_len = 0.0; // preview->get_length();
 
 	if (len == 0) {
 		len = preview_len;
@@ -889,7 +889,7 @@ void TrackEditTypeAudio::draw_key(int p_index, float p_pixels_sec, int p_x, bool
 
 	Vector<Vector2> lines;
 	lines.resize((to_x - from_x + 1) * 2);
-	preview_len = preview->get_length();
+	//preview_len = preview->get_length();
 
 	for (int i = from_x; i < to_x; i++) {
 		float ofs = (i - pixel_begin) * preview_len / pixel_total_len;
@@ -897,8 +897,8 @@ void TrackEditTypeAudio::draw_key(int p_index, float p_pixels_sec, int p_x, bool
 		ofs += start_ofs;
 		ofs_n += start_ofs;
 
-		float max = preview->get_max(ofs, ofs_n) * 0.5 + 0.5;
-		float min = preview->get_min(ofs, ofs_n) * 0.5 + 0.5;
+		float max = 0.0; // preview->get_max(ofs, ofs_n) * 0.5 + 0.5;
+		float min = 0.0; // preview->get_min(ofs, ofs_n) * 0.5 + 0.5;
 
 		int idx = i - from_x;
 		lines.write[idx * 2 + 0] = Vector2(i, rect.position.y + min * rect.size.y);
@@ -929,7 +929,7 @@ void TrackEditTypeAudio::_bind_methods() {
 }
 
 TrackEditTypeAudio::TrackEditTypeAudio() {
-	AudioStreamPreviewGenerator::get_singleton()->connect("preview_updated", this, "_preview_changed");
+	//AudioStreamPreviewGenerator::get_singleton()->connect("preview_updated", this, "_preview_changed");
 	len_resizing = false;
 }
 
@@ -1017,9 +1017,9 @@ void TrackEditTypeAudio::_gui_input(const Ref<InputEvent>& p_event) {
 			float len = stream->get_length();
 
 			if (len == 0) {
-				Ref<AudioStreamPreview> preview = AudioStreamPreviewGenerator::get_singleton()->generate_preview(stream);
-				float preview_len = preview->get_length();
-				len = preview_len;
+				//Ref<AudioStreamPreview> preview = AudioStreamPreviewGenerator::get_singleton()->generate_preview(stream);
+				//float preview_len = preview->get_length();
+				len = 0.0; //preview_len;
 			}
 
 			len -= end_ofs;
@@ -1040,7 +1040,7 @@ void TrackEditTypeAudio::_gui_input(const Ref<InputEvent>& p_event) {
 
 			int end = ofs + len * get_timeline()->get_zoom_scale();
 
-			if (end >= get_timeline()->get_name_limit() && end <= get_size().width - get_timeline()->get_buttons_width() && ABS(mm->get_position().x - end) < 5 * EDSCALE) {
+			if (end >= get_timeline()->get_name_limit() && end <= get_size().width - get_timeline()->get_buttons_width() && ABS(mm->get_position().x - end) < 5 * 1) {
 				use_hsize_cursor = true;
 				len_resizing_index = i;
 			}
