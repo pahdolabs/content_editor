@@ -2456,14 +2456,11 @@ void TrackEditor::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_track_remove_request"), &TrackEditor::_track_remove_request);
 	ClassDB::bind_method(D_METHOD("_dropped_track"), &TrackEditor::_dropped_track);
 	ClassDB::bind_method(D_METHOD("_insert_key_from_track"), &TrackEditor::_insert_key_from_track);
-	ClassDB::bind_method(D_METHOD("_key_selected"), &TrackEditor::_key_selected);
-	ClassDB::bind_method(D_METHOD("_key_deselected"), &TrackEditor::_key_deselected);
 	ClassDB::bind_method(D_METHOD("_move_selection_begin"), &TrackEditor::_move_selection_begin);
 	ClassDB::bind_method(D_METHOD("_move_selection"), &TrackEditor::_move_selection);
 	ClassDB::bind_method(D_METHOD("_move_selection_commit"), &TrackEditor::_move_selection_commit);
 	ClassDB::bind_method(D_METHOD("_move_selection_cancel"), &TrackEditor::_move_selection_cancel);
 	ClassDB::bind_method(D_METHOD("_edit_menu_pressed"), &TrackEditor::_edit_menu_pressed);
-	ClassDB::bind_method(D_METHOD("_timeline_changed"), &TrackEditor::_timeline_changed);
 	ClassDB::bind_method(D_METHOD("_name_limit_changed"), &TrackEditor::_name_limit_changed);
 	ClassDB::bind_method(D_METHOD("_add_track"), &TrackEditor::_add_track);
 	ClassDB::bind_method(D_METHOD("_timeline_value_changed"), &TrackEditor::_timeline_value_changed);
@@ -2477,7 +2474,6 @@ void TrackEditor::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_view_group_toggle"), &TrackEditor::_view_group_toggle);
 	ClassDB::bind_method(D_METHOD("_update_step"), &TrackEditor::_update_step);
 	ClassDB::bind_method(D_METHOD("_snap_mode_changed"), &TrackEditor::_snap_mode_changed);
-	ClassDB::bind_method(D_METHOD("_edit_menu_pressed"), &TrackEditor::_edit_menu_pressed);
 	ClassDB::bind_method(D_METHOD("_edit_menu_about_to_popup"), &TrackEditor::_edit_menu_about_to_popup);
 	ClassDB::bind_method(D_METHOD("_confirm_insert_list"), &TrackEditor::_confirm_insert_list);
 	ClassDB::bind_method(D_METHOD("_box_selection_draw"), &TrackEditor::_box_selection_draw);

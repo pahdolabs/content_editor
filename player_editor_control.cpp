@@ -1117,7 +1117,7 @@ PlayerEditorControl::PlayerEditorControl() {
 	animation->connect("item_selected", this, "_animation_selected");
 
 	frame->connect("value_changed", this, "_seek_value_changed", make_binds(true, false));
-	scale->connect("text_submitted", this, "_scale_changed");
+	scale->connect("text_entered", this, "_scale_changed");
 
 	last_active = false;
 	timeline_position = 0;

@@ -970,7 +970,7 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 			path = memnew(LineEdit);
 			path_popup->add_child(path);
 			path->set_anchors_and_margins_preset(PRESET_WIDE);
-			path->connect("text_submitted", this, "_path_submitted");
+			path->connect("text_entered", this, "_path_submitted");
 		}
 
 		path->set_text(animation->track_get_path(track));
