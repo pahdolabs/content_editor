@@ -6,6 +6,10 @@
 
 class TimelineEdit;
 class TrackEditor;
+class UndoRedo;
+class Popup;
+class PopupMenu;
+class LineEdit;
 
 class TrackEdit : public Control {
 	GDCLASS(TrackEdit, Control);
