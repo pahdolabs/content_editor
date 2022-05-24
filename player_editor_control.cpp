@@ -734,8 +734,8 @@ void PlayerEditorControl::_update_animation_list_icons() {
 	}
 }
 
-void PlayerEditorControl::edit(AnimationPlayer *p_player) {
-	player = p_player;
+void PlayerEditorControl::edit(Object *p_player) {
+	player = cast_to<AnimationPlayer>(p_player);
 
 	if (player) {
 		_update_player();

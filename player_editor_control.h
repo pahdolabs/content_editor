@@ -140,7 +140,7 @@ public:
 	UndoRedo* get_undo_redo() const {
 		return undo_redo;
 	}
-	void edit(AnimationPlayer *p_player);
+	void edit(Object *p_player);
 
 	PlayerEditorControl();
 	~PlayerEditorControl();
