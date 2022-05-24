@@ -663,15 +663,15 @@ void PlayerEditorControl::_update_player() {
 	int active_idx = -1;
 	bool no_anims_found = true;
 	
-#define ITEM_CHECK_DISABLED(m_item) tool_anim->get_popup()->set_item_disabled(tool_anim->get_popup()->get_item_index(m_item), no_anims_found)
-
-	ITEM_CHECK_DISABLED(TOOL_DUPLICATE_ANIM);
-	ITEM_CHECK_DISABLED(TOOL_RENAME_ANIM);
-	ITEM_CHECK_DISABLED(TOOL_EDIT_TRANSITIONS);
-	ITEM_CHECK_DISABLED(TOOL_REMOVE_ANIM);
-	ITEM_CHECK_DISABLED(TOOL_EDIT_RESOURCE);
-
-#undef ITEM_CHECK_DISABLED
+//#define ITEM_CHECK_DISABLED(m_item) tool_anim->get_popup()->set_item_disabled(tool_anim->get_popup()->get_item_index(m_item), no_anims_found)
+//
+//	ITEM_CHECK_DISABLED(TOOL_DUPLICATE_ANIM);
+//	ITEM_CHECK_DISABLED(TOOL_RENAME_ANIM);
+//	ITEM_CHECK_DISABLED(TOOL_EDIT_TRANSITIONS);
+//	ITEM_CHECK_DISABLED(TOOL_REMOVE_ANIM);
+//	ITEM_CHECK_DISABLED(TOOL_EDIT_RESOURCE);
+//
+//#undef ITEM_CHECK_DISABLED
 
 	stop->set_disabled(no_anims_found);
 	play->set_disabled(no_anims_found);
