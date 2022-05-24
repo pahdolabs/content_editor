@@ -104,15 +104,15 @@ void PlayerEditorControl::_notification(int p_what) {
 			tool_anim->add_style_override("normal", get_stylebox("normal", "Button"));
 			track_editor->get_edit_menu()->add_style_override("normal", get_stylebox("normal", "Button"));
 
-#define ITEM_ICON(m_item, m_icon) tool_anim->get_popup()->set_item_icon(tool_anim->get_popup()->get_item_index(m_item), get_icon(m_icon, "EditorIcons"))
-
-			ITEM_ICON(TOOL_NEW_ANIM, "New");
-			ITEM_ICON(TOOL_ANIM_LIBRARY, "AnimationLibrary");
-			ITEM_ICON(TOOL_DUPLICATE_ANIM, "Duplicate");
-			ITEM_ICON(TOOL_RENAME_ANIM, "Rename");
-			ITEM_ICON(TOOL_EDIT_TRANSITIONS, "Blend");
-			ITEM_ICON(TOOL_EDIT_RESOURCE, "Edit");
-			ITEM_ICON(TOOL_REMOVE_ANIM, "Remove");
+//#define ITEM_ICON(m_item, m_icon) tool_anim->get_popup()->set_item_icon(tool_anim->get_popup()->get_item_index(m_item), get_icon(m_icon, "EditorIcons"))
+//
+//			ITEM_ICON(TOOL_NEW_ANIM, "New");
+//			ITEM_ICON(TOOL_ANIM_LIBRARY, "AnimationLibrary");
+//			ITEM_ICON(TOOL_DUPLICATE_ANIM, "Duplicate");
+//			ITEM_ICON(TOOL_RENAME_ANIM, "Rename");
+//			ITEM_ICON(TOOL_EDIT_TRANSITIONS, "Blend");
+//			ITEM_ICON(TOOL_EDIT_RESOURCE, "Edit");
+//			ITEM_ICON(TOOL_REMOVE_ANIM, "Remove");
 
 			_update_animation_list_icons();
 		} break;
