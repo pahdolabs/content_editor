@@ -54,7 +54,7 @@ class PlayerEditorControl : public VBoxContainer {
 	LineEdit *name = nullptr;
 	OptionButton *library = nullptr;
 	Label *name_title = nullptr;
-	UndoRedo *undo_redo = nullptr;
+	const UndoRedo* undo_redo = nullptr;
 
 	Ref<Texture> autoplay_icon;
 	Ref<Texture> reset_icon;
@@ -137,7 +137,7 @@ public:
 
 	void ensure_visibility();
 
-	void set_undo_redo(UndoRedo *p_undo_redo) { undo_redo = p_undo_redo; }
+	void set_undo_redo(const UndoRedo *p_undo_redo) { undo_redo = p_undo_redo; }
 	void edit(AnimationPlayer *p_player);
 
 	PlayerEditorControl();
