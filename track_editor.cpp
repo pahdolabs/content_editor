@@ -2737,7 +2737,7 @@ TrackEditor::TrackEditor() {
 	insert_confirm_bezier->set_pressed(EDITOR_GET("editors/animation/default_create_bezier_tracks"));
 	ichb->add_child(insert_confirm_bezier);
 	insert_confirm_reset = memnew(CheckBox);
-	insert_confirm_reset->set_text(TTR("Create RESET Track(s)", ""));
+	insert_confirm_reset->set_text(TTR("Create RESET Track(s)"));
 	insert_confirm_reset->set_pressed(EDITOR_GET("editors/animation/default_create_reset_tracks"));
 	ichb->add_child(insert_confirm_reset);
 	key_edit = nullptr;

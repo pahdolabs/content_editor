@@ -6,3 +6,9 @@ Import("env_modules")
 content_editor_env = env.Clone()
 
 content_editor_env.add_source_files(env.modules_sources, "*.cpp")
+
+if not content_editor_env.msvc:
+    content_editor_env.Prepend(CFLAGS=["-std=gnu11"])
+    content_editor_env.Prepend(CXXFLAGS=["-std=gnu++17"])
+else:
+    content_editor_env.Prepend(CCFLAGS=["/std:c++17"])
