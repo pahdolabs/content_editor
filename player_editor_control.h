@@ -1,6 +1,7 @@
-#ifndef ANIMATION_PLAYER_EDITOR_H
-#define ANIMATION_PLAYER_EDITOR_H
+#ifndef PLAYER_EDITOR_CONTROL_H
+#define PLAYER_EDITOR_CONTROL_H
 
+#include "scene/gui/box_container.h"
 #include <core/undo_redo.h>
 #include <scene/gui/file_dialog.h>
 #include <scene/gui/option_button.h>
@@ -11,6 +12,7 @@
 #include "scene/gui/tree.h"
 
 class TrackEditor;
+class MenuButton;
 
 class PlayerEditorControl : public VBoxContainer {
 	GDCLASS(PlayerEditorControl, VBoxContainer);
@@ -80,36 +82,6 @@ class PlayerEditorControl : public VBoxContainer {
 	TrackEditor *track_editor = nullptr;
 	static PlayerEditorControl *singleton;
 
-	// Onion skinning.
-	struct {
-		// Settings.
-		bool enabled = false;
-		bool past = false;
-		bool future = false;
-		int steps = 0;
-		bool differences_only = false;
-		bool force_white_modulate = false;
-		bool include_gizmos = false;
-
-		int get_needed_capture_count() const {
-			// 'Differences only' needs a capture of the present.
-			return (past && future ? 2 * steps : steps) + (differences_only ? 1 : 0);
-		}
-
-		// Rendering.
-		int64_t last_frame = 0;
-		int can_overlay = 0;
-		Size2 capture_size;
-		Vector<RID> captures;
-		Vector<bool> captures_valid;
-		struct {
-			RID canvas;
-			RID canvas_item;
-			Ref<ShaderMaterial> material;
-			Ref<Shader> shader;
-		} capture;
-	} onion;
-
 	void _select_anim_by_name(const String &p_anim);
 	double _get_editor_step() const;
 	void _play_pressed();
@@ -147,9 +119,7 @@ class PlayerEditorControl : public VBoxContainer {
 
 	void _unhandled_key_input(const Ref<InputEvent> &p_ev);
 	void _animation_tool_menu(int p_option);
-	void _onion_skinning_menu(int p_option);
-
-	void _pin_pressed();
+	
 	String _get_current() const;
 
 protected:
@@ -169,10 +139,9 @@ public:
 
 	void set_undo_redo(UndoRedo *p_undo_redo) { undo_redo = p_undo_redo; }
 	void edit(AnimationPlayer *p_player);
-	void forward_force_draw_over_viewport(Control *p_overlay);
 
 	PlayerEditorControl();
 	~PlayerEditorControl();
 };
 
-#endif // ANIMATION_PLAYER_EDITOR_H
+#endif // PLAYER_EDITOR_CONTROL_H

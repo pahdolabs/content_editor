@@ -746,51 +746,6 @@ void PlayerEditorControl::edit(AnimationPlayer *p_player) {
 	}
 }
 
-void PlayerEditorControl::forward_force_draw_over_viewport(Control *p_overlay) {
-	if (!onion.can_overlay) {
-		return;
-	}
-	
-	RID ci = p_overlay->get_canvas_item();
-	Rect2 src_rect = p_overlay->get_global_rect();
-	// Re-flip since captures are already flipped.
-	src_rect.position.y = onion.capture_size.y - (src_rect.position.y + src_rect.size.y);
-	src_rect.size.y *= -1;
-
-	Rect2 dst_rect = Rect2(Point2(), p_overlay->get_size());
-
-	float alpha_step = 1.0 / (onion.steps + 1);
-
-	int cidx = 0;
-	if (onion.past) {
-		float alpha = 0;
-		do {
-			alpha += alpha_step;
-
-			if (onion.captures_valid[cidx]) {
-				VisualServer::get_singleton()->canvas_item_add_texture_rect_region(
-						ci, dst_rect, VisualServer::get_singleton()->viewport_get_texture(onion.captures[cidx]), src_rect, Color(1, 1, 1, alpha));
-			}
-
-			cidx++;
-		} while (cidx < onion.steps);
-	}
-	if (onion.future) {
-		float alpha = 1;
-		int base_cidx = cidx;
-		do {
-			alpha -= alpha_step;
-
-			if (onion.captures_valid[cidx]) {
-				VisualServer::get_singleton()->canvas_item_add_texture_rect_region(
-						ci, dst_rect, VisualServer::get_singleton()->viewport_get_texture(onion.captures[cidx]), src_rect, Color(1, 1, 1, alpha));
-			}
-
-			cidx++;
-		} while (cidx < base_cidx + onion.steps); // In case there's the present capture at the end, skip it.
-	}
-}
-
 void PlayerEditorControl::_animation_duplicate() {
 	if (!animation->get_item_count()) {
 		return;
