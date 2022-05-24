@@ -2449,6 +2449,8 @@ void TrackEditor::_bind_methods() {
 	ClassDB::bind_method("_key_selected", &TrackEditor::_key_selected); // Still used by some connect_compat.
 	ClassDB::bind_method("_key_deselected", &TrackEditor::_key_deselected); // Still used by some connect_compat.
 	ClassDB::bind_method("_clear_selection", &TrackEditor::_clear_selection); // Still used by some connect_compat.
+	
+	ClassDB::bind_method(D_METHOD("has_keying"), &TrackEditor::has_keying);
 
 	ClassDB::bind_method(D_METHOD("_animation_changed"), &TrackEditor::_animation_changed);
 	ClassDB::bind_method(D_METHOD("_root_removed"), &TrackEditor::_root_removed);

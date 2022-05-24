@@ -929,7 +929,10 @@ void PlayerEditorControl::_unhandled_key_input(const Ref<InputEvent> &p_ev) {
 }
 
 void PlayerEditorControl::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("set_undo_redo"), &PlayerEditorControl::get_undo_redo);
+	ClassDB::bind_method(D_METHOD("edit", "animation_player"), &PlayerEditorControl::edit);
+	ClassDB::bind_method(D_METHOD("get_undo_redo"), &PlayerEditorControl::get_undo_redo);
+	ClassDB::bind_method(D_METHOD("ensure_visibility"), &PlayerEditorControl::ensure_visibility);
+	ClassDB::bind_method(D_METHOD("get_track_editor"), &PlayerEditorControl::get_track_editor);
 	ClassDB::bind_method(D_METHOD("_node_removed"), &PlayerEditorControl::_node_removed);
 	ClassDB::bind_method(D_METHOD("_animation_new"), &PlayerEditorControl::_animation_new);
 	ClassDB::bind_method(D_METHOD("_animation_rename"), &PlayerEditorControl::_animation_rename);
