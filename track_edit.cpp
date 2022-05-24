@@ -1242,6 +1242,11 @@ void TrackEdit::append_to_selection(const Rect2& p_box, bool p_deselection) {
 }
 
 void TrackEdit::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("_zoom_changed"), &TrackEdit::_zoom_changed);
+	ClassDB::bind_method(D_METHOD("_menu_selected"), &TrackEdit::_menu_selected);
+	ClassDB::bind_method(D_METHOD("_path_submitted"), &TrackEdit::_path_submitted);
+	ClassDB::bind_method(D_METHOD("_play_position_draw"), &TrackEdit::_play_position_draw);
+
 	ADD_SIGNAL(MethodInfo("timeline_changed", PropertyInfo(Variant::REAL, "position"), PropertyInfo(Variant::BOOL, "drag"), PropertyInfo(Variant::BOOL, "timeline_only")));
 	ADD_SIGNAL(MethodInfo("remove_request", PropertyInfo(Variant::INT, "track")));
 	ADD_SIGNAL(MethodInfo("dropped", PropertyInfo(Variant::INT, "from_track"), PropertyInfo(Variant::INT, "to_track")));

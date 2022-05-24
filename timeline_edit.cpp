@@ -498,6 +498,14 @@ void TimelineEdit::_track_added(int p_track) {
 }
 
 void TimelineEdit::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("_zoom_changed"), &TimelineEdit::_zoom_changed);
+	ClassDB::bind_method(D_METHOD("_play_position_draw"), &TimelineEdit::_play_position_draw);
+	ClassDB::bind_method(D_METHOD("_anim_length_changed"), &TimelineEdit::_anim_length_changed);
+	ClassDB::bind_method(D_METHOD("_anim_loop_pressed"), &TimelineEdit::_anim_loop_pressed);
+	ClassDB::bind_method(D_METHOD("_track_added"), &TimelineEdit::_track_added);
+	ClassDB::bind_method(D_METHOD("_scroll_callback"), &TimelineEdit::_scroll_callback);
+	ClassDB::bind_method(D_METHOD("_pan_callback"), &TimelineEdit::_pan_callback);
+	ClassDB::bind_method(D_METHOD("_zoom_callback"), &TimelineEdit::_zoom_callback);
 	ADD_SIGNAL(MethodInfo("zoom_changed"));
 	ADD_SIGNAL(MethodInfo("name_limit_changed"));
 	ADD_SIGNAL(MethodInfo("timeline_changed", PropertyInfo(Variant::REAL, "position"), PropertyInfo(Variant::BOOL, "drag"), PropertyInfo(Variant::BOOL, "timeline_only")));

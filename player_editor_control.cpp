@@ -929,15 +929,32 @@ void PlayerEditorControl::_unhandled_key_input(const Ref<InputEvent> &p_ev) {
 }
 
 void PlayerEditorControl::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("_node_removed"), &PlayerEditorControl::_node_removed);
 	ClassDB::bind_method(D_METHOD("_animation_new"), &PlayerEditorControl::_animation_new);
 	ClassDB::bind_method(D_METHOD("_animation_rename"), &PlayerEditorControl::_animation_rename);
+	ClassDB::bind_method(D_METHOD("_animation_name_edited"), &PlayerEditorControl::_animation_name_edited);
 	ClassDB::bind_method(D_METHOD("_animation_remove"), &PlayerEditorControl::_animation_remove);
+	ClassDB::bind_method(D_METHOD("_animation_remove_confirmed"), &PlayerEditorControl::_animation_remove_confirmed);
 	ClassDB::bind_method(D_METHOD("_animation_blend"), &PlayerEditorControl::_animation_blend);
 	ClassDB::bind_method(D_METHOD("_animation_edit"), &PlayerEditorControl::_animation_edit);
 	ClassDB::bind_method(D_METHOD("_animation_resource_edit"), &PlayerEditorControl::_animation_resource_edit);
 	ClassDB::bind_method(D_METHOD("_animation_player_changed"), &PlayerEditorControl::_animation_player_changed);
 	ClassDB::bind_method(D_METHOD("_list_changed"), &PlayerEditorControl::_list_changed);
 	ClassDB::bind_method(D_METHOD("_animation_duplicate"), &PlayerEditorControl::_animation_duplicate);
+	ClassDB::bind_method(D_METHOD("_blend_edited"), &PlayerEditorControl::_blend_edited);
+	ClassDB::bind_method(D_METHOD("_autoplay_pressed"), &PlayerEditorControl::_autoplay_pressed);
+	ClassDB::bind_method(D_METHOD("_play_pressed"), &PlayerEditorControl::_play_pressed);
+	ClassDB::bind_method(D_METHOD("_play_from_pressed"), &PlayerEditorControl::_play_from_pressed);
+	ClassDB::bind_method(D_METHOD("_play_bw_pressed"), &PlayerEditorControl::_play_bw_pressed);
+	ClassDB::bind_method(D_METHOD("_play_bw_from_pressed"), &PlayerEditorControl::_play_bw_from_pressed);
+	ClassDB::bind_method(D_METHOD("_stop_pressed"), &PlayerEditorControl::_stop_pressed);
+	ClassDB::bind_method(D_METHOD("_animation_selected"), &PlayerEditorControl::_animation_selected);
+	ClassDB::bind_method(D_METHOD("_seek_value_changed"), &PlayerEditorControl::_seek_value_changed);
+	ClassDB::bind_method(D_METHOD("_scale_changed"), &PlayerEditorControl::_scale_changed);
+	ClassDB::bind_method(D_METHOD("_animation_key_editor_seek"), &PlayerEditorControl::_animation_key_editor_seek);
+	ClassDB::bind_method(D_METHOD("_animation_key_editor_anim_len_changed"), &PlayerEditorControl::_animation_key_editor_anim_len_changed);
+	ClassDB::bind_method(D_METHOD("_animation_tool_menu"), &PlayerEditorControl::_animation_tool_menu);
+	ClassDB::bind_method(D_METHOD("_blend_editor_next_changed"), &PlayerEditorControl::_blend_editor_next_changed);
 }
 
 PlayerEditorControl *PlayerEditorControl::singleton = nullptr;
