@@ -1147,7 +1147,7 @@ void TrackEditor::_notification(int p_what) {
 		selected_filter->set_icon(get_icon("AnimationFilter", "EditorIcons"));
 		imported_anim_warning->set_icon(get_icon("NodeWarning", "EditorIcons"));
 		main_panel->add_style_override("panel", get_stylebox("bg", "Tree"));
-		edit->get_popup()->set_item_icon(edit->get_popup()->get_item_index(EDIT_APPLY_RESET), get_icon("Reload", "EditorIcons"));
+		//edit->get_popup()->set_item_icon(edit->get_popup()->get_item_index(EDIT_APPLY_RESET), get_icon("Reload", "EditorIcons"));
 	} break;
 
 	case NOTIFICATION_READY: {
