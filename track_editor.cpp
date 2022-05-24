@@ -38,8 +38,7 @@ void TrackEditor::set_animation(const Ref<Animation>& p_anim) {
 	}
 	animation = p_anim;
 	timeline->set_animation(p_anim);
-
-	_cancel_bezier_edit();
+	
 	_update_tracks();
 
 	if (animation.is_valid()) {
@@ -54,9 +53,7 @@ void TrackEditor::set_animation(const Ref<Animation>& p_anim) {
 		//step->set_read_only(false);
 		snap->set_disabled(false);
 		snap_mode->set_disabled(false);
-
-		bezier_edit_icon->set_disabled(true);
-
+		
 		imported_anim_warning->hide();
 		bool import_warning_done = false;
 		bool bezier_done = false;
@@ -66,7 +63,6 @@ void TrackEditor::set_animation(const Ref<Animation>& p_anim) {
 				import_warning_done = true;
 			}
 			if (animation->track_get_type(i) == Animation::TrackType::TYPE_BEZIER) {
-				bezier_edit_icon->set_disabled(false);
 				bezier_done = true;
 			}
 			if (import_warning_done && bezier_done) {
@@ -84,7 +80,6 @@ void TrackEditor::set_animation(const Ref<Animation>& p_anim) {
 		//step->set_read_only(true);
 		snap->set_disabled(true);
 		snap_mode->set_disabled(true);
-		bezier_edit_icon->set_disabled(true);
 	}
 }
 
@@ -812,7 +807,6 @@ TrackEditor::TrackIndices TrackEditor::_confirm_insert(InsertData p_id, TrackInd
 		array[3] = 0.25;
 		array[4] = 0;
 		value = array;
-		bezier_edit_icon->set_disabled(false);
 
 	} break;
 	case Animation::TYPE_ANIMATION: {
@@ -1148,7 +1142,6 @@ void TrackEditor::_notification(int p_what) {
 	}
 	case NOTIFICATION_THEME_CHANGED: {
 		zoom_icon->set_texture(get_icon("Zoom", "EditorIcons"));
-		bezier_edit_icon->set_icon(get_icon("EditBezier", "EditorIcons"));
 		snap->set_icon(get_icon("Snap", "EditorIcons"));
 		view_group->set_icon(get_icon(view_group->is_pressed() ? "AnimationTrackList" : "AnimationTrackGroup", "EditorIcons"));
 		selected_filter->set_icon(get_icon("AnimationFilter", "EditorIcons"));
@@ -2604,15 +2597,6 @@ TrackEditor::TrackEditor() {
 	bottom_hb->add_child(imported_anim_warning);
 
 	bottom_hb->add_spacer();
-
-	bezier_edit_icon = memnew(Button);
-	bezier_edit_icon->set_flat(true);
-	bezier_edit_icon->set_disabled(true);
-	bezier_edit_icon->set_toggle_mode(true);
-	bezier_edit_icon->connect("pressed", this, "_toggle_bezier_edit");
-	bezier_edit_icon->set_tooltip(TTR("Toggle between the bezier curve editor and track editor."));
-
-	bottom_hb->add_child(bezier_edit_icon);
 
 	selected_filter = memnew(Button);
 	selected_filter->set_flat(true);

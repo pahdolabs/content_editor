@@ -46,7 +46,6 @@ class TrackEditor : public VBoxContainer {
 	SpinBox* step = nullptr;
 	TextureRect* zoom_icon = nullptr;
 	Button* snap = nullptr;
-	Button* bezier_edit_icon = nullptr;
 	OptionButton* snap_mode = nullptr;
 
 	Button* imported_anim_warning = nullptr;
