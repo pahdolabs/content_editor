@@ -1,6 +1,6 @@
 // Ported from Godot 4, code largely by Juan Linietsky and Godot contributors
 
-#include "player_editor.h"
+#include "player_editor_control.h"
 
 #include "core/os/input.h"
 #include "core/os/keyboard.h"
@@ -17,7 +17,7 @@
 
 ///////////////////////////////////
 
-void PlayerEditor::_node_removed(Node *p_node) {
+void PlayerEditorControl::_node_removed(Node *p_node) {
 	if (player && player == p_node) {
 		player = nullptr;
 
@@ -30,7 +30,7 @@ void PlayerEditor::_node_removed(Node *p_node) {
 	}
 }
 
-void PlayerEditor::_notification(int p_what) {
+void PlayerEditorControl::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_PROCESS: {
 			if (!player) {
@@ -122,7 +122,7 @@ void PlayerEditor::_notification(int p_what) {
 	}
 }
 
-void PlayerEditor::_autoplay_pressed() {
+void PlayerEditorControl::_autoplay_pressed() {
 	if (updating) {
 		return;
 	}
@@ -151,7 +151,7 @@ void PlayerEditor::_autoplay_pressed() {
 	}
 }
 
-void PlayerEditor::_play_pressed() {
+void PlayerEditorControl::_play_pressed() {
 	String current = _get_current();
 
 	if (!current.empty()) {
@@ -165,7 +165,7 @@ void PlayerEditor::_play_pressed() {
 	stop->set_pressed(false);
 }
 
-void PlayerEditor::_play_from_pressed() {
+void PlayerEditorControl::_play_from_pressed() {
 	String current = _get_current();
 
 	if (!current.empty()) {
@@ -183,14 +183,14 @@ void PlayerEditor::_play_from_pressed() {
 	stop->set_pressed(false);
 }
 
-String PlayerEditor::_get_current() const {
+String PlayerEditorControl::_get_current() const {
 	String current;
 	if (animation->get_selected() >= 0 && animation->get_selected() < animation->get_item_count()) {
 		current = animation->get_item_text(animation->get_selected());
 	}
 	return current;
 }
-void PlayerEditor::_play_bw_pressed() {
+void PlayerEditorControl::_play_bw_pressed() {
 	String current = _get_current();
 	if (!current.empty()) {
 		if (current == player->get_assigned_animation()) {
@@ -203,7 +203,7 @@ void PlayerEditor::_play_bw_pressed() {
 	stop->set_pressed(false);
 }
 
-void PlayerEditor::_play_bw_from_pressed() {
+void PlayerEditorControl::_play_bw_from_pressed() {
 	String current = _get_current();
 
 	if (!current.empty()) {
@@ -220,7 +220,7 @@ void PlayerEditor::_play_bw_from_pressed() {
 	stop->set_pressed(false);
 }
 
-void PlayerEditor::_stop_pressed() {
+void PlayerEditorControl::_stop_pressed() {
 	if (!player) {
 		return;
 	}
@@ -230,7 +230,7 @@ void PlayerEditor::_stop_pressed() {
 	stop->set_pressed(true);
 }
 
-void PlayerEditor::_animation_selected(int p_which) {
+void PlayerEditorControl::_animation_selected(int p_which) {
 	if (updating) {
 		return;
 	}
@@ -258,11 +258,11 @@ void PlayerEditor::_animation_selected(int p_which) {
 
 	autoplay->set_pressed(current == player->get_autoplay());
 
-	PlayerEditor::get_singleton()->get_track_editor()->update_keying();
+	PlayerEditorControl::get_singleton()->get_track_editor()->update_keying();
 	_animation_key_editor_seek(timeline_position, false);
 }
 
-void PlayerEditor::_animation_new() {
+void PlayerEditorControl::_animation_new() {
 	name_dialog_op = TOOL_NEW_ANIM;
 	name_title->set_text(TTR("New Animation Name:"));
 
@@ -287,7 +287,7 @@ void PlayerEditor::_animation_new() {
 	name->grab_focus();
 }
 
-void PlayerEditor::_animation_rename() {
+void PlayerEditorControl::_animation_rename() {
 	if (!animation->get_item_count()) {
 		return;
 	}
@@ -303,7 +303,7 @@ void PlayerEditor::_animation_rename() {
 	library->hide();
 }
 
-void PlayerEditor::_animation_remove() {
+void PlayerEditorControl::_animation_remove() {
 	if (!animation->get_item_count()) {
 		return;
 	}
@@ -314,7 +314,7 @@ void PlayerEditor::_animation_remove() {
 	delete_dialog->popup_centered();
 }
 
-void PlayerEditor::_animation_remove_confirmed() {
+void PlayerEditorControl::_animation_remove_confirmed() {
 	String current = animation->get_item_text(animation->get_selected());
 	Ref<Animation> anim = player->get_animation(current);
 	
@@ -336,7 +336,7 @@ void PlayerEditor::_animation_remove_confirmed() {
 	undo_redo->commit_action();
 }
 
-void PlayerEditor::_select_anim_by_name(const String &p_anim) {
+void PlayerEditorControl::_select_anim_by_name(const String &p_anim) {
 	int idx = -1;
 	for (int i = 0; i < animation->get_item_count(); i++) {
 		if (animation->get_item_text(i) == p_anim) {
@@ -352,7 +352,7 @@ void PlayerEditor::_select_anim_by_name(const String &p_anim) {
 	_animation_selected(idx);
 }
 
-double PlayerEditor::_get_editor_step() const {
+double PlayerEditorControl::_get_editor_step() const {
 	// Returns the effective snapping value depending on snapping modifiers, or 0 if snapping is disabled.
 	if (track_editor->is_snap_enabled()) {
 		const String current = player->get_assigned_animation();
@@ -366,7 +366,7 @@ double PlayerEditor::_get_editor_step() const {
 	return 0.0;
 }
 
-void PlayerEditor::_animation_name_edited() {
+void PlayerEditorControl::_animation_name_edited() {
 	player->stop();
 
 	String new_name = name->get_text();
@@ -450,7 +450,7 @@ void PlayerEditor::_animation_name_edited() {
 	name_dialog->hide();
 }
 
-void PlayerEditor::_blend_editor_next_changed(const int p_idx) {
+void PlayerEditorControl::_blend_editor_next_changed(const int p_idx) {
 	if (!animation->get_item_count()) {
 		return;
 	}
@@ -465,7 +465,7 @@ void PlayerEditor::_blend_editor_next_changed(const int p_idx) {
 	undo_redo->commit_action();
 }
 
-void PlayerEditor::_animation_blend() {
+void PlayerEditorControl::_animation_blend() {
 	if (updating_blends) {
 		return;
 	}
@@ -522,7 +522,7 @@ void PlayerEditor::_animation_blend() {
 	updating_blends = false;
 }
 
-void PlayerEditor::_blend_edited() {
+void PlayerEditorControl::_blend_edited() {
 	if (updating_blends) {
 		return;
 	}
@@ -552,11 +552,11 @@ void PlayerEditor::_blend_edited() {
 	updating_blends = false;
 }
 
-void PlayerEditor::ensure_visibility() {
+void PlayerEditorControl::ensure_visibility() {
 	_animation_edit();
 }
 
-Dictionary PlayerEditor::get_state() const {
+Dictionary PlayerEditorControl::get_state() const {
 	Dictionary d;
 
 	d["visible"] = is_visible_in_tree();
@@ -569,7 +569,7 @@ Dictionary PlayerEditor::get_state() const {
 	return d;
 }
 
-void PlayerEditor::set_state(const Dictionary &p_state) {
+void PlayerEditorControl::set_state(const Dictionary &p_state) {
 	if (!p_state.has("visible") || !p_state["visible"]) {
 		return;
 	}
@@ -601,7 +601,7 @@ void PlayerEditor::set_state(const Dictionary &p_state) {
 	}
 }
 
-void PlayerEditor::_animation_resource_edit() {
+void PlayerEditorControl::_animation_resource_edit() {
 	String current = _get_current();
 	if (current != String()) {
 		Ref<Animation> anim = player->get_animation(current);
@@ -609,7 +609,7 @@ void PlayerEditor::_animation_resource_edit() {
 	}
 }
 
-void PlayerEditor::_animation_edit() {
+void PlayerEditorControl::_animation_edit() {
 	String current = _get_current();
 	if (current != String()) {
 		Ref<Animation> anim = player->get_animation(current);
@@ -625,11 +625,11 @@ void PlayerEditor::_animation_edit() {
 	}
 }
 
-void PlayerEditor::_scale_changed(const String &p_scale) {
+void PlayerEditorControl::_scale_changed(const String &p_scale) {
 	player->set_speed_scale(p_scale.to_float());
 }
 
-void PlayerEditor::_update_animation() {
+void PlayerEditorControl::_update_animation() {
 	// the purpose of _update_animation is to reflect the current state
 	// of the animation player in the current editor..
 
@@ -657,13 +657,13 @@ void PlayerEditor::_update_animation() {
 	updating = false;
 }
 
-void PlayerEditor::_update_player() {
+void PlayerEditorControl::_update_player() {
 	updating = true;
 
 	animation->clear();
 
 	if (!player) {
-		PlayerEditor::get_singleton()->get_track_editor()->update_keying();
+		PlayerEditorControl::get_singleton()->get_track_editor()->update_keying();
 		return;
 	}
 	
@@ -719,7 +719,7 @@ void PlayerEditor::_update_player() {
 	_update_animation();
 }
 
-void PlayerEditor::_update_animation_list_icons() {
+void PlayerEditorControl::_update_animation_list_icons() {
 	for (int i = 0; i < animation->get_item_count(); i++) {
 		String name = animation->get_item_text(i);
 		if (animation->is_item_disabled(i)) {
@@ -741,7 +741,7 @@ void PlayerEditor::_update_animation_list_icons() {
 	}
 }
 
-void PlayerEditor::edit(AnimationPlayer *p_player) {
+void PlayerEditorControl::edit(AnimationPlayer *p_player) {
 	player = p_player;
 
 	if (player) {
@@ -753,7 +753,7 @@ void PlayerEditor::edit(AnimationPlayer *p_player) {
 	}
 }
 
-void PlayerEditor::forward_force_draw_over_viewport(Control *p_overlay) {
+void PlayerEditorControl::forward_force_draw_over_viewport(Control *p_overlay) {
 	if (!onion.can_overlay) {
 		return;
 	}
@@ -798,7 +798,7 @@ void PlayerEditor::forward_force_draw_over_viewport(Control *p_overlay) {
 	}
 }
 
-void PlayerEditor::_animation_duplicate() {
+void PlayerEditorControl::_animation_duplicate() {
 	if (!animation->get_item_count()) {
 		return;
 	}
@@ -822,7 +822,7 @@ void PlayerEditor::_animation_duplicate() {
 	name->grab_focus();
 }
 
-Ref<Animation> PlayerEditor::_animation_clone(Ref<Animation> p_anim) {
+Ref<Animation> PlayerEditorControl::_animation_clone(Ref<Animation> p_anim) {
 	Ref<Animation> new_anim = memnew(Animation);
 	List<PropertyInfo> plist;
 	p_anim->get_property_list(&plist);
@@ -837,7 +837,7 @@ Ref<Animation> PlayerEditor::_animation_clone(Ref<Animation> p_anim) {
 	return new_anim;
 }
 
-void PlayerEditor::_seek_value_changed(float p_value, bool p_set, bool p_timeline_only) {
+void PlayerEditorControl::_seek_value_changed(float p_value, bool p_set, bool p_timeline_only) {
 	if (updating || !player || player->is_playing()) {
 		return;
 	};
@@ -872,7 +872,7 @@ void PlayerEditor::_seek_value_changed(float p_value, bool p_set, bool p_timelin
 	track_editor->set_anim_pos(pos);
 };
 
-void PlayerEditor::_animation_player_changed(Object *p_pl) {
+void PlayerEditorControl::_animation_player_changed(Object *p_pl) {
 	if (player == p_pl && is_visible_in_tree()) {
 		_update_player();
 		if (blend_editor.dialog->is_visible()) {
@@ -881,17 +881,17 @@ void PlayerEditor::_animation_player_changed(Object *p_pl) {
 	}
 }
 
-void PlayerEditor::_list_changed() {
+void PlayerEditorControl::_list_changed() {
 	if (is_visible_in_tree()) {
 		_update_player();
 	}
 }
 
-void PlayerEditor::_animation_key_editor_anim_len_changed(float p_len) {
+void PlayerEditorControl::_animation_key_editor_anim_len_changed(float p_len) {
 	frame->set_max(p_len);
 }
 
-void PlayerEditor::_animation_key_editor_seek(float p_pos, bool p_drag, bool p_timeline_only) {
+void PlayerEditorControl::_animation_key_editor_seek(float p_pos, bool p_drag, bool p_timeline_only) {
 	timeline_position = p_pos;
 
 	if (!is_visible_in_tree()) {
@@ -916,7 +916,7 @@ void PlayerEditor::_animation_key_editor_seek(float p_pos, bool p_drag, bool p_t
 	_seek_value_changed(p_pos, !p_drag, p_timeline_only);
 }
 
-void PlayerEditor::_animation_tool_menu(int p_option) {
+void PlayerEditorControl::_animation_tool_menu(int p_option) {
 	String current = _get_current();
 
 	Ref<Animation> anim;
@@ -948,7 +948,7 @@ void PlayerEditor::_animation_tool_menu(int p_option) {
 	}
 }
 
-void PlayerEditor::_unhandled_key_input(const Ref<InputEvent> &p_ev) {
+void PlayerEditorControl::_unhandled_key_input(const Ref<InputEvent> &p_ev) {
 	ERR_FAIL_COND(p_ev.is_null());
 
 	Ref<InputEventKey> k = p_ev;
@@ -980,25 +980,25 @@ void PlayerEditor::_unhandled_key_input(const Ref<InputEvent> &p_ev) {
 	}
 }
 
-void PlayerEditor::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("_animation_new"), &PlayerEditor::_animation_new);
-	ClassDB::bind_method(D_METHOD("_animation_rename"), &PlayerEditor::_animation_rename);
-	ClassDB::bind_method(D_METHOD("_animation_remove"), &PlayerEditor::_animation_remove);
-	ClassDB::bind_method(D_METHOD("_animation_blend"), &PlayerEditor::_animation_blend);
-	ClassDB::bind_method(D_METHOD("_animation_edit"), &PlayerEditor::_animation_edit);
-	ClassDB::bind_method(D_METHOD("_animation_resource_edit"), &PlayerEditor::_animation_resource_edit);
-	ClassDB::bind_method(D_METHOD("_animation_player_changed"), &PlayerEditor::_animation_player_changed);
-	ClassDB::bind_method(D_METHOD("_list_changed"), &PlayerEditor::_list_changed);
-	ClassDB::bind_method(D_METHOD("_animation_duplicate"), &PlayerEditor::_animation_duplicate);
+void PlayerEditorControl::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("_animation_new"), &PlayerEditorControl::_animation_new);
+	ClassDB::bind_method(D_METHOD("_animation_rename"), &PlayerEditorControl::_animation_rename);
+	ClassDB::bind_method(D_METHOD("_animation_remove"), &PlayerEditorControl::_animation_remove);
+	ClassDB::bind_method(D_METHOD("_animation_blend"), &PlayerEditorControl::_animation_blend);
+	ClassDB::bind_method(D_METHOD("_animation_edit"), &PlayerEditorControl::_animation_edit);
+	ClassDB::bind_method(D_METHOD("_animation_resource_edit"), &PlayerEditorControl::_animation_resource_edit);
+	ClassDB::bind_method(D_METHOD("_animation_player_changed"), &PlayerEditorControl::_animation_player_changed);
+	ClassDB::bind_method(D_METHOD("_list_changed"), &PlayerEditorControl::_list_changed);
+	ClassDB::bind_method(D_METHOD("_animation_duplicate"), &PlayerEditorControl::_animation_duplicate);
 }
 
-PlayerEditor *PlayerEditor::singleton = nullptr;
+PlayerEditorControl *PlayerEditorControl::singleton = nullptr;
 
-AnimationPlayer *PlayerEditor::get_player() const {
+AnimationPlayer *PlayerEditorControl::get_player() const {
 	return player;
 }
 
-PlayerEditor::PlayerEditor() {
+PlayerEditorControl::PlayerEditorControl() {
 	singleton = this;
 
 	updating = false;
@@ -1166,5 +1166,5 @@ PlayerEditor::PlayerEditor() {
 	_update_player();
 }
 
-PlayerEditor::~PlayerEditor() {
+PlayerEditorControl::~PlayerEditorControl() {
 }

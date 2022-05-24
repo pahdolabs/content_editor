@@ -7,8 +7,8 @@
 #include "scene/gui/spin_box.h"
 #include "scene/gui/tree.h"
 
-class PlayerEditor : public VBoxContainer {
-	GDCLASS(PlayerEditor, VBoxContainer);
+class PlayerEditorControl : public VBoxContainer {
+	GDCLASS(PlayerEditorControl, VBoxContainer);
 	
 	AnimationPlayer *player = nullptr;
 
@@ -73,7 +73,7 @@ class PlayerEditor : public VBoxContainer {
 	bool updating_blends;
 
 	AnimationTrackEditor *track_editor = nullptr;
-	static PlayerEditor *singleton;
+	static PlayerEditorControl *singleton;
 
 	// Onion skinning.
 	struct {
@@ -155,7 +155,7 @@ protected:
 public:
 	AnimationPlayer *get_player() const;
 
-	static PlayerEditor *get_singleton() { return singleton; }
+	static PlayerEditorControl*get_singleton() { return singleton; }
 	AnimationTrackEditor *get_track_editor() { return track_editor; }
 	Dictionary get_state() const;
 	void set_state(const Dictionary &p_state);
@@ -166,8 +166,8 @@ public:
 	void edit(AnimationPlayer *p_player);
 	void forward_force_draw_over_viewport(Control *p_overlay);
 
-	PlayerEditor();
-	~PlayerEditor();
+	PlayerEditorControl();
+	~PlayerEditorControl();
 };
 
 #endif // ANIMATION_PLAYER_EDITOR_H

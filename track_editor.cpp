@@ -7,7 +7,7 @@
 #include <core/os/keyboard.h>
 #include <editor/editor_scale.h>
 
-#include "player_editor.h"
+#include "player_editor_control.h"
 #include "track_edit.h"
 #include "timeline_edit.h"
 #include "track_editor_plugins.h"
@@ -250,7 +250,7 @@ void TrackEditor::make_insert_queue() {
 
 void TrackEditor::commit_insert_queue() {
 	bool reset_allowed = true;
-	AnimationPlayer* player = PlayerEditor::get_singleton()->get_player();
+	AnimationPlayer* player = PlayerEditorControl::get_singleton()->get_player();
 	if (player->has_animation("RESET") && player->get_animation("RESET") == animation) {
 		// Avoid messing with the reset animation itself.
 		reset_allowed = false;
@@ -487,7 +487,7 @@ void TrackEditor::insert_node_value_key(Node* p_node, const String& p_property, 
 	String path = root->get_path_to(node);
 
 	if (Object::cast_to<AnimationPlayer>(node) && p_property == "current_animation") {
-		if (node == PlayerEditor::get_singleton()->get_player()) {
+		if (node == PlayerEditorControl::get_singleton()->get_player()) {
 			//EditorNode::get_singleton()->show_warning(TTR("AnimationPlayer can't animate itself, only other players."));
 			return;
 		}
@@ -579,7 +579,7 @@ void TrackEditor::insert_node_value_key(Node* p_node, const String& p_property, 
 }
 
 Ref<Animation> TrackEditor::_create_and_get_reset_animation() {
-	AnimationPlayer* player = PlayerEditor::get_singleton()->get_player();
+	AnimationPlayer* player = PlayerEditorControl::get_singleton()->get_player();
 	if (player->has_animation("RESET")) {
 		return player->get_animation("RESET");
 	}
@@ -588,9 +588,9 @@ Ref<Animation> TrackEditor::_create_and_get_reset_animation() {
 		reset_anim.instance();
 		reset_anim->set_length(ANIM_MIN_LENGTH);
 		undo_redo->add_do_method(player, "add_animation", "RESET", reset_anim);
-		undo_redo->add_do_method(PlayerEditor::get_singleton(), "_animation_player_changed", player);
+		undo_redo->add_do_method(PlayerEditorControl::get_singleton(), "_animation_player_changed", player);
 		undo_redo->add_undo_method(player, "remove_animation", "RESET");
-		undo_redo->add_undo_method(PlayerEditor::get_singleton(), "_animation_player_changed", player);
+		undo_redo->add_undo_method(PlayerEditorControl::get_singleton(), "_animation_player_changed", player);
 		return reset_anim;
 	}
 }
@@ -1243,7 +1243,7 @@ void TrackEditor::_new_track_node_selected(NodePath p_path) {
 			return;
 		}
 
-		if (node == PlayerEditor::get_singleton()->get_player()) {
+		if (node == PlayerEditorControl::get_singleton()->get_player()) {
 			EditorNode::get_singleton()->show_warning(TTR("AnimationPlayer can't animate itself, only other players."));
 			return;
 		}
@@ -1900,7 +1900,7 @@ void TrackEditor::_anim_duplicate_keys(bool transpose) {
 }
 
 void TrackEditor::_edit_menu_about_to_popup() {
-	AnimationPlayer* player = PlayerEditor::get_singleton()->get_player();
+	AnimationPlayer* player = PlayerEditorControl::get_singleton()->get_player();
 	edit->get_popup()->set_item_disabled(edit->get_popup()->get_item_index(EDIT_APPLY_RESET), !player->has_animation("RESET") || player->get_assigned_animation() != "RESET");
 }
 
@@ -2304,9 +2304,9 @@ void TrackEditor::_edit_menu_pressed(int p_option) {
 	case EDIT_CLEAN_UP_ANIMATION_CONFIRM: {
 		if (cleanup_all->is_pressed()) {
 			List<StringName> names;
-			PlayerEditor::get_singleton()->get_player()->get_animation_list(&names);
+			PlayerEditorControl::get_singleton()->get_player()->get_animation_list(&names);
 			for (List<StringName>::Element* E = names.front(); E; E = E->next()) {
-				_cleanup_animation(PlayerEditor::get_singleton()->get_player()->get_animation(E->get()));
+				_cleanup_animation(PlayerEditorControl::get_singleton()->get_player()->get_animation(E->get()));
 			}
 		}
 		else {
