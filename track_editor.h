@@ -177,10 +177,6 @@ class TrackEditor : public VBoxContainer {
 
 	Vector<Ref<TrackEditPlugin>> track_edit_plugins;
 
-	void _toggle_bezier_edit();
-	void _cancel_bezier_edit();
-	void _bezier_edit(int p_for_track);
-
 	////////////// edit menu stuff
 
 	ConfirmationDialog* optimize_dialog = nullptr;
