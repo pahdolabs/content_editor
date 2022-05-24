@@ -237,8 +237,6 @@ void TrackEditor::set_anim_pos(float p_pos) {
 static bool track_type_is_resettable(Animation::TrackType p_type) {
 	switch (p_type) {
 	case Animation::TYPE_VALUE:
-		[[fallthrough]];
-	case Animation::TYPE_BEZIER:
 		return true;
 	default:
 		return false;
@@ -672,7 +670,7 @@ PropertyInfo TrackEditor::_find_hint_for_track(int p_idx, NodePath& r_base_path,
 	List<PropertyInfo> pinfo;
 	property_info_base.get_property_list(&pinfo);
 
-	for (List<PropertyInfo>::Element* E; E; E = E->next()) {
+	for (List<PropertyInfo>::Element* E = pinfo.front(); E; E = E->next()) {
 		if (E->get().name == leftover_path[leftover_path.size() - 1]) {
 			return E->get();
 		}
@@ -1149,7 +1147,6 @@ void TrackEditor::_notification(int p_what) {
 
 	case NOTIFICATION_ENTER_TREE: {
 		panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/animation_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EditorSettings::get_singleton()->get("editors/panning/simple_panning")));
-		[[fallthrough]];
 	}
 	case NOTIFICATION_THEME_CHANGED: {
 		zoom_icon->set_texture(get_icon("Zoom", "EditorIcons"));

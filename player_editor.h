@@ -147,8 +147,6 @@ class PlayerEditor : public VBoxContainer {
 	void _pin_pressed();
 	String _get_current() const;
 
-	~PlayerEditor();
-
 protected:
 	void _notification(int p_what);
 	void _node_removed(Node *p_node);
@@ -169,6 +167,7 @@ public:
 	void forward_force_draw_over_viewport(Control *p_overlay);
 
 	PlayerEditor();
+	~PlayerEditor();
 };
 
 #endif // ANIMATION_PLAYER_EDITOR_H
