@@ -4,6 +4,7 @@
 
 #include <scene/gui/separator.h>
 
+#include "icons_cache.h"
 #include "track_editor.h"
 #include "core/os/input.h"
 #include "core/os/keyboard.h"
@@ -78,15 +79,16 @@ void PlayerEditorControl::_notification(int p_what) {
 
 		case NOTIFICATION_TRANSLATION_CHANGED:
 		case NOTIFICATION_THEME_CHANGED: {
-			autoplay->set_icon(get_icon("AutoPlay", "EditorIcons"));
+			IconsCache* icons = IconsCache::get_singleton();
+			autoplay->set_icon(icons->get_icon("AutoPlay"));
 
-			play->set_icon(get_icon("PlayStart", "EditorIcons"));
-			play_from->set_icon(get_icon("Play", "EditorIcons"));
-			play_bw->set_icon(get_icon("PlayStartBackwards", "EditorIcons"));
-			play_bw_from->set_icon(get_icon("PlayBackwards", "EditorIcons"));
+			play->set_icon(icons->get_icon("PlayStart"));
+			play_from->set_icon(icons->get_icon("Play"));
+			play_bw->set_icon(icons->get_icon("PlayStartBackwards"));
+			play_bw_from->set_icon(icons->get_icon("PlayBackwards"));
 
-			autoplay_icon = get_icon("AutoPlay", "EditorIcons");
-			reset_icon = get_icon("Reload", "EditorIcons");
+			autoplay_icon = icons->get_icon("AutoPlay");
+			reset_icon = icons->get_icon("Reload");
 			{
 				Ref<Image> autoplay_img = autoplay_icon->get_data();
 				Ref<Image> reset_img = reset_icon->get_data();
@@ -99,20 +101,20 @@ void PlayerEditorControl::_notification(int p_what) {
 				autoplay_reset_icon.instance();
 				autoplay_reset_icon->create_from_image(autoplay_reset_img);
 			}
-			stop->set_icon(get_icon("Stop", "EditorIcons"));
+			stop->set_icon(icons->get_icon("Stop"));
 
 			tool_anim->add_style_override("normal", get_stylebox("normal", "Button"));
 			track_editor->get_edit_menu()->add_style_override("normal", get_stylebox("normal", "Button"));
 
-//#define ITEM_ICON(m_item, m_icon) tool_anim->get_popup()->set_item_icon(tool_anim->get_popup()->get_item_index(m_item), get_icon(m_icon, "EditorIcons"))
-//
-//			ITEM_ICON(TOOL_NEW_ANIM, "New");
-//			ITEM_ICON(TOOL_ANIM_LIBRARY, "AnimationLibrary");
-//			ITEM_ICON(TOOL_DUPLICATE_ANIM, "Duplicate");
-//			ITEM_ICON(TOOL_RENAME_ANIM, "Rename");
-//			ITEM_ICON(TOOL_EDIT_TRANSITIONS, "Blend");
-//			ITEM_ICON(TOOL_EDIT_RESOURCE, "Edit");
-//			ITEM_ICON(TOOL_REMOVE_ANIM, "Remove");
+#define ITEM_ICON(m_item, m_icon) tool_anim->get_popup()->set_item_icon(tool_anim->get_popup()->get_item_index(m_item), icons->get_icon(m_icon))
+
+			ITEM_ICON(TOOL_NEW_ANIM, "New");
+			ITEM_ICON(TOOL_ANIM_LIBRARY, "AnimationLibrary");
+			ITEM_ICON(TOOL_DUPLICATE_ANIM, "Duplicate");
+			ITEM_ICON(TOOL_RENAME_ANIM, "Rename");
+			ITEM_ICON(TOOL_EDIT_TRANSITIONS, "Blend");
+			ITEM_ICON(TOOL_EDIT_RESOURCE, "Edit");
+			ITEM_ICON(TOOL_REMOVE_ANIM, "Remove");
 
 			_update_animation_list_icons();
 		} break;
@@ -676,15 +678,15 @@ void PlayerEditorControl::_update_player() {
 		no_anims_found = false;
 	}
 	
-//#define ITEM_CHECK_DISABLED(m_item) tool_anim->get_popup()->set_item_disabled(tool_anim->get_popup()->get_item_index(m_item), no_anims_found)
-//
-//	ITEM_CHECK_DISABLED(TOOL_DUPLICATE_ANIM);
-//	ITEM_CHECK_DISABLED(TOOL_RENAME_ANIM);
-//	ITEM_CHECK_DISABLED(TOOL_EDIT_TRANSITIONS);
-//	ITEM_CHECK_DISABLED(TOOL_REMOVE_ANIM);
-//	ITEM_CHECK_DISABLED(TOOL_EDIT_RESOURCE);
-//
-//#undef ITEM_CHECK_DISABLED
+#define ITEM_CHECK_DISABLED(m_item) tool_anim->get_popup()->set_item_disabled(tool_anim->get_popup()->get_item_index(m_item), no_anims_found)
+
+	ITEM_CHECK_DISABLED(TOOL_DUPLICATE_ANIM);
+	ITEM_CHECK_DISABLED(TOOL_RENAME_ANIM);
+	ITEM_CHECK_DISABLED(TOOL_EDIT_TRANSITIONS);
+	ITEM_CHECK_DISABLED(TOOL_REMOVE_ANIM);
+	ITEM_CHECK_DISABLED(TOOL_EDIT_RESOURCE);
+
+#undef ITEM_CHECK_DISABLED
 
 	stop->set_disabled(no_anims_found);
 	play->set_disabled(no_anims_found);
@@ -972,12 +974,17 @@ void PlayerEditorControl::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_animation_key_editor_anim_len_changed"), &PlayerEditorControl::_animation_key_editor_anim_len_changed);
 	ClassDB::bind_method(D_METHOD("_animation_tool_menu"), &PlayerEditorControl::_animation_tool_menu);
 	ClassDB::bind_method(D_METHOD("_blend_editor_next_changed"), &PlayerEditorControl::_blend_editor_next_changed);
+	ClassDB::bind_method(D_METHOD("_icons_cache_changed"), &PlayerEditorControl::_icons_cache_changed);
 }
 
 PlayerEditorControl *PlayerEditorControl::singleton = nullptr;
 
 AnimationPlayer *PlayerEditorControl::get_player() const {
 	return player;
+}
+
+void PlayerEditorControl::_icons_cache_changed() {
+	_notification(NOTIFICATION_THEME_CHANGED);
 }
 
 PlayerEditorControl::PlayerEditorControl() {
@@ -1041,21 +1048,21 @@ PlayerEditorControl::PlayerEditorControl() {
 	delete_dialog->connect("confirmed", this, "_animation_remove_confirmed");
 
 	tool_anim = memnew(MenuButton);
-	//tool_anim->set_shortcut_context(this);
 	tool_anim->set_flat(false);
 	tool_anim->set_tooltip(TTR("Animation Tools"));
 	tool_anim->set_text(TTR("Animation"));
-	//tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/new_animation", TTR("New")), TOOL_NEW_ANIM);
+	
+	tool_anim->get_popup()->add_item("New", TOOL_NEW_ANIM);
 	tool_anim->get_popup()->add_separator();
-	//tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/animation_libraries", TTR("Manage Animations...")), TOOL_ANIM_LIBRARY);
+	tool_anim->get_popup()->add_item("Manage Animations...", TOOL_ANIM_LIBRARY);
 	tool_anim->get_popup()->add_separator();
-	//tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/duplicate_animation", TTR("Duplicate...")), TOOL_DUPLICATE_ANIM);
+	tool_anim->get_popup()->add_item("Duplicate...", TOOL_DUPLICATE_ANIM);
 	tool_anim->get_popup()->add_separator();
-	//tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/rename_animation", TTR("Rename...")), TOOL_RENAME_ANIM);
-	//tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/edit_transitions", TTR("Edit Transitions...")), TOOL_EDIT_TRANSITIONS);
-	//tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/open_animation_in_inspector", TTR("Open in Inspector")), TOOL_EDIT_RESOURCE);
+	tool_anim->get_popup()->add_item("Rename...", TOOL_RENAME_ANIM);
+	tool_anim->get_popup()->add_item("Edit Transitions...", TOOL_EDIT_TRANSITIONS);
+	tool_anim->get_popup()->add_item("Open in Inspector", TOOL_EDIT_RESOURCE);
 	tool_anim->get_popup()->add_separator();
-	//tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/remove_animation", TTR("Remove")), TOOL_REMOVE_ANIM);
+	tool_anim->get_popup()->add_item("Remove", TOOL_REMOVE_ANIM);
 	tool_anim->set_disabled(true);
 	hb->add_child(tool_anim);
 
@@ -1148,6 +1155,8 @@ PlayerEditorControl::PlayerEditorControl() {
 	track_editor->connect("animation_len_changed", this, "_animation_key_editor_anim_len_changed");
 
 	_update_player();
+
+	IconsCache::get_singleton()->connect("icons_changed", this, "_icons_cache_changed");
 }
 
 PlayerEditorControl::~PlayerEditorControl() {

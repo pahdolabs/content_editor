@@ -2,6 +2,7 @@
 
 #include <core/undo_redo.h>
 
+#include "icons_cache.h"
 #include "track_edit.h"
 #include "track_editor.h"
 #include "view_panner.h"
@@ -58,11 +59,12 @@ void TimelineEdit::_anim_loop_pressed() {
 }
 
 int TimelineEdit::get_buttons_width() const {
-	Ref<Texture> interp_mode = get_icon("TrackContinuous", "EditorIcons");
-	Ref<Texture> interp_type = get_icon("InterpRaw", "EditorIcons");
-	Ref<Texture> loop_type = get_icon("InterpWrapClamp", "EditorIcons");
-	Ref<Texture> remove_icon = get_icon("Remove", "EditorIcons");
-	Ref<Texture> down_icon = get_icon("select_arrow", "Tree");
+	IconsCache *icons = IconsCache::get_singleton();
+	Ref<Texture> interp_mode = icons->get_icon("TrackContinuous");
+	Ref<Texture> interp_type = icons->get_icon("InterpRaw");
+	Ref<Texture> loop_type = icons->get_icon("InterpWrapClamp");
+	Ref<Texture> remove_icon = icons->get_icon("Remove");
+	Ref<Texture> down_icon = icons->get_icon("select_arrow");
 
 	int total_w = interp_mode->get_width() + interp_type->get_width() + loop_type->get_width() + remove_icon->get_width();
 	total_w += (down_icon->get_width() + 4 * 1) * 4;
@@ -71,7 +73,7 @@ int TimelineEdit::get_buttons_width() const {
 }
 
 int TimelineEdit::get_name_limit() const {
-	Ref<Texture> hsize_icon = get_icon("Hsize", "EditorIcons");
+	Ref<Texture> hsize_icon = IconsCache::get_singleton()->get_icon("Hsize");
 
 	int limit = MAX(name_limit, add_track->get_minimum_size().width + hsize_icon->get_width());
 
@@ -84,21 +86,25 @@ void TimelineEdit::_notification(int p_what) {
 	switch (p_what) {
 	case NOTIFICATION_ENTER_TREE:
 	case NOTIFICATION_THEME_CHANGED: {
-		//panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/animation_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EditorSettings::get_singleton()->get("editors/panning/simple_panning")));
-		add_track->set_icon(get_icon("Add", "EditorIcons"));
-		loop->set_icon(get_icon("Loop", "EditorIcons"));
-		time_icon->set_texture(get_icon("Time", "EditorIcons"));
+		
+		//TODO: panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/animation_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EditorSettings::get_singleton()->get("editors/panning/simple_panning")));
+
+		IconsCache* icons = IconsCache::get_singleton();
+
+		add_track->set_icon(icons->get_icon("Add"));
+		loop->set_icon(icons->get_icon("Loop"));
+		time_icon->set_texture(icons->get_icon("Time"));
 
 		add_track->get_popup()->clear();
-		add_track->get_popup()->add_icon_item(get_icon("KeyValue", "EditorIcons"), TTR("Property Track"));
-		add_track->get_popup()->add_icon_item(get_icon("KeyXPosition", "EditorIcons"), TTR("3D Position Track"));
-		add_track->get_popup()->add_icon_item(get_icon("KeyXRotation", "EditorIcons"), TTR("3D Rotation Track"));
-		add_track->get_popup()->add_icon_item(get_icon("KeyXScale", "EditorIcons"), TTR("3D Scale Track"));
-		add_track->get_popup()->add_icon_item(get_icon("KeyBlendShape", "EditorIcons"), TTR("Blend Shape Track"));
-		add_track->get_popup()->add_icon_item(get_icon("KeyCall", "EditorIcons"), TTR("Call Method Track"));
-		add_track->get_popup()->add_icon_item(get_icon("KeyBezier", "EditorIcons"), TTR("Bezier Curve Track"));
-		add_track->get_popup()->add_icon_item(get_icon("KeyAudio", "EditorIcons"), TTR("Audio Playback Track"));
-		add_track->get_popup()->add_icon_item(get_icon("KeyAnimation", "EditorIcons"), TTR("Animation Playback Track"));
+		add_track->get_popup()->add_icon_item(icons->get_icon("KeyValue"), TTR("Property Track"));
+		add_track->get_popup()->add_icon_item(icons->get_icon("KeyXPosition"), TTR("3D Position Track"));
+		add_track->get_popup()->add_icon_item(icons->get_icon("KeyXRotation"), TTR("3D Rotation Track"));
+		add_track->get_popup()->add_icon_item(icons->get_icon("KeyXScale"), TTR("3D Scale Track"));
+		add_track->get_popup()->add_icon_item(icons->get_icon("KeyBlendShape"), TTR("Blend Shape Track"));
+		add_track->get_popup()->add_icon_item(icons->get_icon("KeyCall"), TTR("Call Method Track"));
+		add_track->get_popup()->add_icon_item(icons->get_icon("KeyBezier"), TTR("Bezier Curve Track"));
+		add_track->get_popup()->add_icon_item(icons->get_icon("KeyAudio"), TTR("Audio Playback Track"));
+		add_track->get_popup()->add_icon_item(icons->get_icon("KeyAnimation"), TTR("Animation Playback Track"));
 	} break;
 
 	/*case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
@@ -129,7 +135,9 @@ void TimelineEdit::_notification(int p_what) {
 			l = 0.001; // Avoid crashor.
 		}
 
-		Ref<Texture> hsize_icon = get_icon("Hsize", "EditorIcons");
+		IconsCache *icons = IconsCache::get_singleton();
+
+		Ref<Texture> hsize_icon = icons->get_icon("Hsize");
 		hsize_rect = Rect2(get_name_limit() - hsize_icon->get_width() - 2 * 1, (get_size().height - hsize_icon->get_height()) / 2, hsize_icon->get_width(), hsize_icon->get_height());
 		draw_texture(hsize_icon, hsize_rect.position);
 
@@ -301,7 +309,8 @@ Size2 TimelineEdit::get_minimum_size() const {
 	Size2 ms = add_track->get_minimum_size();
 	Ref<Font> font = get_font("font", "Label");
 	ms.height = MAX(ms.height, font->get_height());
-	ms.width = get_buttons_width() + add_track->get_minimum_size().width + get_icon("Hsize", "EditorIcons")->get_width() + 2;
+	IconsCache *icons = IconsCache::get_singleton();
+	ms.width = get_buttons_width() + add_track->get_minimum_size().width + icons->get_icon("Hsize")->get_width() + 2;
 	return ms;
 }
 
@@ -350,12 +359,14 @@ void TimelineEdit::update_values() {
 		time_icon->set_tooltip(TTR("Animation length (seconds)"));
 	}
 
+	IconsCache *icons = IconsCache::get_singleton();
+
 	if (animation->has_loop()) {
-		loop->set_icon(get_icon("Loop", "EditorIcons"));
+		loop->set_icon(icons->get_icon("Loop"));
 		loop->set_pressed(true);
 	}
 	else {
-		loop->set_icon(get_icon("Loop", "EditorIcons"));
+		loop->set_icon(icons->get_icon("Loop"));
 		loop->set_pressed(false);
 	}
 
@@ -375,9 +386,11 @@ void TimelineEdit::_play_position_draw() {
 	if (px >= get_name_limit() && px < (play_position->get_size().width - get_buttons_width())) {
 		Color color = get_color("accent_color", "Editor");
 		play_position->draw_line(Point2(px, 0), Point2(px, h), color, Math::round(2 * 1.0));
+
+		IconsCache *icons = IconsCache::get_singleton();
 		play_position->draw_texture(
-			get_icon("TimelineIndicator", "EditorIcons"),
-			Point2(px - get_icon("TimelineIndicator", "EditorIcons")->get_width() * 0.5, 0),
+			icons->get_icon("TimelineIndicator"),
+			Point2(px - icons->get_icon("TimelineIndicator")->get_width() * 0.5, 0),
 			color);
 	}
 }
@@ -497,6 +510,12 @@ void TimelineEdit::_track_added(int p_track) {
 	emit_signal("track_added", p_track);
 }
 
+void TimelineEdit::_icons_cache_changed() {
+	_notification(NOTIFICATION_THEME_CHANGED);
+	update();
+}
+
+
 void TimelineEdit::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_zoom_changed"), &TimelineEdit::_zoom_changed);
 	ClassDB::bind_method(D_METHOD("_play_position_draw"), &TimelineEdit::_play_position_draw);
@@ -506,6 +525,7 @@ void TimelineEdit::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_scroll_callback"), &TimelineEdit::_scroll_callback);
 	ClassDB::bind_method(D_METHOD("_pan_callback"), &TimelineEdit::_pan_callback);
 	ClassDB::bind_method(D_METHOD("_zoom_callback"), &TimelineEdit::_zoom_callback);
+	ClassDB::bind_method(D_METHOD("_icons_cache_changed"), &TimelineEdit::_icons_cache_changed);
 	ADD_SIGNAL(MethodInfo("zoom_changed"));
 	ADD_SIGNAL(MethodInfo("name_limit_changed"));
 	ADD_SIGNAL(MethodInfo("timeline_changed", PropertyInfo(Variant::REAL, "position"), PropertyInfo(Variant::BOOL, "drag"), PropertyInfo(Variant::BOOL, "timeline_only")));
@@ -563,4 +583,6 @@ TimelineEdit::TimelineEdit() {
 
 	panner.instance();
 	panner->set_callbacks(this, "_scroll_callback", this, "_pan_callback", this, "_zoom_callback");
+
+	IconsCache::get_singleton()->connect("icons_changed", this, "_icons_cache_changed");
 }

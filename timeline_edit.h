@@ -56,6 +56,8 @@ class TimelineEdit : public Range {
 	void _gui_input(const Ref<InputEvent>& p_event);
 	void _track_added(int p_track);
 
+	void _icons_cache_changed();
+
 protected:
 	static void _bind_methods();
 	void _notification(int p_what);

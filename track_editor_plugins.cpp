@@ -10,14 +10,16 @@
 #include <scene/3d/sprite_3d.h>
 #include <scene/animation/animation_player.h>
 
+#include "icons_cache.h"
+
 /// BOOL ///
 int TrackEditBool::get_key_height() const {
-	Ref<Texture> checked = get_icon("checked", "CheckBox");
+	Ref<Texture> checked = IconsCache::get_singleton()->get_icon("checked");
 	return checked->get_height();
 }
 
 Rect2 TrackEditBool::get_key_rect(int p_index, float p_pixels_sec) {
-	Ref<Texture> checked = get_icon("checked", "CheckBox");
+	Ref<Texture> checked = IconsCache::get_singleton()->get_icon("checked");
 	return Rect2(-checked->get_width() / 2, 0, checked->get_width(), get_size().height);
 }
 
@@ -27,7 +29,7 @@ bool TrackEditBool::is_key_selectable_by_distance() const {
 
 void TrackEditBool::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_selected, int p_clip_left, int p_clip_right) {
 	bool checked = get_animation()->track_get_key_value(get_track(), p_index);
-	Ref<Texture> icon = get_icon(checked ? "checked" : "unchecked", "CheckBox");
+	Ref<Texture> icon = IconsCache::get_singleton()->get_icon(checked ? "checked" : "unchecked");
 
 	Vector2 ofs(p_x - icon->get_width() / 2, int(get_size().height - icon->get_height()) / 2);
 
@@ -693,12 +695,12 @@ void TrackEditSubAnim::set_node(Object* p_object) {
 //// VOLUME DB ////
 
 int TrackEditVolumeDB::get_key_height() const {
-	Ref<Texture> volume_texture = get_icon("ColorTrackVu", "EditorIcons");
+	Ref<Texture> volume_texture = IconsCache::get_singleton()->get_icon("ColorTrackVu");
 	return volume_texture->get_height() * 1.2;
 }
 
 void TrackEditVolumeDB::draw_bg(int p_clip_left, int p_clip_right) {
-	Ref<Texture> volume_texture = get_icon("ColorTrackVu", "EditorIcons");
+	Ref<Texture> volume_texture = IconsCache::get_singleton()->get_icon("ColorTrackVu");
 	int tex_h = volume_texture->get_height();
 
 	int y_from = (get_size().height - tex_h) / 2;
@@ -709,7 +711,7 @@ void TrackEditVolumeDB::draw_bg(int p_clip_left, int p_clip_right) {
 }
 
 void TrackEditVolumeDB::draw_fg(int p_clip_left, int p_clip_right) {
-	Ref<Texture> volume_texture = get_icon("ColorTrackVu", "EditorIcons");
+	Ref<Texture> volume_texture = IconsCache::get_singleton()->get_icon("ColorTrackVu");
 	int tex_h = volume_texture->get_height();
 	int y_from = (get_size().height - tex_h) / 2;
 	int db0 = y_from + (24 / 80.0) * tex_h;
@@ -744,7 +746,7 @@ void TrackEditVolumeDB::draw_key_link(int p_index, float p_pixels_sec, int p_x, 
 		to_x = p_clip_right;
 	}
 
-	Ref<Texture> volume_texture = get_icon("ColorTrackVu", "EditorIcons");
+	Ref<Texture> volume_texture = IconsCache::get_singleton()->get_icon("ColorTrackVu");
 	int tex_h = volume_texture->get_height();
 
 	int y_from = (get_size().height - tex_h) / 2;

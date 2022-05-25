@@ -9,6 +9,7 @@
 #include <scene/gui/panel_container.h>
 #include <scene/gui/separator.h>
 
+#include "icons_cache.h"
 #include "player_editor_control.h"
 #include "track_edit.h"
 #include "timeline_edit.h"
@@ -983,7 +984,7 @@ void TrackEditor::_update_tracks() {
 
 		//	if (!group_sort.has(base_path)) {
 		//		TrackEditGroup* g = memnew(TrackEditGroup);
-		//		Ref<Texture> icon = get_icon("Node", "EditorIcons");
+		//		Ref<Texture> icon = IconsCache::get_singleton()->get_icon("Node");
 		//		String name = base_path;
 		//		String tooltip;
 		//		if (root && root->has_node(base_path)) {
@@ -1141,13 +1142,14 @@ void TrackEditor::_notification(int p_what) {
 		//panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/animation_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EditorSettings::get_singleton()->get("editors/panning/simple_panning")));
 	}
 	case NOTIFICATION_THEME_CHANGED: {
-		zoom_icon->set_texture(get_icon("Zoom", "EditorIcons"));
-		snap->set_icon(get_icon("Snap", "EditorIcons"));
-		view_group->set_icon(get_icon(view_group->is_pressed() ? "AnimationTrackList" : "AnimationTrackGroup", "EditorIcons"));
-		selected_filter->set_icon(get_icon("AnimationFilter", "EditorIcons"));
-		imported_anim_warning->set_icon(get_icon("NodeWarning", "EditorIcons"));
+		IconsCache *icons = IconsCache::get_singleton();
+		zoom_icon->set_texture(icons->get_icon("Zoom"));
+		snap->set_icon(icons->get_icon("Snap"));
+		view_group->set_icon(icons->get_icon(view_group->is_pressed() ? "AnimationTrackList" : "AnimationTrackGroup"));
+		selected_filter->set_icon(icons->get_icon("AnimationFilter"));
+		imported_anim_warning->set_icon(icons->get_icon("NodeWarning"));
 		main_panel->add_style_override("panel", get_stylebox("bg", "Tree"));
-		//edit->get_popup()->set_item_icon(edit->get_popup()->get_item_index(EDIT_APPLY_RESET), get_icon("Reload", "EditorIcons"));
+		edit->get_popup()->set_item_icon(edit->get_popup()->get_item_index(EDIT_APPLY_RESET), icons->get_icon("Reload"));
 	} break;
 
 	case NOTIFICATION_READY: {
@@ -1947,6 +1949,7 @@ void TrackEditor::goto_next_step(bool p_from_mouse_event) {
 
 void TrackEditor::_edit_menu_pressed(int p_option) {
 	last_menu_track_opt = p_option;
+	IconsCache *icons = IconsCache::get_singleton();
 	switch (p_option) {
 	case EDIT_COPY_TRACKS: {
 		track_copy_select->clear();
@@ -1961,10 +1964,10 @@ void TrackEditor::_edit_menu_pressed(int p_option) {
 			}
 
 			String text;
-			Ref<Texture> icon = get_icon("Node", "EditorIcons");
+			Ref<Texture> icon = icons->get_icon("Node");
 			if (node) {
-				if (has_icon(node->get_class(), "EditorIcons")) {
-					icon = get_icon(node->get_class(), "EditorIcons");
+				if (icons->has_icon(node->get_class())) {
+					icon = icons->get_icon(node->get_class());
 				}
 
 				text = node->get_name();
@@ -2361,7 +2364,7 @@ void TrackEditor::_cleanup_animation(Ref<Animation> p_animation) {
 
 void TrackEditor::_view_group_toggle() {
 	_update_tracks();
-	view_group->set_icon(get_icon(view_group->is_pressed() ? "AnimationTrackList" : "AnimationTrackGroup", "EditorIcons"));
+	view_group->set_icon(IconsCache::get_singleton()->get_icon(view_group->is_pressed() ? "AnimationTrackList" : "AnimationTrackGroup"));
 }
 
 bool TrackEditor::is_grouping_tracks() {
@@ -2481,10 +2484,17 @@ void TrackEditor::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_box_selection_draw"), &TrackEditor::_box_selection_draw);
 	ClassDB::bind_method(D_METHOD("_select_all_tracks_for_copy"), &TrackEditor::_select_all_tracks_for_copy);
 
+	ClassDB::bind_method("_icons_cache_changed", &TrackEditor::_icons_cache_changed);
+
 	ADD_SIGNAL(MethodInfo("timeline_changed", PropertyInfo(Variant::REAL, "position"), PropertyInfo(Variant::BOOL, "drag"), PropertyInfo(Variant::BOOL, "timeline_only")));
 	ADD_SIGNAL(MethodInfo("keying_changed"));
 	ADD_SIGNAL(MethodInfo("animation_len_changed", PropertyInfo(Variant::REAL, "len")));
 	ADD_SIGNAL(MethodInfo("animation_step_changed", PropertyInfo(Variant::REAL, "step")));
+}
+
+void TrackEditor::_icons_cache_changed() {
+	_notification(NOTIFICATION_THEME_CHANGED);
+	update();
 }
 
 void TrackEditor::_pick_track_filter_text_changed(const String& p_newtext) {
@@ -2855,6 +2865,8 @@ TrackEditor::TrackEditor() {
 	track_copy_select->set_hide_root(true);
 	track_vbox->add_child(track_copy_select);
 	track_copy_dialog->connect("confirmed", this, "_edit_menu_pressed", varray(EDIT_COPY_TRACKS_CONFIRM));
+
+	IconsCache::get_singleton()->connect("icons_changed", this, "_icons_cache_changed");
 }
 
 TrackEditor::~TrackEditor() {

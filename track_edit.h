@@ -81,6 +81,8 @@ class TrackEdit : public Control {
 	bool in_group = false;
 	TrackEditor* editor = nullptr;
 
+	void _icons_cache_changed();
+
 protected:
 	static void _bind_methods();
 	void _notification(int p_what);

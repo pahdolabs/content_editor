@@ -3,7 +3,9 @@
 #include <core/undo_redo.h>
 #include <scene/animation/animation_player.h>
 #include <scene/main/viewport.h>
+#include <modules/svg/image_loader_svg.h>
 
+#include "icons_cache.h"
 #include "player_editor_control.h"
 #include "timeline_edit.h"
 #include "track_editor.h"
@@ -17,7 +19,7 @@ void TrackEdit::_notification(int p_what) {
 		ERR_FAIL_INDEX(track, animation->get_track_count());
 
 		type_icon = _get_key_type_icon();
-		selected_icon = get_icon("KeySelected", "EditorIcons");
+		selected_icon = IconsCache::get_singleton()->get_icon("KeySelected");
 	} break;
 
 	case NOTIFICATION_DRAW: {
@@ -25,6 +27,8 @@ void TrackEdit::_notification(int p_what) {
 			return;
 		}
 		ERR_FAIL_INDEX(track, animation->get_track_count());
+
+		IconsCache* icons = IconsCache::get_singleton();
 
 		int limit = timeline->get_name_limit();
 
@@ -54,7 +58,7 @@ void TrackEdit::_notification(int p_what) {
 		// NAMES AND ICONS //
 
 		{
-			Ref<Texture> check = animation->track_is_enabled(track) ? get_icon("checked", "CheckBox") : get_icon("unchecked", "CheckBox");
+			Ref<Texture> check = animation->track_is_enabled(track) ? icons->get_icon("checked") : icons->get_icon("unchecked");
 
 			int ofs = in_group ? check->get_width() : 0; // Not the best reference for margin but..
 
@@ -155,25 +159,25 @@ void TrackEdit::_notification(int p_what) {
 
 		{
 			Ref<Texture> wrap_icon[2] = {
-				get_icon("InterpWrapClamp", "EditorIcons"),
-				get_icon("InterpWrapLoop", "EditorIcons"),
+				icons->get_icon("InterpWrapClamp"),
+				icons->get_icon("InterpWrapLoop"),
 			};
 
 			Ref<Texture> interp_icon[3] = {
-				get_icon("InterpRaw", "EditorIcons"),
-				get_icon("InterpLinear", "EditorIcons"),
-				get_icon("InterpCubic", "EditorIcons")
+				icons->get_icon("InterpRaw"),
+				icons->get_icon("InterpLinear"),
+				icons->get_icon("InterpCubic")
 			};
 			Ref<Texture> cont_icon[4] = {
-				get_icon("TrackContinuous", "EditorIcons"),
-				get_icon("TrackDiscrete", "EditorIcons"),
-				get_icon("TrackTrigger", "EditorIcons"),
-				get_icon("TrackCapture", "EditorIcons")
+				icons->get_icon("TrackContinuous"),
+				icons->get_icon("TrackDiscrete"),
+				icons->get_icon("TrackTrigger"),
+				icons->get_icon("TrackCapture")
 			};
 
 			int ofs = get_size().width - timeline->get_buttons_width();
 
-			Ref<Texture> down_icon = get_icon("select_arrow", "Tree");
+			Ref<Texture> down_icon = icons->get_icon("select_arrow");
 
 			draw_line(Point2(ofs, 0), Point2(ofs, get_size().height), linecolor, Math::round(1.0));
 
@@ -211,7 +215,7 @@ void TrackEdit::_notification(int p_what) {
 					update_mode_rect.size.x += down_icon->get_width();
 				}
 				else if (animation->track_get_type(track) == Animation::TYPE_BEZIER) {
-					Ref<Texture> bezier_icon = get_icon("EditBezier", "EditorIcons");
+					Ref<Texture> bezier_icon = icons->get_icon("EditBezier");
 					update_mode_rect.size.x += down_icon->get_width();
 
 					update_mode_rect = Rect2();
@@ -296,7 +300,7 @@ void TrackEdit::_notification(int p_what) {
 			{
 				// Erase.
 
-				Ref<Texture> icon = get_icon("Remove", "EditorIcons");
+				Ref<Texture> icon = icons->get_icon("Remove");
 
 				remove_rect.position.x = ofs + ((get_size().width - ofs) - icon->get_width());
 				remove_rect.position.y = int(get_size().height - icon->get_height()) / 2;
@@ -397,9 +401,11 @@ void TrackEdit::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_select
 
 	Ref<Texture> icon_to_draw = p_selected ? selected_icon : type_icon;
 
+	IconsCache* icons = IconsCache::get_singleton();
+
 	if (animation->track_get_type(track) == Animation::TYPE_VALUE && !Math::is_equal_approx(animation->track_get_key_transition(track, p_index), real_t(1.0))) {
 		// Use a different icon for keys with non-linear easing.
-		icon_to_draw = get_icon(p_selected ? "KeyEasedSelected" : "KeyValueEased", "EditorIcons");
+		icon_to_draw = icons->get_icon(p_selected ? "KeyEasedSelected" : "KeyValueEased");
 	}
 
 	// Override type icon for invalid value keys, unless selected.
@@ -407,7 +413,7 @@ void TrackEdit::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_select
 		const Variant& v = animation->track_get_key_value(track, p_index);
 		Variant::Type valid_type = Variant::NIL;
 		if (!_is_value_key_valid(v, valid_type)) {
-			icon_to_draw = get_icon("KeyInvalid", "EditorIcons");
+			icon_to_draw = icons->get_icon("KeyInvalid");
 		}
 	}
 
@@ -527,7 +533,7 @@ void TrackEdit::set_animation_and_track(const Ref<Animation>& p_animation, int p
 
 	node_path = animation->track_get_path(p_track);
 	type_icon = _get_key_type_icon();
-	selected_icon = get_icon("KeySelected", "EditorIcons");
+	selected_icon = IconsCache::get_singleton()->get_icon("KeySelected");
 }
 
 NodePath TrackEdit::get_path() const {
@@ -535,7 +541,7 @@ NodePath TrackEdit::get_path() const {
 }
 
 Size2 TrackEdit::get_minimum_size() const {
-	Ref<Texture> texture = get_icon("Object", "EditorIcons");
+	Ref<Texture> texture = IconsCache::get_singleton()->get_icon("Object");
 	Ref<Font> font = get_font("font", "Label");
 	int separation = get_constant("vseparation", "ItemList");
 
@@ -628,16 +634,17 @@ bool TrackEdit::_is_value_key_valid(const Variant& p_key_value, Variant::Type& r
 }
 
 Ref<Texture> TrackEdit::_get_key_type_icon() const {
+	IconsCache *icons = IconsCache::get_singleton();
 	Ref<Texture> type_icons[9] = {
-		get_icon("KeyValue", "EditorIcons"),
-		get_icon("KeyTrackPosition", "EditorIcons"),
-		get_icon("KeyTrackRotation", "EditorIcons"),
-		get_icon("KeyTrackScale", "EditorIcons"),
-		get_icon("KeyTrackBlendShape", "EditorIcons"),
-		get_icon("KeyCall", "EditorIcons"),
-		get_icon("KeyBezier", "EditorIcons"),
-		get_icon("KeyAudio", "EditorIcons"),
-		get_icon("KeyAnimation", "EditorIcons")
+		icons->get_icon("KeyValue"),
+		icons->get_icon("KeyTrackPosition"),
+		icons->get_icon("KeyTrackRotation"),
+		icons->get_icon("KeyTrackScale"),
+		icons->get_icon("KeyTrackBlendShape"),
+		icons->get_icon("KeyCall"),
+		icons->get_icon("KeyBezier"),
+		icons->get_icon("KeyAudio"),
+		icons->get_icon("KeyAnimation")
 	};
 	return type_icons[animation->track_get_type(track)];
 }
@@ -787,6 +794,8 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 		}*/
 	}
 
+	IconsCache *icons = IconsCache::get_singleton();
+
 	Ref<InputEventMouseButton> mb = p_event;
 	if (mb.is_valid() && mb->is_pressed() && mb->get_button_index() == BUTTON_LEFT) {
 		Point2 pos = mb->get_position();
@@ -813,10 +822,10 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 				menu->connect("id_pressed", this, "_menu_selected");
 			}
 			menu->clear();
-			menu->add_icon_item(get_icon("TrackContinuous", "EditorIcons"), TTR("Continuous"), MENU_CALL_MODE_CONTINUOUS);
-			menu->add_icon_item(get_icon("TrackDiscrete", "EditorIcons"), TTR("Discrete"), MENU_CALL_MODE_DISCRETE);
-			menu->add_icon_item(get_icon("TrackTrigger", "EditorIcons"), TTR("Trigger"), MENU_CALL_MODE_TRIGGER);
-			menu->add_icon_item(get_icon("TrackCapture", "EditorIcons"), TTR("Capture"), MENU_CALL_MODE_CAPTURE);
+			menu->add_icon_item(icons->get_icon("TrackContinuous"), TTR("Continuous"), MENU_CALL_MODE_CONTINUOUS);
+			menu->add_icon_item(icons->get_icon("TrackDiscrete"), TTR("Discrete"), MENU_CALL_MODE_DISCRETE);
+			menu->add_icon_item(icons->get_icon("TrackTrigger"), TTR("Trigger"), MENU_CALL_MODE_TRIGGER);
+			menu->add_icon_item(icons->get_icon("TrackCapture"), TTR("Capture"), MENU_CALL_MODE_CAPTURE);
 
 			Vector2 popup_pos = get_viewport()->get_canvas_transform().xform(get_global_position()) + update_mode_rect.position + Vector2(0, update_mode_rect.size.height);
 			menu->set_position(popup_pos);
@@ -831,9 +840,9 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 				menu->connect("id_pressed", this, "_menu_selected");
 			}
 			menu->clear();
-			menu->add_icon_item(get_icon("InterpRaw", "EditorIcons"), TTR("Nearest"), MENU_INTERPOLATION_NEAREST);
-			menu->add_icon_item(get_icon("InterpLinear", "EditorIcons"), TTR("Linear"), MENU_INTERPOLATION_LINEAR);
-			menu->add_icon_item(get_icon("InterpCubic", "EditorIcons"), TTR("Cubic"), MENU_INTERPOLATION_CUBIC);
+			menu->add_icon_item(icons->get_icon("InterpRaw"), TTR("Nearest"), MENU_INTERPOLATION_NEAREST);
+			menu->add_icon_item(icons->get_icon("InterpLinear"), TTR("Linear"), MENU_INTERPOLATION_LINEAR);
+			menu->add_icon_item(icons->get_icon("InterpCubic"), TTR("Cubic"), MENU_INTERPOLATION_CUBIC);
 
 			Vector2 popup_pos = get_viewport()->get_canvas_transform().xform(get_global_position()) + interp_mode_rect.position + Vector2(0, interp_mode_rect.size.height);
 			menu->set_position(popup_pos);
@@ -848,8 +857,8 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 				menu->connect("id_pressed", this, "_menu_selected");
 			}
 			menu->clear();
-			menu->add_icon_item(get_icon("InterpWrapClamp", "EditorIcons"), TTR("Clamp Loop Interp"), MENU_LOOP_CLAMP);
-			menu->add_icon_item(get_icon("InterpWrapLoop", "EditorIcons"), TTR("Wrap Loop Interp"), MENU_LOOP_WRAP);
+			menu->add_icon_item(icons->get_icon("InterpWrapClamp"), TTR("Clamp Loop Interp"), MENU_LOOP_CLAMP);
+			menu->add_icon_item(icons->get_icon("InterpWrapLoop"), TTR("Wrap Loop Interp"), MENU_LOOP_WRAP);
 
 			Vector2 popup_pos = get_viewport()->get_canvas_transform().xform(get_global_position()) + loop_wrap_rect.position + Vector2(0, loop_wrap_rect.size.height);
 			menu->set_position(popup_pos);
@@ -941,18 +950,18 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 			}
 
 			menu->clear();
-			menu->add_icon_item(get_icon("Key", "EditorIcons"), TTR("Insert Key"), MENU_KEY_INSERT);
+			menu->add_icon_item(icons->get_icon("Key"), TTR("Insert Key"), MENU_KEY_INSERT);
 			if (editor->is_selection_active()) {
 				menu->add_separator();
-				menu->add_icon_item(get_icon("Duplicate", "EditorIcons"), TTR("Duplicate Key(s)"), MENU_KEY_DUPLICATE);
+				menu->add_icon_item(icons->get_icon("Duplicate"), TTR("Duplicate Key(s)"), MENU_KEY_DUPLICATE);
 
 				AnimationPlayer* player = PlayerEditorControl::get_singleton()->get_player();
 				if (!player->has_animation("RESET") || animation != player->get_animation("RESET")) {
-					menu->add_icon_item(get_icon("Reload", "EditorIcons"), TTR("Add RESET Value(s)"), MENU_KEY_ADD_RESET);
+					menu->add_icon_item(icons->get_icon("Reload"), TTR("Add RESET Value(s)"), MENU_KEY_ADD_RESET);
 				}
 
 				menu->add_separator();
-				menu->add_icon_item(get_icon("Remove", "EditorIcons"), TTR("Delete Key(s)"), MENU_KEY_DELETE);
+				menu->add_icon_item(icons->get_icon("Remove"), TTR("Delete Key(s)"), MENU_KEY_DELETE);
 			}
 
 			menu->set_position(get_viewport()->get_canvas_transform().xform(get_global_position()) + get_local_mouse_position());
@@ -1240,11 +1249,17 @@ void TrackEdit::append_to_selection(const Rect2& p_box, bool p_deselection) {
 	}
 }
 
+void TrackEdit::_icons_cache_changed() {
+	_notification(NOTIFICATION_THEME_CHANGED);
+	update();
+}
+
 void TrackEdit::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_zoom_changed"), &TrackEdit::_zoom_changed);
 	ClassDB::bind_method(D_METHOD("_menu_selected"), &TrackEdit::_menu_selected);
 	ClassDB::bind_method(D_METHOD("_path_submitted"), &TrackEdit::_path_submitted);
 	ClassDB::bind_method(D_METHOD("_play_position_draw"), &TrackEdit::_play_position_draw);
+	ClassDB::bind_method("_icons_cache_changed", &TrackEdit::_icons_cache_changed);
 
 	ADD_SIGNAL(MethodInfo("timeline_changed", PropertyInfo(Variant::REAL, "position"), PropertyInfo(Variant::BOOL, "drag"), PropertyInfo(Variant::BOOL, "timeline_only")));
 	ADD_SIGNAL(MethodInfo("remove_request", PropertyInfo(Variant::INT, "track")));
@@ -1284,4 +1299,6 @@ TrackEdit::TrackEdit() {
 	play_position->connect("draw", this, "_play_position_draw");
 	set_focus_mode(FOCUS_CLICK);
 	set_mouse_filter(MOUSE_FILTER_PASS); // Scroll has to work too for selection.
+
+	IconsCache::get_singleton()->connect("icons_changed", this, "_icons_cache_changed");
 }

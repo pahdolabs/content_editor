@@ -122,6 +122,8 @@ class PlayerEditorControl : public VBoxContainer {
 	
 	String _get_current() const;
 
+	void _icons_cache_changed();
+
 protected:
 	void _notification(int p_what);
 	void _node_removed(Node *p_node);
