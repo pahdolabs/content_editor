@@ -176,7 +176,6 @@ void ViewPanner::set_force_drag(bool p_force) {
 }
 
 void ViewPanner::_bind_methods() {
-void ViewPanner::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("release_pan_key"), &ViewPanner::release_pan_key);
 }
 
