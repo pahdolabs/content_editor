@@ -66,8 +66,8 @@ int TimelineEdit::get_buttons_width() const {
 	Ref<Texture> remove_icon = icons->get_icon("Remove");
 	Ref<Texture> down_icon = icons->get_icon("select_arrow");
 
-	int total_w = interp_mode->get_width() + interp_type->get_width() + loop_type->get_width() + remove_icon->get_width();
-	total_w += (down_icon->get_width() + 4 * 1) * 4;
+	int total_w = (interp_mode != nullptr ? interp_mode->get_width() : 0) + (interp_type != nullptr ? interp_type->get_width() : 0) + (loop_type != nullptr ? loop_type->get_width() : 0) + (remove_icon != nullptr ? remove_icon->get_width() : 0);
+	total_w += ((down_icon != nullptr ? down_icon->get_width() : 0) + 4 * 1) * 4;
 
 	return total_w;
 }
