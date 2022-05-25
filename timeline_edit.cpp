@@ -141,7 +141,9 @@ void TimelineEdit::_notification(int p_what) {
 		int hsize_width = hsize_icon != nullptr ? hsize_icon->get_width() : 0;
 		int hsize_height = hsize_icon != nullptr ? hsize_icon->get_height() : 0;
 		hsize_rect = Rect2(get_name_limit() - hsize_width - 2 * 1, (get_size().height - hsize_height) / 2, hsize_width, hsize_height);
-		draw_texture(hsize_icon, hsize_rect.position);
+		if (hsize_icon != nullptr) {
+			draw_texture(hsize_icon, hsize_rect.position);
+		}
 
 		{
 			float time_min = 0;

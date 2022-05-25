@@ -109,7 +109,6 @@ void PlayerEditorControl::_notification(int p_what) {
 #define ITEM_ICON(m_item, m_icon) tool_anim->get_popup()->set_item_icon(tool_anim->get_popup()->get_item_index(m_item), icons->get_icon(m_icon))
 
 			ITEM_ICON(TOOL_NEW_ANIM, "New");
-			ITEM_ICON(TOOL_ANIM_LIBRARY, "AnimationLibrary");
 			ITEM_ICON(TOOL_DUPLICATE_ANIM, "Duplicate");
 			ITEM_ICON(TOOL_RENAME_ANIM, "Rename");
 			ITEM_ICON(TOOL_EDIT_TRANSITIONS, "Blend");

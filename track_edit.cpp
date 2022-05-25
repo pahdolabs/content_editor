@@ -214,7 +214,9 @@ void TrackEdit::_notification(int p_what) {
 				update_mode_rect.size = update_icon != nullptr ? update_icon->get_size() : Size2(0, 0);
 
 				if (animation->track_get_type(track) == Animation::TYPE_VALUE) {
-					draw_texture(update_icon, update_mode_rect.position);
+					if (update_icon != nullptr) {
+						draw_texture(update_icon, update_mode_rect.position);
+					}
 				}
 				// Make it easier to click.
 				update_mode_rect.position.y = 0;
@@ -250,7 +252,9 @@ void TrackEdit::_notification(int p_what) {
 				interp_mode_rect.size = icon != nullptr ? icon->get_size() : Size2(0, 0);
 
 				if ((animation->track_get_type(track) == Animation::TYPE_VALUE)) {
-					draw_texture(icon, interp_mode_rect.position);
+					if (icon != nullptr) {
+						draw_texture(icon, interp_mode_rect.position);
+					}
 				}
 				// Make it easier to click.
 				interp_mode_rect.position.y = 0;

@@ -41,7 +41,9 @@ void TrackEditBool::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_se
 		return;
 	}
 
-	draw_texture(icon, ofs);
+	if (icon != nullptr) {
+		draw_texture(icon, ofs);
+	}
 
 	if (p_selected) {
 		Color color = get_color("accent_color", "Editor");
@@ -516,7 +518,9 @@ void TrackEditSpriteFrame::draw_key(int p_index, float p_pixels_sec, int p_x, bo
 
 	draw_rect_clipped(rect, bg);
 
-	draw_texture_region_clipped(texture, rect, region);
+	if (texture != nullptr) {
+		draw_texture_region_clipped(texture, rect, region);
+	}
 
 	if (p_selected) {
 		draw_rect_clipped(rect, accent, false);
@@ -701,13 +705,15 @@ int TrackEditVolumeDB::get_key_height() const {
 
 void TrackEditVolumeDB::draw_bg(int p_clip_left, int p_clip_right) {
 	Ref<Texture> volume_texture = IconsCache::get_singleton()->get_icon("ColorTrackVu");
-	int tex_h = volume_texture->get_height();
+	int tex_h = volume_texture != nullptr ? volume_texture->get_height() : 0;
 
 	int y_from = (get_size().height - tex_h) / 2;
 	int y_size = tex_h;
 
 	Color color(1, 1, 1, 0.3);
-	draw_texture_rect(volume_texture, Rect2(p_clip_left, y_from, p_clip_right - p_clip_left, y_from + y_size), false, color);
+	if (volume_texture != nullptr) {
+		draw_texture_rect(volume_texture, Rect2(p_clip_left, y_from, p_clip_right - p_clip_left, y_from + y_size), false, color);
+	}
 }
 
 void TrackEditVolumeDB::draw_fg(int p_clip_left, int p_clip_right) {
