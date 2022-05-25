@@ -662,6 +662,19 @@ void PlayerEditorControl::_update_player() {
 	
 	int active_idx = -1;
 	bool no_anims_found = true;
+
+	List<StringName> animlist;
+	player->get_animation_list(&animlist);
+
+	for (List<StringName>::Element* E = animlist.front(); E; E = E->next()) {
+		String path = "";
+		path += E->get();
+		animation->add_item(path);
+		if (player->get_assigned_animation() == path) {
+			active_idx = animation->get_item_count() - 1;
+		}
+		no_anims_found = false;
+	}
 	
 //#define ITEM_CHECK_DISABLED(m_item) tool_anim->get_popup()->set_item_disabled(tool_anim->get_popup()->get_item_index(m_item), no_anims_found)
 //
