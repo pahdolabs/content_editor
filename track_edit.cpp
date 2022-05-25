@@ -60,15 +60,26 @@ void TrackEdit::_notification(int p_what) {
 		{
 			Ref<Texture> check = animation->track_is_enabled(track) ? icons->get_icon("checked") : icons->get_icon("unchecked");
 
-			int ofs = in_group ? check->get_width() : 0; // Not the best reference for margin but..
+			int ofs = in_group ? (check != nullptr ? check->get_width() : 0) : 0; // Not the best reference for margin but..
 
-			check_rect = Rect2(Point2(ofs, int(get_size().height - check->get_height()) / 2), check->get_size());
-			draw_texture(check, check_rect.position);
-			ofs += check->get_width() + hsep;
+			check_rect = Rect2(Point2(ofs, int(get_size().height - (check != nullptr ? check->get_height() : 0)) / 2), (check != nullptr ? check->get_size() : Size2(0, 0)));
+			if (check != nullptr) {
+				draw_texture(check, check_rect.position);
+
+				ofs += check->get_width() + hsep;
+			}
+			else {
+				ofs += hsep;
+			}
 
 			Ref<Texture> type_icon = _get_key_type_icon();
-			draw_texture(type_icon, Point2(ofs, int(get_size().height - type_icon->get_height()) / 2));
-			ofs += type_icon->get_width() + hsep;
+			if (type_icon != nullptr) {
+				draw_texture(type_icon, Point2(ofs, int(get_size().height - type_icon->get_height()) / 2));
+				ofs += type_icon->get_width() + hsep;
+			}
+			else {
+				ofs += hsep;
+			}
 
 			NodePath path = animation->track_get_path(track);
 			Node* node = nullptr;
@@ -98,14 +109,16 @@ void TrackEdit::_notification(int p_what) {
 				text_color.a *= 0.7;
 			}
 			else if (node) {
-				Ref<Texture> icon;// = EditorNode::get_singleton()->get_object_icon(node, "Node");
+				Ref<Texture> icon = icons->get_icon("Node");
 
-				//draw_texture(icon, Point2(ofs, int(get_size().height - icon->get_height()) / 2));
-				//icon_cache = icon;
+				if (icon != nullptr) {
+					draw_texture(icon, Point2(ofs, int(get_size().height - icon->get_height()) / 2));
+				}
+				icon_cache = icon;
 
 				text = String() + node->get_name() + ":" + path.get_concatenated_subnames();
 				ofs += hsep;
-				ofs += icon->get_width();
+				ofs += icon != nullptr ? icon->get_width() : 0;
 
 			}
 			else {
@@ -197,8 +210,8 @@ void TrackEdit::_notification(int p_what) {
 				Ref<Texture> update_icon = cont_icon[update_mode];
 
 				update_mode_rect.position.x = ofs;
-				update_mode_rect.position.y = int(get_size().height - update_icon->get_height()) / 2;
-				update_mode_rect.size = update_icon->get_size();
+				update_mode_rect.position.y = int(get_size().height - (update_icon != nullptr ? update_icon->get_height() : 0)) / 2;
+				update_mode_rect.size = update_icon != nullptr ? update_icon->get_size() : Size2(0, 0);
 
 				if (animation->track_get_type(track) == Animation::TYPE_VALUE) {
 					draw_texture(update_icon, update_mode_rect.position);
@@ -207,24 +220,20 @@ void TrackEdit::_notification(int p_what) {
 				update_mode_rect.position.y = 0;
 				update_mode_rect.size.y = get_size().height;
 
-				ofs += update_icon->get_width() + hsep / 2;
+				ofs += (update_icon != nullptr ? update_icon->get_width() : 0) + hsep / 2;
 				update_mode_rect.size.x += hsep / 2;
 
 				if (animation->track_get_type(track) == Animation::TYPE_VALUE) {
-					draw_texture(down_icon, Vector2(ofs, int(get_size().height - down_icon->get_height()) / 2));
-					update_mode_rect.size.x += down_icon->get_width();
-				}
-				else if (animation->track_get_type(track) == Animation::TYPE_BEZIER) {
-					Ref<Texture> bezier_icon = icons->get_icon("EditBezier");
-					update_mode_rect.size.x += down_icon->get_width();
-
-					update_mode_rect = Rect2();
+					if (down_icon != nullptr) {
+						draw_texture(down_icon, Vector2(ofs, int(get_size().height - down_icon->get_height()) / 2));
+					}
+					update_mode_rect.size.x += down_icon != nullptr ? down_icon->get_width() : 0;
 				}
 				else {
 					update_mode_rect = Rect2();
 				}
 
-				ofs += down_icon->get_width();
+				ofs += down_icon != nullptr ? down_icon->get_width() : 0;
 				draw_line(Point2(ofs + hsep * 0.5, 0), Point2(ofs + hsep * 0.5, get_size().height), linecolor, Math::round(1.0));
 				ofs += hsep;
 			}
@@ -237,8 +246,8 @@ void TrackEdit::_notification(int p_what) {
 				Ref<Texture> icon = interp_icon[interp_mode];
 
 				interp_mode_rect.position.x = ofs;
-				interp_mode_rect.position.y = int(get_size().height - icon->get_height()) / 2;
-				interp_mode_rect.size = icon->get_size();
+				interp_mode_rect.position.y = int(get_size().height - (icon != nullptr ? icon->get_height() : 0)) / 2;
+				interp_mode_rect.size = icon != nullptr ? icon->get_size() : Size2(0, 0);
 
 				if ((animation->track_get_type(track) == Animation::TYPE_VALUE)) {
 					draw_texture(icon, interp_mode_rect.position);
@@ -247,18 +256,20 @@ void TrackEdit::_notification(int p_what) {
 				interp_mode_rect.position.y = 0;
 				interp_mode_rect.size.y = get_size().height;
 
-				ofs += icon->get_width() + hsep / 2;
+				ofs += (icon != nullptr ? icon->get_width() : 0) + hsep / 2;
 				interp_mode_rect.size.x += hsep / 2;
 
 				if ((animation->track_get_type(track) == Animation::TYPE_VALUE)) {
-					draw_texture(down_icon, Vector2(ofs, int(get_size().height - down_icon->get_height()) / 2));
-					interp_mode_rect.size.x += down_icon->get_width();
+					if (down_icon != nullptr) {
+						draw_texture(down_icon, Vector2(ofs, int(get_size().height - down_icon->get_height()) / 2));
+					}
+					interp_mode_rect.size.x += down_icon != nullptr ? down_icon->get_width() : 0;
 				}
 				else {
 					interp_mode_rect = Rect2();
 				}
 
-				ofs += down_icon->get_width();
+				ofs += down_icon != nullptr ? down_icon->get_width() : 0;
 				draw_line(Point2(ofs + hsep * 0.5, 0), Point2(ofs + hsep * 0.5, get_size().height), linecolor, Math::round(1.0));
 				ofs += hsep;
 			}
@@ -271,28 +282,32 @@ void TrackEdit::_notification(int p_what) {
 				Ref<Texture> icon = wrap_icon[loop_wrap ? 1 : 0];
 
 				loop_wrap_rect.position.x = ofs;
-				loop_wrap_rect.position.y = int(get_size().height - icon->get_height()) / 2;
-				loop_wrap_rect.size = icon->get_size();
+				loop_wrap_rect.position.y = int(get_size().height - (icon != nullptr ? icon->get_height() : 0)) / 2;
+				loop_wrap_rect.size = icon != nullptr ? icon->get_size() : Size2(0, 0);
 
 				if ((animation->track_get_type(track) == Animation::TYPE_VALUE)) {
-					draw_texture(icon, loop_wrap_rect.position);
+					if (icon != nullptr) {
+						draw_texture(icon, loop_wrap_rect.position);
+					}
 				}
 
 				loop_wrap_rect.position.y = 0;
 				loop_wrap_rect.size.y = get_size().height;
 
-				ofs += icon->get_width() + hsep / 2;
+				ofs += (icon != nullptr ? icon->get_width() : 0) + hsep / 2;
 				loop_wrap_rect.size.x += hsep / 2;
 
 				if ((animation->track_get_type(track) == Animation::TYPE_VALUE)) {
-					draw_texture(down_icon, Vector2(ofs, int(get_size().height - down_icon->get_height()) / 2));
-					loop_wrap_rect.size.x += down_icon->get_width();
+					if (down_icon != nullptr) {
+						draw_texture(down_icon, Vector2(ofs, int(get_size().height - down_icon->get_height()) / 2));
+					}
+					loop_wrap_rect.size.x += down_icon != nullptr ? down_icon->get_width() : 0;
 				}
 				else {
 					loop_wrap_rect = Rect2();
 				}
 
-				ofs += down_icon->get_width();
+				ofs += down_icon != nullptr ? down_icon->get_width() : 0;
 				draw_line(Point2(ofs + hsep * 0.5, 0), Point2(ofs + hsep * 0.5, get_size().height), linecolor, Math::round(1.0));
 				ofs += hsep;
 			}
@@ -302,11 +317,13 @@ void TrackEdit::_notification(int p_what) {
 
 				Ref<Texture> icon = icons->get_icon("Remove");
 
-				remove_rect.position.x = ofs + ((get_size().width - ofs) - icon->get_width());
-				remove_rect.position.y = int(get_size().height - icon->get_height()) / 2;
-				remove_rect.size = icon->get_size();
+				remove_rect.position.x = ofs + ((get_size().width - ofs) - (icon != nullptr ? icon->get_width() : 0));
+				remove_rect.position.y = int(get_size().height - (icon != nullptr ? icon->get_height() : 0)) / 2;
+				remove_rect.size = icon != nullptr ? icon->get_size() : Size2(0, 0);
 
-				draw_texture(icon, remove_rect.position);
+				if (icon != nullptr) {
+					draw_texture(icon, remove_rect.position);
+				}
 			}
 		}
 
@@ -348,7 +365,7 @@ int TrackEdit::get_key_height() const {
 		return 0;
 	}
 
-	return type_icon->get_height();
+	return type_icon != nullptr ? type_icon->get_height() : 0;
 }
 
 Rect2 TrackEdit::get_key_rect(int p_index, float p_pixels_sec) {
@@ -417,7 +434,7 @@ void TrackEdit::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_select
 		}
 	}
 
-	Vector2 ofs(p_x - icon_to_draw->get_width() / 2, int(get_size().height - icon_to_draw->get_height()) / 2);
+	Vector2 ofs(p_x - (icon_to_draw != nullptr ? icon_to_draw->get_width() : 0) / 2, int(get_size().height - (icon_to_draw != nullptr ? icon_to_draw->get_height() : 0)) / 2);
 
 	if (animation->track_get_type(track) == Animation::TYPE_METHOD) {
 		Ref<Font> font = get_font("font", "Label");
@@ -443,19 +460,22 @@ void TrackEdit::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_select
 		}
 		text += ")";
 
-		int limit = MAX(0, p_clip_right - p_x - icon_to_draw->get_width());
+		int icon_to_draw_width = icon_to_draw != nullptr ? icon_to_draw->get_width() : 0;
+		int limit = MAX(0, p_clip_right - p_x - icon_to_draw_width);
 		if (limit > 0) {
-			draw_string(font, Vector2(p_x + icon_to_draw->get_width(), int(get_size().height - font->get_height()) / 2 + font->get_ascent()), text, color);
+			draw_string(font, Vector2(p_x + icon_to_draw_width, int(get_size().height - font->get_height()) / 2 + font->get_ascent()), text, color);
 		}
 	}
 
 	// Use a different color for the currently hovered key.
 	// The color multiplier is chosen to work with both dark and light editor themes,
 	// and on both unselected and selected key icons.
-	draw_texture(
-		icon_to_draw,
-		ofs,
-		p_index == hovering_key_idx ? get_color("folder_icon_modulate", "FileDialog") : Color(1, 1, 1));
+	if (icon_to_draw != nullptr) {
+		draw_texture(
+			icon_to_draw,
+			ofs,
+			p_index == hovering_key_idx ? get_color("folder_icon_modulate", "FileDialog") : Color(1, 1, 1));
+	}
 }
 
 // Helper.
@@ -545,7 +565,7 @@ Size2 TrackEdit::get_minimum_size() const {
 	Ref<Font> font = get_font("font", "Label");
 	int separation = get_constant("vseparation", "ItemList");
 
-	int max_h = MAX(texture->get_height(), font->get_height());
+	int max_h = MAX((texture != nullptr? texture->get_height() : 0), font->get_height());
 	max_h = MAX(max_h, get_key_height());
 
 	return Vector2(1, max_h + separation);

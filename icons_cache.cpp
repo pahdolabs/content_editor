@@ -25,9 +25,8 @@ bool IconsCache::has_icon(const String& p_icon_name) {
 }
 
 void IconsCache::add_icon_path(const String &p_icon_path) {
-	DirAccessRef da = DirAccess::create(DirAccess::ACCESS_RESOURCES);
 	Error err;
-	da->open(p_icon_path, &err);
+	DirAccess *da = DirAccess::open(p_icon_path, &err);
 	if(err != OK) {
 		return;
 	}
@@ -38,15 +37,20 @@ void IconsCache::add_icon_path(const String &p_icon_path) {
 	ImageLoaderSVG loader;
 	while(!next.empty()) {
 		if (!da->current_is_dir()) {
-			FileAccessRef fa = FileAccess::create_for_path(p_icon_path + "/" + next);
-			Ref<Image> icon_data;
+			if (next.get_extension() == "svg") {
+				FileAccess *fa = FileAccess::open(p_icon_path + "/" + next, FileAccess::READ, &err);
+				if (err == OK) {
+					Ref<Image> icon_data;
 
-			icon_data.instance();
-			if(loader.load_image(icon_data, fa, false, 1.0) == OK) {
-				Ref<ImageTexture> texture;
-				texture.instance();
-				texture->create_from_image(icon_data);
-				icons[next.get_file().replace("." + next.get_extension(), "")] = texture;
+					icon_data.instance();
+					if (loader.load_image(icon_data, fa, false, 1.0) == OK) {
+						Ref<ImageTexture> texture;
+						texture.instance();
+						texture->create_from_image(icon_data);
+						icons[next.get_file().replace("." + next.get_extension(), "")] = texture;
+					}
+					fa->close();
+				}
 			}
 		}
 		next = da->get_next();

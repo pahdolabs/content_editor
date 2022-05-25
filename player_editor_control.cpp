@@ -86,10 +86,10 @@ void PlayerEditorControl::_notification(int p_what) {
 			play_from->set_icon(icons->get_icon("Play"));
 			play_bw->set_icon(icons->get_icon("PlayStartBackwards"));
 			play_bw_from->set_icon(icons->get_icon("PlayBackwards"));
-
+			
 			autoplay_icon = icons->get_icon("AutoPlay");
 			reset_icon = icons->get_icon("Reload");
-			{
+			if(autoplay_icon != nullptr && reset_icon != nullptr) {
 				Ref<Image> autoplay_img = autoplay_icon->get_data();
 				Ref<Image> reset_img = reset_icon->get_data();
 				Ref<Image> autoplay_reset_img;

@@ -75,7 +75,7 @@ int TimelineEdit::get_buttons_width() const {
 int TimelineEdit::get_name_limit() const {
 	Ref<Texture> hsize_icon = IconsCache::get_singleton()->get_icon("Hsize");
 
-	int limit = MAX(name_limit, add_track->get_minimum_size().width + hsize_icon->get_width());
+	int limit = MAX(name_limit, add_track->get_minimum_size().width + (hsize_icon != nullptr ? hsize_icon->get_width() : 0));
 
 	limit = MIN(limit, get_size().width - get_buttons_width() - 1);
 
@@ -138,7 +138,9 @@ void TimelineEdit::_notification(int p_what) {
 		IconsCache *icons = IconsCache::get_singleton();
 
 		Ref<Texture> hsize_icon = icons->get_icon("Hsize");
-		hsize_rect = Rect2(get_name_limit() - hsize_icon->get_width() - 2 * 1, (get_size().height - hsize_icon->get_height()) / 2, hsize_icon->get_width(), hsize_icon->get_height());
+		int hsize_width = hsize_icon != nullptr ? hsize_icon->get_width() : 0;
+		int hsize_height = hsize_icon != nullptr ? hsize_icon->get_height() : 0;
+		hsize_rect = Rect2(get_name_limit() - hsize_width - 2 * 1, (get_size().height - hsize_height) / 2, hsize_width, hsize_height);
 		draw_texture(hsize_icon, hsize_rect.position);
 
 		{
@@ -388,10 +390,12 @@ void TimelineEdit::_play_position_draw() {
 		play_position->draw_line(Point2(px, 0), Point2(px, h), color, Math::round(2 * 1.0));
 
 		IconsCache *icons = IconsCache::get_singleton();
-		play_position->draw_texture(
-			icons->get_icon("TimelineIndicator"),
-			Point2(px - icons->get_icon("TimelineIndicator")->get_width() * 0.5, 0),
-			color);
+		if (icons->has_icon("TimelineIndicator")) {
+			play_position->draw_texture(
+				icons->get_icon("TimelineIndicator"),
+				Point2(px - icons->get_icon("TimelineIndicator")->get_width() * 0.5, 0),
+				color);
+		}
 	}
 }
 
