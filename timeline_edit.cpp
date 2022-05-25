@@ -310,7 +310,7 @@ Size2 TimelineEdit::get_minimum_size() const {
 	Ref<Font> font = get_font("font", "Label");
 	ms.height = MAX(ms.height, font->get_height());
 	IconsCache *icons = IconsCache::get_singleton();
-	ms.width = get_buttons_width() + add_track->get_minimum_size().width + icons->has_icon("Hsize") ? icons->get_icon("Hsize")->get_width() : 0 + 2;
+	ms.width = get_buttons_width() + add_track->get_minimum_size().width + (icons->has_icon("Hsize") ? icons->get_icon("Hsize")->get_width() : 0) + 2;
 	return ms;
 }
 
