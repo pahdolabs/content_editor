@@ -5,11 +5,11 @@
 class Colors {
 public:
 	static const float CONTRAST;
-	static const Color base_color;
-	static const Color dark_color_2;
-	static const Color accent_color;
-	static const Color box_selection_fill_color;
-	static const Color box_selection_stroke_color;
+	static const Color BASE_COLOR;
+	static const Color DARK_COLOR_2;
+	static const Color ACCENT_COLOR;
+	static const Color BOX_SELECTION_FILL_COLOR;
+	static const Color BOX_SELECTION_STROKE_COLOR;
 };
 
 #endif
