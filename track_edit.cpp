@@ -845,8 +845,6 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 				}
 			}
 
-			print_line(itos(hovering_key_idx));
-
 			if (hovering_key_idx != previous_hovering_key_idx) {
 				// Required to draw keyframe hover feedback on the correct keyframe.
 				update();
@@ -1017,6 +1015,7 @@ void TrackEdit::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_menu_selected"), &TrackEdit::_menu_selected);
 	ClassDB::bind_method(D_METHOD("_play_position_draw"), &TrackEdit::_play_position_draw);
 	ClassDB::bind_method("_icons_cache_changed", &TrackEdit::_icons_cache_changed);
+	ClassDB::bind_method(D_METHOD("_gui_input", "event"), &TrackEdit::_gui_input);
 
 	ADD_SIGNAL(MethodInfo("timeline_changed", PropertyInfo(Variant::REAL, "position"), PropertyInfo(Variant::BOOL, "drag"), PropertyInfo(Variant::BOOL, "timeline_only")));
 	ADD_SIGNAL(MethodInfo("remove_request", PropertyInfo(Variant::INT, "track")));

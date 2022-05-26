@@ -322,6 +322,7 @@ void TrackEditAudio::set_node(Object* p_object) {
 }
 
 void TrackEditAudio::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("_gui_input", "event"), &TrackEdit::_gui_input);
 }
 
 TrackEditAudio::TrackEditAudio() {

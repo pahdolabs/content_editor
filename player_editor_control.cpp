@@ -629,6 +629,9 @@ PlayerEditorControl::PlayerEditorControl() {
 	_update_player();
 
 	IconsCache::get_singleton()->connect("icons_changed", this, "_icons_cache_changed");
+
+	set_process(true);
+	ensure_visibility();
 }
 
 PlayerEditorControl::~PlayerEditorControl() {
