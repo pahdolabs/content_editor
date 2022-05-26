@@ -46,7 +46,6 @@ void TrackEditor::set_animation(const Ref<Animation>& p_anim) {
 		animation->connect("changed", this, "_animation_changed");
 
 		hscroll->show();
-		edit->set_disabled(false);
 		step->set_block_signals(true);
 
 		_update_step_spinbox();
@@ -74,7 +73,6 @@ void TrackEditor::set_animation(const Ref<Animation>& p_anim) {
 	}
 	else {
 		hscroll->hide();
-		edit->set_disabled(true);
 		step->set_block_signals(true);
 		step->set_value(0);
 		step->set_block_signals(false);
@@ -1094,7 +1092,6 @@ void TrackEditor::_update_step_spinbox() {
 
 void TrackEditor::_animation_update() {
 	timeline->update();
-	timeline->update_values();
 
 	bool same = true;
 
@@ -1132,10 +1129,6 @@ void TrackEditor::_animation_update() {
 	animation_changing_awaiting_update = false;
 }
 
-MenuButton* TrackEditor::get_edit_menu() {
-	return edit;
-}
-
 void TrackEditor::_notification(int p_what) {
 	switch (p_what) {
 	case NOTIFICATION_ENTER_TREE: {
@@ -1149,7 +1142,6 @@ void TrackEditor::_notification(int p_what) {
 		selected_filter->set_icon(icons->get_icon("AnimationFilter"));
 		imported_anim_warning->set_icon(icons->get_icon("NodeWarning"));
 		main_panel->add_style_override("panel", get_stylebox("bg", "Tree"));
-		edit->get_popup()->set_item_icon(edit->get_popup()->get_item_index(EDIT_APPLY_RESET), icons->get_icon("Reload"));
 	} break;
 
 	case NOTIFICATION_READY: {
@@ -2696,53 +2688,7 @@ TrackEditor::TrackEditor() {
 	zoom->set_v_size_flags(SIZE_SHRINK_CENTER);
 	bottom_hb->add_child(zoom);
 	timeline->set_zoom(zoom);
-
-	edit = memnew(MenuButton);
-	//edit->set_shortcut_context(this);
-	edit->set_text(TTR("Edit"));
-	edit->set_flat(false);
-	edit->set_disabled(true);
-	edit->set_tooltip(TTR("Animation properties."));
-	edit->get_popup()->add_item(TTR("Copy Tracks"), EDIT_COPY_TRACKS);
-	edit->get_popup()->add_item(TTR("Paste Tracks"), EDIT_PASTE_TRACKS);
-	edit->get_popup()->add_separator();
-	edit->get_popup()->add_item(TTR("Scale Selection"), EDIT_SCALE_SELECTION);
-	edit->get_popup()->add_item(TTR("Scale From Cursor"), EDIT_SCALE_FROM_CURSOR);
-	edit->get_popup()->add_separator();
-	//edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/duplicate_selection", TTR("Duplicate Selection"), KeyModifierMask::KEY_MASK_CMD | KEY_D), EDIT_DUPLICATE_SELECTION);
-	//edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/duplicate_selection_transposed", TTR("Duplicate Transposed"), KeyModifierMask::KEY_MASK_SHIFT | KeyModifierMask::KEY_MASK_CMD | KEY_D), EDIT_DUPLICATE_TRANSPOSED);
-	//edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/add_reset_value", TTR("Add RESET Value(s)")));
-	edit->get_popup()->add_separator();
-	//edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/delete_selection", TTR("Delete Selection"), KEY_DELETE), EDIT_DELETE_SELECTION);
-
-	edit->get_popup()->add_separator();
-	//edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/goto_next_step", TTR("Go to Next Step"), KeyModifierMask::KEY_MASK_CMD | KEY_RIGHT), EDIT_GOTO_NEXT_STEP);
-	//edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/goto_prev_step", TTR("Go to Previous Step"), KeyModifierMask::KEY_MASK_CMD | KEY_LEFT), EDIT_GOTO_PREV_STEP);
-	edit->get_popup()->add_separator();
-	//edit->get_popup()->add_shortcut(ED_SHORTCUT("animation_editor/apply_reset", TTR("Apply Reset")), EDIT_APPLY_RESET);
-	edit->get_popup()->add_separator();
-	edit->get_popup()->add_item(TTR("Optimize Animation"), EDIT_OPTIMIZE_ANIMATION);
-	edit->get_popup()->add_item(TTR("Clean-Up Animation"), EDIT_CLEAN_UP_ANIMATION);
-
-	edit->get_popup()->connect("id_pressed", this, "_edit_menu_pressed");
-	edit->get_popup()->connect("about_to_show", this, "_edit_menu_about_to_popup");
-
-	/*pick_track = memnew(SceneTreeDialog);
-	add_child(pick_track);
-	pick_track->register_text_enter(pick_track->get_filter_line_edit());
-	pick_track->set_title(TTR("Pick a node to animate:"));
-	pick_track->connect("selected", this, "_new_track_node_selected");
-	pick_track->get_filter_line_edit()->connect("text_changed", this, "_pick_track_filter_text_changed");
-	pick_track->get_filter_line_edit()->connect("gui_input", this, "_pick_track_filter_input");*/
-
-	/*prop_selector = memnew(PropertySelector);
-	add_child(prop_selector);
-	prop_selector->connect("selected", this, "_new_track_property_selected");
-
-	method_selector = memnew(PropertySelector);
-	add_child(method_selector);
-	method_selector->connect("selected", this, "_add_method_key");*/
-
+	
 	insert_confirm = memnew(ConfirmationDialog);
 	add_child(insert_confirm);
 	insert_confirm->connect("confirmed", this, "_confirm_insert_list");

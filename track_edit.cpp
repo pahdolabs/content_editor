@@ -171,150 +171,11 @@ void TrackEdit::_notification(int p_what) {
 		// BUTTONS //
 
 		{
-			Ref<Texture> wrap_icon[2] = {
-				icons->get_icon("InterpWrapClamp"),
-				icons->get_icon("InterpWrapLoop"),
-			};
-
-			Ref<Texture> interp_icon[3] = {
-				icons->get_icon("InterpRaw"),
-				icons->get_icon("InterpLinear"),
-				icons->get_icon("InterpCubic")
-			};
-			Ref<Texture> cont_icon[4] = {
-				icons->get_icon("TrackContinuous"),
-				icons->get_icon("TrackDiscrete"),
-				icons->get_icon("TrackTrigger"),
-				icons->get_icon("TrackCapture")
-			};
-
 			int ofs = get_size().width - timeline->get_buttons_width();
 
 			Ref<Texture> down_icon = icons->get_icon("select_arrow");
 
 			draw_line(Point2(ofs, 0), Point2(ofs, get_size().height), linecolor, Math::round(1.0));
-
-			ofs += hsep;
-			{
-				// Callmode.
-
-				Animation::UpdateMode update_mode;
-
-				if (animation->track_get_type(track) == Animation::TYPE_VALUE) {
-					update_mode = animation->value_track_get_update_mode(track);
-				}
-				else {
-					update_mode = Animation::UPDATE_CONTINUOUS;
-				}
-
-				Ref<Texture> update_icon = cont_icon[update_mode];
-
-				update_mode_rect.position.x = ofs;
-				update_mode_rect.position.y = int(get_size().height - (update_icon != nullptr ? update_icon->get_height() : 0)) / 2;
-				update_mode_rect.size = update_icon != nullptr ? update_icon->get_size() : Size2(0, 0);
-
-				if (animation->track_get_type(track) == Animation::TYPE_VALUE) {
-					if (update_icon != nullptr) {
-						draw_texture(update_icon, update_mode_rect.position);
-					}
-				}
-				// Make it easier to click.
-				update_mode_rect.position.y = 0;
-				update_mode_rect.size.y = get_size().height;
-
-				ofs += (update_icon != nullptr ? update_icon->get_width() : 0) + hsep / 2;
-				update_mode_rect.size.x += hsep / 2;
-
-				if (animation->track_get_type(track) == Animation::TYPE_VALUE) {
-					if (down_icon != nullptr) {
-						draw_texture(down_icon, Vector2(ofs, int(get_size().height - down_icon->get_height()) / 2));
-					}
-					update_mode_rect.size.x += down_icon != nullptr ? down_icon->get_width() : 0;
-				}
-				else {
-					update_mode_rect = Rect2();
-				}
-
-				ofs += down_icon != nullptr ? down_icon->get_width() : 0;
-				draw_line(Point2(ofs + hsep * 0.5, 0), Point2(ofs + hsep * 0.5, get_size().height), linecolor, Math::round(1.0));
-				ofs += hsep;
-			}
-
-			{
-				// Interp.
-
-				Animation::InterpolationType interp_mode = animation->track_get_interpolation_type(track);
-
-				Ref<Texture> icon = interp_icon[interp_mode];
-
-				interp_mode_rect.position.x = ofs;
-				interp_mode_rect.position.y = int(get_size().height - (icon != nullptr ? icon->get_height() : 0)) / 2;
-				interp_mode_rect.size = icon != nullptr ? icon->get_size() : Size2(0, 0);
-
-				if ((animation->track_get_type(track) == Animation::TYPE_VALUE)) {
-					if (icon != nullptr) {
-						draw_texture(icon, interp_mode_rect.position);
-					}
-				}
-				// Make it easier to click.
-				interp_mode_rect.position.y = 0;
-				interp_mode_rect.size.y = get_size().height;
-
-				ofs += (icon != nullptr ? icon->get_width() : 0) + hsep / 2;
-				interp_mode_rect.size.x += hsep / 2;
-
-				if ((animation->track_get_type(track) == Animation::TYPE_VALUE)) {
-					if (down_icon != nullptr) {
-						draw_texture(down_icon, Vector2(ofs, int(get_size().height - down_icon->get_height()) / 2));
-					}
-					interp_mode_rect.size.x += down_icon != nullptr ? down_icon->get_width() : 0;
-				}
-				else {
-					interp_mode_rect = Rect2();
-				}
-
-				ofs += down_icon != nullptr ? down_icon->get_width() : 0;
-				draw_line(Point2(ofs + hsep * 0.5, 0), Point2(ofs + hsep * 0.5, get_size().height), linecolor, Math::round(1.0));
-				ofs += hsep;
-			}
-
-			{
-				// Loop.
-
-				bool loop_wrap = animation->track_get_interpolation_loop_wrap(track);
-
-				Ref<Texture> icon = wrap_icon[loop_wrap ? 1 : 0];
-
-				loop_wrap_rect.position.x = ofs;
-				loop_wrap_rect.position.y = int(get_size().height - (icon != nullptr ? icon->get_height() : 0)) / 2;
-				loop_wrap_rect.size = icon != nullptr ? icon->get_size() : Size2(0, 0);
-
-				if ((animation->track_get_type(track) == Animation::TYPE_VALUE)) {
-					if (icon != nullptr) {
-						draw_texture(icon, loop_wrap_rect.position);
-					}
-				}
-
-				loop_wrap_rect.position.y = 0;
-				loop_wrap_rect.size.y = get_size().height;
-
-				ofs += (icon != nullptr ? icon->get_width() : 0) + hsep / 2;
-				loop_wrap_rect.size.x += hsep / 2;
-
-				if ((animation->track_get_type(track) == Animation::TYPE_VALUE)) {
-					if (down_icon != nullptr) {
-						draw_texture(down_icon, Vector2(ofs, int(get_size().height - down_icon->get_height()) / 2));
-					}
-					loop_wrap_rect.size.x += down_icon != nullptr ? down_icon->get_width() : 0;
-				}
-				else {
-					loop_wrap_rect = Rect2();
-				}
-
-				ofs += down_icon != nullptr ? down_icon->get_width() : 0;
-				draw_line(Point2(ofs + hsep * 0.5, 0), Point2(ofs + hsep * 0.5, get_size().height), linecolor, Math::round(1.0));
-				ofs += hsep;
-			}
 
 			{
 				// Erase.
@@ -560,16 +421,12 @@ void TrackEdit::set_animation_and_track(const Ref<Animation>& p_animation, int p
 	selected_icon = IconsCache::get_singleton()->get_icon("KeySelected");
 }
 
-NodePath TrackEdit::get_path() const {
-	return node_path;
-}
-
 Size2 TrackEdit::get_minimum_size() const {
 	Ref<Texture> texture = IconsCache::get_singleton()->get_icon("Object");
 	Ref<Font> font = get_font("font", "Label");
 	int separation = get_constant("vseparation", "ItemList");
 
-	int max_h = MAX((texture != nullptr? texture->get_height() : 0), font->get_height());
+	int max_h = MAX((texture != nullptr ? texture->get_height() : 0), font->get_height());
 	max_h = MAX(max_h, get_key_height());
 
 	return Vector2(1, max_h + separation);
@@ -624,14 +481,6 @@ void TrackEdit::_zoom_changed() {
 	play_position->update();
 }
 
-void TrackEdit::_path_submitted(const String& p_text) {
-	undo_redo->create_action(TTR("Change Track Path"));
-	undo_redo->add_do_method(animation.ptr(), "track_set_path", track, p_text);
-	undo_redo->add_undo_method(animation.ptr(), "track_set_path", track, animation->track_get_path(track));
-	undo_redo->commit_action();
-	path_popup->hide();
-}
-
 bool TrackEdit::_is_value_key_valid(const Variant& p_key_value, Variant::Type& r_valid_type) const {
 	if (root == nullptr) {
 		return false;
@@ -658,7 +507,7 @@ bool TrackEdit::_is_value_key_valid(const Variant& p_key_value, Variant::Type& r
 }
 
 Ref<Texture> TrackEdit::_get_key_type_icon() const {
-	IconsCache *icons = IconsCache::get_singleton();
+	IconsCache* icons = IconsCache::get_singleton();
 	Ref<Texture> type_icons[9] = {
 		icons->get_icon("KeyValue"),
 		icons->get_icon("KeyTrackPosition"),
@@ -681,18 +530,6 @@ String TrackEdit::get_tooltip(const Point2& p_pos) const {
 	// Don't overlap track keys if they start at 0.
 	if (path_rect.has_point(p_pos + Size2(type_icon->get_width(), 0))) {
 		return animation->track_get_path(track);
-	}
-
-	if (update_mode_rect.has_point(p_pos)) {
-		return TTR("Update Mode (How this property is set)");
-	}
-
-	if (interp_mode_rect.has_point(p_pos)) {
-		return TTR("Interpolation Mode");
-	}
-
-	if (loop_wrap_rect.has_point(p_pos)) {
-		return TTR("Loop Wrap Mode (Interpolate end with beginning on loop)");
 	}
 
 	if (remove_rect.has_point(p_pos)) {
@@ -818,7 +655,7 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 		}*/
 	}
 
-	IconsCache *icons = IconsCache::get_singleton();
+	IconsCache* icons = IconsCache::get_singleton();
 
 	Ref<InputEventMouseButton> mb = p_event;
 	if (mb.is_valid() && mb->is_pressed() && mb->get_button_index() == BUTTON_LEFT) {
@@ -839,57 +676,6 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 			accept_event();
 		}
 
-		if (update_mode_rect.has_point(pos)) {
-			if (!menu) {
-				menu = memnew(PopupMenu);
-				add_child(menu);
-				menu->connect("id_pressed", this, "_menu_selected");
-			}
-			menu->clear();
-			menu->add_icon_item(icons->get_icon("TrackContinuous"), TTR("Continuous"), MENU_CALL_MODE_CONTINUOUS);
-			menu->add_icon_item(icons->get_icon("TrackDiscrete"), TTR("Discrete"), MENU_CALL_MODE_DISCRETE);
-			menu->add_icon_item(icons->get_icon("TrackTrigger"), TTR("Trigger"), MENU_CALL_MODE_TRIGGER);
-			menu->add_icon_item(icons->get_icon("TrackCapture"), TTR("Capture"), MENU_CALL_MODE_CAPTURE);
-
-			Vector2 popup_pos = get_viewport()->get_canvas_transform().xform(get_global_position()) + update_mode_rect.position + Vector2(0, update_mode_rect.size.height);
-			menu->set_position(popup_pos);
-			menu->popup();
-			accept_event();
-		}
-
-		if (interp_mode_rect.has_point(pos)) {
-			if (!menu) {
-				menu = memnew(PopupMenu);
-				add_child(menu);
-				menu->connect("id_pressed", this, "_menu_selected");
-			}
-			menu->clear();
-			menu->add_icon_item(icons->get_icon("InterpRaw"), TTR("Nearest"), MENU_INTERPOLATION_NEAREST);
-			menu->add_icon_item(icons->get_icon("InterpLinear"), TTR("Linear"), MENU_INTERPOLATION_LINEAR);
-			menu->add_icon_item(icons->get_icon("InterpCubic"), TTR("Cubic"), MENU_INTERPOLATION_CUBIC);
-
-			Vector2 popup_pos = get_viewport()->get_canvas_transform().xform(get_global_position()) + interp_mode_rect.position + Vector2(0, interp_mode_rect.size.height);
-			menu->set_position(popup_pos);
-			menu->popup();
-			accept_event();
-		}
-
-		if (loop_wrap_rect.has_point(pos)) {
-			if (!menu) {
-				menu = memnew(PopupMenu);
-				add_child(menu);
-				menu->connect("id_pressed", this, "_menu_selected");
-			}
-			menu->clear();
-			menu->add_icon_item(icons->get_icon("InterpWrapClamp"), TTR("Clamp Loop Interp"), MENU_LOOP_CLAMP);
-			menu->add_icon_item(icons->get_icon("InterpWrapLoop"), TTR("Wrap Loop Interp"), MENU_LOOP_WRAP);
-
-			Vector2 popup_pos = get_viewport()->get_canvas_transform().xform(get_global_position()) + loop_wrap_rect.position + Vector2(0, loop_wrap_rect.size.height);
-			menu->set_position(popup_pos);
-			menu->popup();
-			accept_event();
-		}
-
 		if (remove_rect.has_point(pos)) {
 			emit_signal("remove_request", track);
 			accept_event();
@@ -897,7 +683,6 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 		}
 
 		// Check keyframes.
-
 
 		float scale = timeline->get_zoom_scale();
 		int limit = timeline->get_name_limit();
@@ -994,25 +779,6 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 			insert_at_pos = offset + timeline->get_value();
 			accept_event();
 		}
-	}
-
-	if (mb.is_valid() && !mb->is_pressed() && mb->get_button_index() == BUTTON_LEFT && clicking_on_name) {
-		if (!path) {
-			path_popup = memnew(Popup);
-			add_child(path_popup);
-			path = memnew(LineEdit);
-			path_popup->add_child(path);
-			path->set_anchors_and_margins_preset(PRESET_WIDE);
-			path->connect("text_entered", this, "_path_submitted");
-		}
-
-		path->set_text(animation->track_get_path(track));
-		Vector2 theme_ofs = path->get_stylebox("normal", "LineEdit")->get_offset();
-		path_popup->set_position(get_viewport()->get_canvas_transform().xform(get_global_position()) + path_rect.position - theme_ofs);
-		path_popup->set_size(path_rect.size);
-		path_popup->popup();
-		path->grab_focus();
-		clicking_on_name = false;
 	}
 
 	if (mb.is_valid() && moving_selection_attempt) {
@@ -1188,38 +954,6 @@ void TrackEdit::drop_data(const Point2& p_point, const Variant& p_data) {
 
 void TrackEdit::_menu_selected(int p_index) {
 	switch (p_index) {
-	case MENU_CALL_MODE_CONTINUOUS:
-	case MENU_CALL_MODE_DISCRETE:
-	case MENU_CALL_MODE_TRIGGER:
-	case MENU_CALL_MODE_CAPTURE: {
-		Animation::UpdateMode update_mode = Animation::UpdateMode(p_index);
-		undo_redo->create_action(TTR("Change Animation Update Mode"));
-		undo_redo->add_do_method(animation.ptr(), "value_track_set_update_mode", track, update_mode);
-		undo_redo->add_undo_method(animation.ptr(), "value_track_set_update_mode", track, animation->value_track_get_update_mode(track));
-		undo_redo->commit_action();
-		update();
-
-	} break;
-	case MENU_INTERPOLATION_NEAREST:
-	case MENU_INTERPOLATION_LINEAR:
-	case MENU_INTERPOLATION_CUBIC: {
-		Animation::InterpolationType interp_mode = Animation::InterpolationType(p_index - MENU_INTERPOLATION_NEAREST);
-		undo_redo->create_action(TTR("Change Animation Interpolation Mode"));
-		undo_redo->add_do_method(animation.ptr(), "track_set_interpolation_type", track, interp_mode);
-		undo_redo->add_undo_method(animation.ptr(), "track_set_interpolation_type", track, animation->track_get_interpolation_type(track));
-		undo_redo->commit_action();
-		update();
-	} break;
-	case MENU_LOOP_WRAP:
-	case MENU_LOOP_CLAMP: {
-		bool loop_wrap = p_index == MENU_LOOP_WRAP;
-		undo_redo->create_action(TTR("Change Animation Loop Mode"));
-		undo_redo->add_do_method(animation.ptr(), "track_set_interpolation_loop_wrap", track, loop_wrap);
-		undo_redo->add_undo_method(animation.ptr(), "track_set_interpolation_loop_wrap", track, animation->track_get_interpolation_loop_wrap(track));
-		undo_redo->commit_action();
-		update();
-
-	} break;
 	case MENU_KEY_INSERT: {
 		emit_signal("insert_key", insert_at_pos);
 	} break;
@@ -1281,7 +1015,6 @@ void TrackEdit::_icons_cache_changed() {
 void TrackEdit::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_zoom_changed"), &TrackEdit::_zoom_changed);
 	ClassDB::bind_method(D_METHOD("_menu_selected"), &TrackEdit::_menu_selected);
-	ClassDB::bind_method(D_METHOD("_path_submitted"), &TrackEdit::_path_submitted);
 	ClassDB::bind_method(D_METHOD("_play_position_draw"), &TrackEdit::_play_position_draw);
 	ClassDB::bind_method("_icons_cache_changed", &TrackEdit::_icons_cache_changed);
 
@@ -1308,8 +1041,6 @@ TrackEdit::TrackEdit() {
 	undo_redo = nullptr;
 	timeline = nullptr;
 	root = nullptr;
-	path = nullptr;
-	path_popup = nullptr;
 	menu = nullptr;
 	dropping_at = 0;
 

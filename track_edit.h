@@ -15,15 +15,6 @@ class TrackEdit : public Control {
 	GDCLASS(TrackEdit, Control);
 
 	enum {
-		MENU_CALL_MODE_CONTINUOUS,
-		MENU_CALL_MODE_DISCRETE,
-		MENU_CALL_MODE_TRIGGER,
-		MENU_CALL_MODE_CAPTURE,
-		MENU_INTERPOLATION_NEAREST,
-		MENU_INTERPOLATION_LINEAR,
-		MENU_INTERPOLATION_CUBIC,
-		MENU_LOOP_WRAP,
-		MENU_LOOP_CLAMP,
 		MENU_KEY_INSERT,
 		MENU_KEY_DUPLICATE,
 		MENU_KEY_ADD_RESET,
@@ -31,8 +22,6 @@ class TrackEdit : public Control {
 	};
 	TimelineEdit* timeline = nullptr;
 	UndoRedo* undo_redo = nullptr;
-	Popup* path_popup = nullptr;
-	LineEdit* path = nullptr;
 	Node* root = nullptr;
 	Control* play_position = nullptr; //separate control used to draw so updates for only position changed are much faster
 	float play_position_pos;
@@ -44,9 +33,6 @@ class TrackEdit : public Control {
 	Rect2 check_rect;
 	Rect2 path_rect;
 
-	Rect2 update_mode_rect;
-	Rect2 interp_mode_rect;
-	Rect2 loop_wrap_rect;
 	Rect2 remove_rect;
 
 	Ref<Texture> type_icon;
@@ -64,8 +50,7 @@ class TrackEdit : public Control {
 	String path_cache;
 
 	void _menu_selected(int p_index);
-
-	void _path_submitted(const String& p_text);
+	
 	void _play_position_draw();
 	bool _is_value_key_valid(const Variant& p_key_value, Variant::Type& r_valid_type) const;
 
@@ -113,7 +98,6 @@ public:
 	TimelineEdit* get_timeline() const { return timeline; }
 	TrackEditor* get_editor() const { return editor; }
 	UndoRedo* get_undo_redo() const { return undo_redo; }
-	NodePath get_path() const;
 	void set_animation_and_track(const Ref<Animation>& p_animation, int p_track);
 	virtual Size2 get_minimum_size() const override;
 

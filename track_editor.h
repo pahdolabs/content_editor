@@ -32,8 +32,6 @@ class TrackEditor : public VBoxContainer {
 	Ref<Animation> animation;
 	Node* root = nullptr;
 
-	MenuButton* edit = nullptr;
-
 	PanelContainer* main_panel = nullptr;
 	HScrollBar* hscroll = nullptr;
 	ScrollContainer* scroll = nullptr;
@@ -78,9 +76,6 @@ class TrackEditor : public VBoxContainer {
 
 	void _update_step_spinbox();
 
-	/*PropertySelector* prop_selector = nullptr;
-	PropertySelector* method_selector = nullptr;*/
-	//SceneTreeDialog* pick_track = nullptr;
 	int adding_track_type;
 	NodePath adding_track_path;
 
@@ -299,8 +294,7 @@ public:
 
 	/** If `p_from_mouse_event` is `true`, handle Shift key presses for precise snapping. */
 	void goto_next_step(bool p_from_mouse_event);
-
-	MenuButton* get_edit_menu();
+	
 	TrackEditor();
 	~TrackEditor();
 };

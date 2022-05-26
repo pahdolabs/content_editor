@@ -24,11 +24,7 @@ class TimelineEdit : public Range {
 	float play_position_pos;
 
 	HBoxContainer* len_hb = nullptr;
-	SpinBox* length = nullptr;
-	Button* loop = nullptr;
-	TextureRect* time_icon = nullptr;
-
-	MenuButton* add_track = nullptr;
+	
 	Control* play_position = nullptr; //separate control used to draw so updates for only position changed are much faster
 	HScrollBar* hscroll = nullptr;
 
@@ -78,8 +74,6 @@ public:
 	void set_play_position(float p_pos);
 	float get_play_position() const;
 	void update_play_position();
-
-	void update_values();
 
 	void set_use_fps(bool p_use_fps);
 	bool is_using_fps() const;

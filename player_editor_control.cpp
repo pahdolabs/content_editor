@@ -79,8 +79,6 @@ void PlayerEditorControl::_notification(int p_what) {
 			play_bw_from->set_icon(icons->get_icon("PlayBackwards"));
 			
 			stop->set_icon(icons->get_icon("Stop"));
-			
-			track_editor->get_edit_menu()->add_style_override("normal", get_stylebox("normal", "Button"));
 
 			_update_animation_list_icons();
 		} break;
@@ -603,6 +601,8 @@ PlayerEditorControl::PlayerEditorControl() {
 	animation->set_h_size_flags(SIZE_EXPAND_FILL);
 	animation->set_tooltip(TTR("Display list of animations in player."));
 	animation->set_clip_text(true);
+
+	hb->add_child(memnew(VSeparator));
 
 	track_editor = memnew(TrackEditor);
 	

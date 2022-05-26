@@ -59,7 +59,7 @@ void TimelineEdit::_anim_loop_pressed() {
 }
 
 int TimelineEdit::get_buttons_width() const {
-	IconsCache *icons = IconsCache::get_singleton();
+	IconsCache* icons = IconsCache::get_singleton();
 	Ref<Texture> interp_mode = icons->get_icon("TrackContinuous");
 	Ref<Texture> interp_type = icons->get_icon("InterpRaw");
 	Ref<Texture> loop_type = icons->get_icon("InterpWrapClamp");
@@ -75,7 +75,7 @@ int TimelineEdit::get_buttons_width() const {
 int TimelineEdit::get_name_limit() const {
 	Ref<Texture> hsize_icon = IconsCache::get_singleton()->get_icon("Hsize");
 
-	int limit = MAX(name_limit, add_track->get_minimum_size().width + (hsize_icon != nullptr ? hsize_icon->get_width() : 0));
+	int limit = MAX(name_limit, (hsize_icon != nullptr ? hsize_icon->get_width() : 0));
 
 	limit = MIN(limit, get_size().width - get_buttons_width() - 1);
 
@@ -84,33 +84,6 @@ int TimelineEdit::get_name_limit() const {
 
 void TimelineEdit::_notification(int p_what) {
 	switch (p_what) {
-	case NOTIFICATION_ENTER_TREE:
-	case NOTIFICATION_THEME_CHANGED: {
-		
-		//TODO: panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/animation_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EditorSettings::get_singleton()->get("editors/panning/simple_panning")));
-
-		IconsCache* icons = IconsCache::get_singleton();
-
-		add_track->set_icon(icons->get_icon("Add"));
-		loop->set_icon(icons->get_icon("Loop"));
-		time_icon->set_texture(icons->get_icon("Time"));
-
-		add_track->get_popup()->clear();
-		add_track->get_popup()->add_icon_item(icons->get_icon("KeyValue"), TTR("Property Track"));
-		add_track->get_popup()->add_icon_item(icons->get_icon("KeyXPosition"), TTR("3D Position Track"));
-		add_track->get_popup()->add_icon_item(icons->get_icon("KeyXRotation"), TTR("3D Rotation Track"));
-		add_track->get_popup()->add_icon_item(icons->get_icon("KeyXScale"), TTR("3D Scale Track"));
-		add_track->get_popup()->add_icon_item(icons->get_icon("KeyBlendShape"), TTR("Blend Shape Track"));
-		add_track->get_popup()->add_icon_item(icons->get_icon("KeyCall"), TTR("Call Method Track"));
-		add_track->get_popup()->add_icon_item(icons->get_icon("KeyBezier"), TTR("Bezier Curve Track"));
-		add_track->get_popup()->add_icon_item(icons->get_icon("KeyAudio"), TTR("Audio Playback Track"));
-		add_track->get_popup()->add_icon_item(icons->get_icon("KeyAnimation"), TTR("Animation Playback Track"));
-	} break;
-
-	/*case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
-		panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/animation_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EditorSettings::get_singleton()->get("editors/panning/simple_panning")));
-	} break;*/
-
 	case NOTIFICATION_RESIZED: {
 		len_hb->set_position(Vector2(get_size().width - get_buttons_width(), 0));
 		len_hb->set_size(Size2(get_buttons_width(), get_size().height));
@@ -135,7 +108,7 @@ void TimelineEdit::_notification(int p_what) {
 			l = 0.001; // Avoid crashor.
 		}
 
-		IconsCache *icons = IconsCache::get_singleton();
+		IconsCache* icons = IconsCache::get_singleton();
 
 		Ref<Texture> hsize_icon = icons->get_icon("Hsize");
 		int hsize_width = hsize_icon != nullptr ? hsize_icon->get_width() : 0;
@@ -297,24 +270,21 @@ void TimelineEdit::set_animation(const Ref<Animation>& p_animation) {
 	animation = p_animation;
 	if (animation.is_valid()) {
 		len_hb->show();
-		add_track->show();
 		play_position->show();
 	}
 	else {
 		len_hb->hide();
-		add_track->hide();
 		play_position->hide();
 	}
 	update();
-	update_values();
 }
 
 Size2 TimelineEdit::get_minimum_size() const {
-	Size2 ms = add_track->get_minimum_size();
+	Size2 ms = Size2(0, 0);
 	Ref<Font> font = get_font("font", "Label");
 	ms.height = MAX(ms.height, font->get_height());
-	IconsCache *icons = IconsCache::get_singleton();
-	ms.width = get_buttons_width() + add_track->get_minimum_size().width + (icons->has_icon("Hsize") ? icons->get_icon("Hsize")->get_width() : 0) + 2;
+	IconsCache* icons = IconsCache::get_singleton();
+	ms.width = get_buttons_width() + (icons->has_icon("Hsize") ? icons->get_icon("Hsize")->get_width() : 0) + 2;
 	return ms;
 }
 
@@ -344,39 +314,6 @@ void TimelineEdit::update_play_position() {
 	play_position->update();
 }
 
-void TimelineEdit::update_values() {
-	if (!animation.is_valid() || editing) {
-		return;
-	}
-
-	editing = true;
-	if (use_fps && animation->get_step() > 0) {
-		length->set_value(animation->get_length() / animation->get_step());
-		length->set_step(1);
-		length->set_tooltip(TTR("Animation length (frames)"));
-		time_icon->set_tooltip(TTR("Animation length (frames)"));
-	}
-	else {
-		length->set_value(animation->get_length());
-		length->set_step(0.001);
-		length->set_tooltip(TTR("Animation length (seconds)"));
-		time_icon->set_tooltip(TTR("Animation length (seconds)"));
-	}
-
-	IconsCache *icons = IconsCache::get_singleton();
-
-	if (animation->has_loop()) {
-		loop->set_icon(icons->get_icon("Loop"));
-		loop->set_pressed(true);
-	}
-	else {
-		loop->set_icon(icons->get_icon("Loop"));
-		loop->set_pressed(false);
-	}
-
-	editing = false;
-}
-
 void TimelineEdit::_play_position_draw() {
 	if (!animation.is_valid() || play_position_pos < 0) {
 		return;
@@ -391,7 +328,7 @@ void TimelineEdit::_play_position_draw() {
 		Color color = get_color("accent_color", "Editor");
 		play_position->draw_line(Point2(px, 0), Point2(px, h), color, Math::round(2 * 1.0));
 
-		IconsCache *icons = IconsCache::get_singleton();
+		IconsCache* icons = IconsCache::get_singleton();
 		if (icons->has_icon("TimelineIndicator")) {
 			play_position->draw_texture(
 				icons->get_icon("TimelineIndicator"),
@@ -500,7 +437,6 @@ void TimelineEdit::_zoom_callback(Vector2 p_scroll_vec, Vector2 p_origin, bool p
 
 void TimelineEdit::set_use_fps(bool p_use_fps) {
 	use_fps = p_use_fps;
-	update_values();
 	update();
 }
 
@@ -551,40 +487,13 @@ TimelineEdit::TimelineEdit() {
 	play_position->set_anchors_and_margins_preset(PRESET_WIDE);
 	play_position->connect("draw", this, "_play_position_draw");
 
-	add_track = memnew(MenuButton);
-	add_track->set_position(Vector2(0, 0));
-	add_child(add_track);
-	add_track->set_text(TTR("Add Track"));
-
 	len_hb = memnew(HBoxContainer);
 
 	Control* expander = memnew(Control);
 	expander->set_h_size_flags(SIZE_EXPAND_FILL);
 	len_hb->add_child(expander);
-	time_icon = memnew(TextureRect);
-	time_icon->set_v_size_flags(SIZE_SHRINK_CENTER);
-	time_icon->set_tooltip(TTR("Animation length (seconds)"));
-	len_hb->add_child(time_icon);
-	length = memnew(SpinBox);
-	length->set_min(0.001);
-	length->set_max(36000);
-	length->set_step(0.001);
-	length->set_allow_greater(true);
-	length->set_custom_minimum_size(Vector2(70 * 1.0, 0));
-	//length->set_hide_slider(true);
-	length->set_tooltip(TTR("Animation length (seconds)"));
-	length->connect("value_changed", this, "_anim_length_changed");
-	len_hb->add_child(length);
-	loop = memnew(Button);
-	loop->set_flat(true);
-	loop->set_tooltip(TTR("Animation Looping"));
-	loop->connect("pressed", this, "_anim_loop_pressed");
-	loop->set_toggle_mode(true);
-	len_hb->add_child(loop);
 	add_child(len_hb);
 
-	add_track->hide();
-	add_track->get_popup()->connect("index_pressed", this, "_track_added");
 	len_hb->hide();
 
 	panner.instance();
