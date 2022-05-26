@@ -18,67 +18,22 @@ class PlayerEditorControl : public VBoxContainer {
 	GDCLASS(PlayerEditorControl, VBoxContainer);
 	
 	AnimationPlayer *player = nullptr;
-
-	enum {
-		TOOL_NEW_ANIM,
-		TOOL_ANIM_LIBRARY,
-		TOOL_DUPLICATE_ANIM,
-		TOOL_RENAME_ANIM,
-		TOOL_EDIT_TRANSITIONS,
-		TOOL_REMOVE_ANIM,
-		TOOL_EDIT_RESOURCE
-	};
-
-	enum {
-		ANIM_OPEN,
-		ANIM_SAVE,
-		ANIM_SAVE_AS
-	};
-
-	enum {
-		RESOURCE_LOAD,
-		RESOURCE_SAVE
-	};
-
+	
 	OptionButton *animation = nullptr;
 	Button *stop = nullptr;
 	Button *play = nullptr;
 	Button *play_from = nullptr;
 	Button *play_bw = nullptr;
 	Button *play_bw_from = nullptr;
-	Button *autoplay = nullptr;
-
-	MenuButton *tool_anim = nullptr;
+	
 	SpinBox *frame = nullptr;
-	LineEdit *scale = nullptr;
-	LineEdit *name = nullptr;
-	OptionButton *library = nullptr;
 	Label *name_title = nullptr;
 	UndoRedo *undo_redo = nullptr;
-
-	Ref<Texture> autoplay_icon;
-	Ref<Texture> reset_icon;
-	Ref<ImageTexture> autoplay_reset_icon;
+	
 	bool last_active;
-	float timeline_position;
-
-	FileDialog *file = nullptr;
-	ConfirmationDialog *delete_dialog = nullptr;
-
-	struct BlendEditor {
-		AcceptDialog *dialog = nullptr;
-		Tree *tree = nullptr;
-		OptionButton *next = nullptr;
-
-	} blend_editor;
-
-	ConfirmationDialog *name_dialog = nullptr;
-	ConfirmationDialog *error_dialog = nullptr;
-	int name_dialog_op = TOOL_NEW_ANIM;
-
 	bool updating;
-	bool updating_blends;
-
+	float timeline_position;
+	
 	TrackEditor *track_editor = nullptr;
 	static PlayerEditorControl *singleton;
 
@@ -88,29 +43,17 @@ class PlayerEditorControl : public VBoxContainer {
 	void _play_from_pressed();
 	void _play_bw_pressed();
 	void _play_bw_from_pressed();
-	void _autoplay_pressed();
 	void _stop_pressed();
 	void _animation_selected(int p_which);
-	void _animation_new();
-	void _animation_rename();
-	void _animation_name_edited();
-
-	void _animation_remove();
-	void _animation_remove_confirmed();
-	void _animation_blend();
+	
 	void _animation_edit();
-	void _animation_duplicate();
-	Ref<Animation> _animation_clone(const Ref<Animation> p_anim);
 	void _animation_resource_edit();
-	void _scale_changed(const String &p_scale);
 	void _seek_value_changed(float p_value, bool p_set = false, bool p_timeline_only = false);
-	void _blend_editor_next_changed(const int p_idx);
 
 	void _list_changed();
 	void _update_animation();
 	void _update_player();
 	void _update_animation_list_icons();
-	void _blend_edited();
 
 	void _animation_player_changed(Object *p_pl);
 
@@ -118,7 +61,6 @@ class PlayerEditorControl : public VBoxContainer {
 	void _animation_key_editor_anim_len_changed(float p_len);
 
 	void _unhandled_key_input(const Ref<InputEvent> &p_ev);
-	void _animation_tool_menu(int p_option);
 	
 	String _get_current() const;
 
