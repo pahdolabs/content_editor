@@ -10,6 +10,7 @@
 #include <scene/3d/sprite_3d.h>
 #include <scene/animation/animation_player.h>
 
+#include "consts.h"
 #include "icons_cache.h"
 
 /// BOOL ///
@@ -46,7 +47,7 @@ void TrackEditBool::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_se
 	}
 
 	if (p_selected) {
-		Color color = get_color("accent_color", "Editor");
+		Color color = Colors::accent_color;
 		draw_rect_clipped(Rect2(ofs, icon->get_size()), color, false);
 	}
 }
@@ -149,7 +150,7 @@ void TrackEditColor::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_s
 	draw_rect_clipped(rect, color);
 
 	if (p_selected) {
-		Color accent = get_color("accent_color", "Editor");
+		Color accent = Colors::accent_color;
 		draw_rect_clipped(rect, accent, false);
 	}
 }
@@ -298,7 +299,7 @@ void TrackEditAudio::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_s
 		VisualServer::get_singleton()->canvas_item_add_multiline(get_canvas_item(), lines, color);
 
 		if (p_selected) {
-			Color accent = get_color("accent_color", "Editor");
+			Color accent = Colors::accent_color;
 			draw_rect(rect, accent, false);
 		}
 	}
@@ -311,7 +312,7 @@ void TrackEditAudio::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_s
 		draw_rect_clipped(rect, color);
 
 		if (p_selected) {
-			Color accent = get_color("accent_color", "Editor");
+			Color accent = Colors::accent_color;
 			draw_rect_clipped(rect, accent, false);
 		}
 	}
@@ -513,7 +514,7 @@ void TrackEditSpriteFrame::draw_key(int p_index, float p_pixels_sec, int p_x, bo
 		return;
 	}
 
-	Color accent = get_color("accent_color", "Editor");
+	Color accent = Colors::accent_color;
 	Color bg = accent;
 	bg.a = 0.15;
 
@@ -674,7 +675,7 @@ void TrackEditSubAnim::draw_key(int p_index, float p_pixels_sec, int p_x, bool p
 		}
 
 		if (p_selected) {
-			Color accent = get_color("accent_color", "Editor");
+			Color accent = Colors::accent_color;
 			draw_rect(rect, accent, false);
 		}
 	}
@@ -687,7 +688,7 @@ void TrackEditSubAnim::draw_key(int p_index, float p_pixels_sec, int p_x, bool p
 		draw_rect_clipped(rect, color);
 
 		if (p_selected) {
-			Color accent = get_color("accent_color", "Editor");
+			Color accent = Colors::accent_color;
 			draw_rect_clipped(rect, accent, false);
 		}
 	}
@@ -919,7 +920,7 @@ void TrackEditTypeAudio::draw_key(int p_index, float p_pixels_sec, int p_x, bool
 
 	VisualServer::get_singleton()->canvas_item_add_multiline(get_canvas_item(), lines, color);
 
-	Color cut_color = get_color("accent_color", "Editor");
+	Color cut_color = Colors::accent_color;
 	cut_color.a = 0.7;
 	if (start_ofs > 0 && pixel_begin > p_clip_left) {
 		draw_rect(Rect2(pixel_begin, rect.position.y, 1, rect.size.y), cut_color);
@@ -929,7 +930,7 @@ void TrackEditTypeAudio::draw_key(int p_index, float p_pixels_sec, int p_x, bool
 	}
 
 	if (p_selected) {
-		Color accent = get_color("accent_color", "Editor");
+		Color accent = Colors::accent_color;
 		draw_rect(rect, accent, false);
 	}
 }
@@ -1251,7 +1252,7 @@ void TrackEditTypeAnimation::draw_key(int p_index, float p_pixels_sec, int p_x, 
 		}
 
 		if (p_selected) {
-			Color accent = get_color("accent_color", "Editor");
+			Color accent = Colors::accent_color;
 			draw_rect(rect, accent, false);
 		}
 	}
@@ -1264,7 +1265,7 @@ void TrackEditTypeAnimation::draw_key(int p_index, float p_pixels_sec, int p_x, 
 		draw_rect_clipped(rect, color);
 
 		if (p_selected) {
-			Color accent = get_color("accent_color", "Editor");
+			Color accent = Colors::accent_color;
 			draw_rect_clipped(rect, accent, false);
 		}
 	}
