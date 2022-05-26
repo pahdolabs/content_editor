@@ -34,7 +34,7 @@ public:
 			return;
 		}
 
-		
+
 		Viewport* root = SceneTree::get_singleton()->get_root();
 
 		Node* np_node = root->get_node(np);
@@ -130,6 +130,22 @@ public:
 		}
 
 		switch (animation->track_get_type(track)) {
+		case Animation::TYPE_TRANSFORM: {
+			Dictionary d_old = animation->track_get_key_value(track, key);
+			Dictionary d_new = d_old.duplicate();
+			d_new[p_name] = p_value;
+			setting = true;
+			undo_redo->create_action(TTR("Anim Change Transform"));
+			undo_redo->add_do_method(animation.ptr(), "track_set_key_value", track, key, d_new);
+			undo_redo->add_undo_method(animation.ptr(), "track_set_key_value", track, key, d_old);
+			undo_redo->add_do_method(this, "_update_obj", animation);
+			undo_redo->add_undo_method(this, "_update_obj", animation);
+			undo_redo->commit_action();
+
+			setting = false;
+			return true;
+		} break;
+
 		case Animation::TYPE_VALUE: {
 			if (name == "value") {
 				Variant value = p_value;
@@ -151,7 +167,79 @@ public:
 				return true;
 			}
 		} break;
-		
+
+		case Animation::TYPE_METHOD: {
+			Dictionary d_old = animation->track_get_key_value(track, key);
+			Dictionary d_new = d_old.duplicate();
+
+			bool change_notify_deserved = false;
+			bool mergeable = false;
+
+			if (name == "name") {
+				d_new["method"] = p_value;
+			}
+			else if (name == "arg_count") {
+				Vector<Variant> args = d_old["args"];
+				args.resize(p_value);
+				d_new["args"] = args;
+				change_notify_deserved = true;
+			}
+			else if (name.begins_with("args/")) {
+				Vector<Variant> args = d_old["args"];
+				int idx = name.get_slice("/", 1).to_int();
+				ERR_FAIL_INDEX_V(idx, args.size(), false);
+
+				String what = name.get_slice("/", 2);
+				if (what == "type") {
+					Variant::Type t = Variant::Type(int(p_value));
+
+					if (t != args[idx].get_type()) {
+						Variant::CallError err;
+						if (Variant::can_convert(args[idx].get_type(), t)) {
+							Variant old = args[idx];
+							Variant* ptrs[1] = { &old };
+							args.write[idx] = Variant::construct(t, (const Variant**)ptrs, 1, err);
+						}
+						else {
+							args.write[idx] = Variant::construct(t, nullptr, 0, err);
+						}
+						change_notify_deserved = true;
+						d_new["args"] = args;
+					}
+				}
+				else if (what == "value") {
+					Variant value = p_value;
+					if (value.get_type() == Variant::NODE_PATH) {
+						_fix_node_path(value);
+					}
+
+					args.write[idx] = value;
+					d_new["args"] = args;
+					mergeable = true;
+				}
+			}
+
+			if (mergeable) {
+				undo_redo->create_action(TTR("Anim Change Call"), UndoRedo::MERGE_ENDS);
+			}
+			else {
+				undo_redo->create_action(TTR("Anim Change Call"));
+			}
+
+			setting = true;
+			undo_redo->add_do_method(animation.ptr(), "track_set_key_value", track, key, d_new);
+			undo_redo->add_undo_method(animation.ptr(), "track_set_key_value", track, key, d_old);
+			undo_redo->add_do_method(this, "_update_obj", animation);
+			undo_redo->add_undo_method(this, "_update_obj", animation);
+			undo_redo->commit_action();
+
+			setting = false;
+			if (change_notify_deserved) {
+				notify_change();
+			}
+			return true;
+		} break;
+
 		case Animation::TYPE_AUDIO: {
 			if (name == "stream") {
 				Ref<AudioStream> stream = p_value;
@@ -248,6 +336,14 @@ public:
 		}
 
 		switch (animation->track_get_type(track)) {
+		case Animation::TYPE_TRANSFORM: {
+			Dictionary d = animation->track_get_key_value(track, key);
+			ERR_FAIL_COND_V(!d.has(name), false);
+			r_ret = d[p_name];
+			return true;
+
+		} break;
+
 		case Animation::TYPE_VALUE: {
 			if (name == "value") {
 				r_ret = animation->track_get_key_value(track, key);
@@ -336,6 +432,13 @@ public:
 		}
 
 		switch (animation->track_get_type(track)) {
+		case Animation::TYPE_TRANSFORM: {
+			p_list->push_back(PropertyInfo(Variant::VECTOR3, "location"));
+			p_list->push_back(PropertyInfo(Variant::QUAT, "rotation"));
+			p_list->push_back(PropertyInfo(Variant::VECTOR3, "scale"));
+
+		} break;
+
 		case Animation::TYPE_VALUE: {
 			Variant v = animation->track_get_key_value(track, key);
 
@@ -407,7 +510,7 @@ public:
 				if (ap) {
 					List<StringName> anims;
 					ap->get_animation_list(&anims);
-					for (List<StringName>::Element *E = anims.front(); E; E = E->next()) {
+					for (List<StringName>::Element* E = anims.front(); E; E = E->next()) {
 						if (!animations.empty()) {
 							animations += ",";
 						}
@@ -534,9 +637,9 @@ public:
 	bool _set(const StringName& p_name, const Variant& p_value) {
 		bool update_obj = false;
 		bool change_notify_deserved = false;
-		for (Map<int, List<float>>::Element *E = key_ofs_map.front(); E; E = E->next()) {
+		for (Map<int, List<float>>::Element* E = key_ofs_map.front(); E; E = E->next()) {
 			int track = E->key();
-			for (List<float>::Element *key_ofs = E->value().front(); key_ofs; key_ofs = key_ofs->next()) {
+			for (List<float>::Element* key_ofs = E->value().front(); key_ofs; key_ofs = key_ofs->next()) {
 				int key = animation->track_find_key(track, key_ofs->get(), true);
 				ERR_FAIL_COND_V(key == -1, false);
 
@@ -589,6 +692,20 @@ public:
 				}
 
 				switch (animation->track_get_type(track)) {
+				case Animation::TYPE_TRANSFORM: {
+					Dictionary d_old = animation->track_get_key_value(track, key);
+					Dictionary d_new = d_old.duplicate();
+					d_new[p_name] = p_value;
+
+					if (!setting) {
+						setting = true;
+						undo_redo->create_action(TTR("Anim Multi Change Transform"));
+					}
+					undo_redo->add_do_method(animation.ptr(), "track_set_key_value", track, key, d_new);
+					undo_redo->add_undo_method(animation.ptr(), "track_set_key_value", track, key, d_old);
+					update_obj = true;
+				} break;
+
 				case Animation::TYPE_VALUE: {
 					if (name == "value") {
 						Variant value = p_value;
@@ -607,6 +724,75 @@ public:
 						update_obj = true;
 					}
 				} break;
+
+				case Animation::TYPE_METHOD: {
+					Dictionary d_old = animation->track_get_key_value(track, key);
+					Dictionary d_new = d_old.duplicate();
+
+					bool mergeable = false;
+
+					if (name == "name") {
+						d_new["method"] = p_value;
+					}
+					else if (name == "arg_count") {
+						Vector<Variant> args = d_old["args"];
+						args.resize(p_value);
+						d_new["args"] = args;
+						change_notify_deserved = true;
+					}
+					else if (name.begins_with("args/")) {
+						Vector<Variant> args = d_old["args"];
+						int idx = name.get_slice("/", 1).to_int();
+						ERR_FAIL_INDEX_V(idx, args.size(), false);
+
+						String what = name.get_slice("/", 2);
+						if (what == "type") {
+							Variant::Type t = Variant::Type(int(p_value));
+
+							if (t != args[idx].get_type()) {
+								Variant::CallError err;
+								if (Variant::can_convert(args[idx].get_type(), t)) {
+									Variant old = args[idx];
+									Variant* ptrs[1] = { &old };
+									args.write[idx] = Variant::construct(t, (const Variant**)ptrs, 1, err);
+								}
+								else {
+									args.write[idx] = Variant::construct(t, nullptr, 0, err);
+								}
+								change_notify_deserved = true;
+								d_new["args"] = args;
+							}
+						}
+						else if (what == "value") {
+							Variant value = p_value;
+							if (value.get_type() == Variant::NODE_PATH) {
+								_fix_node_path(value, base_map[track]);
+							}
+
+							args.write[idx] = value;
+							d_new["args"] = args;
+							mergeable = true;
+						}
+					}
+
+					Variant prev = animation->track_get_key_value(track, key);
+
+					if (!setting) {
+						if (mergeable) {
+							undo_redo->create_action(TTR("Anim Multi Change Call"), UndoRedo::MERGE_ENDS);
+						}
+						else {
+							undo_redo->create_action(TTR("Anim Multi Change Call"));
+						}
+
+						setting = true;
+					}
+
+					undo_redo->add_do_method(animation.ptr(), "track_set_key_value", track, key, d_new);
+					undo_redo->add_undo_method(animation.ptr(), "track_set_key_value", track, key, d_old);
+					update_obj = true;
+				} break;
+
 				case Animation::TYPE_AUDIO: {
 					if (name == "stream") {
 						Ref<AudioStream> stream = p_value;
@@ -710,6 +896,14 @@ public:
 				}
 
 				switch (animation->track_get_type(track)) {
+				case Animation::TYPE_TRANSFORM: {
+					Dictionary d = animation->track_get_key_value(track, key);
+					ERR_FAIL_COND_V(!d.has(name), false);
+					r_ret = d[p_name];
+					return true;
+
+				} break;
+
 				case Animation::TYPE_VALUE: {
 					if (name == "value") {
 						r_ret = animation->track_get_key_value(track, key);
@@ -767,7 +961,7 @@ public:
 						r_ret = animation->bezier_track_get_key_out_handle(track, key);
 						return true;
 					}
-					
+
 
 				} break;
 				case Animation::TYPE_AUDIO: {
@@ -855,6 +1049,12 @@ public:
 
 		if (same_track_type) {
 			switch (animation->track_get_type(first_track)) {
+			case Animation::TYPE_TRANSFORM: {
+				p_list->push_back(PropertyInfo(Variant::VECTOR3, "location"));
+				p_list->push_back(PropertyInfo(Variant::QUAT, "rotation"));
+				p_list->push_back(PropertyInfo(Variant::VECTOR3, "scale"));
+			} break;
+
 			case Animation::TYPE_VALUE: {
 				if (same_key_type) {
 					Variant v = animation->track_get_key_value(first_track, first_key);
