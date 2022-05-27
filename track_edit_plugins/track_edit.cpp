@@ -5,11 +5,11 @@
 #include <scene/main/viewport.h>
 #include <modules/svg/image_loader_svg.h>
 
-#include "consts.h"
-#include "icons_cache.h"
-#include "player_editor_control.h"
-#include "timeline_edit.h"
-#include "track_editor.h"
+#include "../consts.h"
+#include "../icons_cache.h"
+#include "../track_editor/player_editor_control.h"
+#include "../track_editor/timeline_edit.h"
+#include "../track_editor/track_editor.h"
 
 void TrackEdit::_notification(int p_what) {
 	switch (p_what) {

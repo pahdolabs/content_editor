@@ -4,7 +4,7 @@
 
 #include <scene/gui/separator.h>
 
-#include "icons_cache.h"
+#include "../icons_cache.h"
 #include "track_editor.h"
 #include "core/os/input.h"
 #include "core/os/keyboard.h"

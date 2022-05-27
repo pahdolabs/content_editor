@@ -2,8 +2,8 @@
 
 #include <core/undo_redo.h>
 
-#include "consts.h"
-#include "icons_cache.h"
+#include "../consts.h"
+#include "../icons_cache.h"
 #include "track_edit.h"
 #include "track_editor.h"
 #include "view_panner.h"

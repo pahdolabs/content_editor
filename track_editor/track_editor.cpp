@@ -9,18 +9,18 @@
 #include <scene/gui/panel_container.h>
 #include <scene/gui/separator.h>
 
-#include "consts.h"
-#include "icons_cache.h"
+#include "../consts.h"
+#include "../icons_cache.h"
 #include "player_editor_control.h"
 #include "track_edit.h"
 #include "timeline_edit.h"
-#include "track_editor_plugins.h"
+#include "../track_edit_plugins/track_edit_default_plugin.h"
 #include "track_edit_plugin.h"
 #include "track_key_edit.h"
 #include "view_panner.h"
 
 void TrackEditor::add_track_edit_plugin(const Ref<TrackEditPlugin>& p_plugin) {
-	if (track_edit_plugins.find(p_plugin) == -1) {
+	if (track_edit_plugins.find(p_plugin) != -1) {
 		return;
 	}
 	track_edit_plugins.push_back(p_plugin);
