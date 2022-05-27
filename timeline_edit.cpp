@@ -470,6 +470,7 @@ void TimelineEdit::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_zoom_callback"), &TimelineEdit::_zoom_callback);
 	ClassDB::bind_method(D_METHOD("_icons_cache_changed"), &TimelineEdit::_icons_cache_changed);
 	ClassDB::bind_method(D_METHOD("_gui_input", "event"), &TimelineEdit::_gui_input);
+	
 	ADD_SIGNAL(MethodInfo("zoom_changed"));
 	ADD_SIGNAL(MethodInfo("name_limit_changed"));
 	ADD_SIGNAL(MethodInfo("timeline_changed", PropertyInfo(Variant::REAL, "position"), PropertyInfo(Variant::BOOL, "drag"), PropertyInfo(Variant::BOOL, "timeline_only")));

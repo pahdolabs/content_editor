@@ -14,7 +14,7 @@ bool ViewPanner::gui_input(const Ref<InputEvent>& p_event, Rect2 p_canvas_rect) 
 			if (control_scheme == SCROLL_PANS) {
 				if (mb->get_control()) {
 					scroll_vec.y *= mb->get_factor();
-					callback_helper(zoom_callback_object, zoom_callback_function, varray(scroll_vec, mb->get_position(), mb->get_alt()));
+					zoom_callback_object->call(zoom_callback_function, scroll_vec, mb->get_position(), mb->get_alt());
 					return true;
 				}
 				else {
@@ -27,7 +27,7 @@ bool ViewPanner::gui_input(const Ref<InputEvent>& p_event, Rect2 p_canvas_rect) 
 						panning.y += mb->get_factor() * scroll_vec.y;
 						panning.x += mb->get_factor() * scroll_vec.x;
 					}
-					callback_helper(scroll_callback_object, scroll_callback_function, varray(panning, mb->get_alt()));
+					scroll_callback_object->call(scroll_callback_function, panning, mb->get_alt());
 					return true;
 				}
 			}
@@ -42,12 +42,12 @@ bool ViewPanner::gui_input(const Ref<InputEvent>& p_event, Rect2 p_canvas_rect) 
 						panning.y += mb->get_factor() * scroll_vec.y;
 						panning.x += mb->get_factor() * scroll_vec.x;
 					}
-					callback_helper(scroll_callback_object, scroll_callback_function, varray(panning, mb->get_alt()));
+					scroll_callback_object->call(scroll_callback_function, panning, mb->get_alt());
 					return true;
 				}
 				else if (!mb->get_shift()) {
 					scroll_vec.y *= mb->get_factor();
-					callback_helper(zoom_callback_object, zoom_callback_function, varray(scroll_vec, mb->get_position(), mb->get_alt()));
+					zoom_callback_object->call(zoom_callback_function, scroll_vec, mb->get_position(), mb->get_alt());
 					return true;
 				}
 			}
@@ -78,10 +78,10 @@ bool ViewPanner::gui_input(const Ref<InputEvent>& p_event, Rect2 p_canvas_rect) 
 	if (mm.is_valid()) {
 		if (is_dragging) {
 			if (p_canvas_rect != Rect2()) {
-				callback_helper(pan_callback_object, pan_callback_function, varray(warp_mouse_motion(mm, p_canvas_rect)));
+				pan_callback_object->call(pan_callback_function, warp_mouse_motion(mm, p_canvas_rect));
 			}
 			else {
-				callback_helper(pan_callback_object, pan_callback_function, varray(mm->get_relative()));
+				pan_callback_object->call(pan_callback_function, mm->get_relative());
 			}
 			return true;
 		}
@@ -123,25 +123,15 @@ void ViewPanner::release_pan_key() {
 	is_dragging = false;
 }
 
-void ViewPanner::callback_helper(Object* p_callback_object, String p_callback_function, Vector<Variant> p_args) {
-	const Variant** argptr = (const Variant**)alloca(sizeof(Variant*) * p_args.size());
-	for (int i = 0; i < p_args.size(); i++) {
-		argptr[i] = &p_args[i];
-	}
-
-	Variant::CallError ce;
-	p_callback_object->call(p_callback_function, p_args, p_args.size(), &ce);
-}
-
-void ViewPanner::set_callbacks(Object* p_scroll_callback_object, String p_scroll_callback_function, Object* p_pan_callback_object, String p_pan_callback_function, Object* p_zoom_callback_object, String p_zoom_callback_function) {
+void ViewPanner::set_callbacks(Object* p_scroll_callback_object, const String &p_scroll_callback_function, Object* p_pan_callback_object, const String &p_pan_callback_function, Object* p_zoom_callback_object, const String &p_zoom_callback_function) {
 	scroll_callback_object = p_scroll_callback_object;
 	scroll_callback_function = p_scroll_callback_function;
 
 	pan_callback_object = p_pan_callback_object;
-	pan_callback_function = pan_callback_function;
+	pan_callback_function = p_pan_callback_function;
 
 	zoom_callback_object = p_zoom_callback_object;
-	zoom_callback_function = zoom_callback_function;
+	zoom_callback_function = p_zoom_callback_function;
 }
 
 void ViewPanner::set_control_scheme(ControlScheme p_scheme) {

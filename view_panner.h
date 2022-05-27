@@ -32,9 +32,8 @@ private:
 	String pan_callback_function;
 	Object *zoom_callback_object;
 	String zoom_callback_function;
-
-	void callback_helper(Object *p_callback_object, String p_callback_function, Vector<Variant> p_args);
-	ControlScheme control_scheme = SCROLL_ZOOMS;
+	
+	ControlScheme control_scheme = SCROLL_PANS;
 
 	Vector2 warp_mouse_motion(Ref<InputEventMouseMotion> p_event, Rect2 p_canvas_rect);
 
@@ -42,7 +41,7 @@ protected:
 	static void _bind_methods();
 
 public:
-	void set_callbacks(Object* p_scroll_callback_object, String p_scroll_callback_function, Object* p_pan_callback_object, String p_pan_callback_function, Object* p_zoom_callback_object, String p_zoom_callback_function);
+	void set_callbacks(Object* p_scroll_callback_object, const String &p_scroll_callback_function, Object* p_pan_callback_object, const String &p_pan_callback_function, Object* p_zoom_callback_object, const String &p_zoom_callback_function);
 	void set_control_scheme(ControlScheme p_scheme);
 	void set_enable_rmb(bool p_enable);
 	void set_pan_shortcut(Ref<ShortCut> p_shortcut);
