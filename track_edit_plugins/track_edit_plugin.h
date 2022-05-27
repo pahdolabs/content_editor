@@ -1,7 +1,7 @@
 #ifndef TRACK_EDIT_PLUGIN_H
 #define TRACK_EDIT_PLUGIN_H
 
-#include <core/reference.h>
+#include "core/reference.h"
 
 class TrackEdit;
 

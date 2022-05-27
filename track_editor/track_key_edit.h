@@ -1,9 +1,9 @@
 #ifndef TRACK_KEY_EDIT_H
 #define TRACK_KEY_EDIT_H
 
-#include <core/object.h>
-#include <scene/main/viewport.h>
-#include <servers/audio/audio_stream.h>
+#include "core/object.h"
+#include "scene/main/viewport.h"
+#include "servers/audio/audio_stream.h"
 
 class TrackKeyEdit : public Object {
 	GDCLASS(TrackKeyEdit, Object);

@@ -1,13 +1,13 @@
 #include "track_editor.h"
 
-#include <core/os/input.h>
-#include <scene/scene_string_names.h>
-#include <scene/animation/animation_player.h>
-#include <scene/main/viewport.h>
-#include <core/os/keyboard.h>
-#include <scene/gui/scroll_container.h>
-#include <scene/gui/panel_container.h>
-#include <scene/gui/separator.h>
+#include "core/os/input.h"
+#include "scene/scene_string_names.h"
+#include "scene/animation/animation_player.h"
+#include "scene/main/viewport.h"
+#include "core/os/keyboard.h"
+#include "scene/gui/scroll_container.h"
+#include "scene/gui/panel_container.h"
+#include "scene/gui/separator.h"
 
 #include "../consts.h"
 #include "../icons_cache.h"

@@ -1,9 +1,9 @@
 #include "track_edit.h"
 
-#include <core/undo_redo.h>
-#include <scene/animation/animation_player.h>
-#include <scene/main/viewport.h>
-#include <modules/svg/image_loader_svg.h>
+#include "core/undo_redo.h"
+#include "scene/animation/animation_player.h"
+#include "scene/main/viewport.h"
+#include "modules/svg/image_loader_svg.h"
 
 #include "../consts.h"
 #include "../icons_cache.h"

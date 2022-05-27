@@ -1,6 +1,6 @@
 #include "timeline_edit.h"
 
-#include <core/undo_redo.h>
+#include "core/undo_redo.h"
 
 #include "../consts.h"
 #include "../icons_cache.h"

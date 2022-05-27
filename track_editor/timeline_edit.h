@@ -2,9 +2,7 @@
 #define TIMELINE_EDIT_H
 
 #include "scene/gui/control.h"
-#include "scene/gui/menu_button.h"
 #include "scene/gui/scroll_bar.h"
-#include "scene/gui/texture_rect.h"
 #include "scene/resources/animation.h"
 
 class UndoRedo;

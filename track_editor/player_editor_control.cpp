@@ -2,7 +2,7 @@
 
 #include "player_editor_control.h"
 
-#include <scene/gui/separator.h>
+#include "scene/gui/separator.h"
 
 #include "../icons_cache.h"
 #include "track_editor.h"

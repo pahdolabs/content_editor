@@ -1,8 +1,8 @@
 #include "icons_cache.h"
 
-#include <core/project_settings.h>
-#include <core/os/dir_access.h>
-#include <modules/svg/image_loader_svg.h>
+#include "core/project_settings.h"
+#include "core/os/dir_access.h"
+#include "modules/svg/image_loader_svg.h"
 
 IconsCache *IconsCache::singleton;
 

@@ -1,14 +1,7 @@
 #include "track_edit_default_plugin.h"
 
-#include "../track_editor/track_editor.h"
-#include "../track_editor/timeline_edit.h"
-#include <core/undo_redo.h>
-#include <core/os/input_event.h>
-#include <servers/audio/audio_stream.h>
-#include <scene/2d/sprite.h>
-#include <scene/2d/animated_sprite.h>
-#include <scene/3d/sprite_3d.h>
-#include <scene/animation/animation_player.h>
+#include "core/undo_redo.h"
+#include "servers/audio/audio_stream.h"
 
 #include "track_edit.h"
 #include "track_edit_audio.h"
@@ -19,9 +12,6 @@
 #include "track_edit_type_sprite_frame.h"
 #include "track_edit_type_sub_anim.h"
 #include "track_edit_volume_db.h"
-
-#include "../consts.h"
-#include "../icons_cache.h"
 
 TrackEdit* TrackEditDefaultPlugin::create_value_track_edit(Object* p_object, Variant::Type p_type, const String& p_property, PropertyHint p_hint, const String& p_hint_string, int p_usage) {
 	if (p_property == "playing" && (p_object->is_class("AudioStreamPlayer") || p_object->is_class("AudioStreamPlayer2D") || p_object->is_class("AudioStreamPlayer3D"))) {

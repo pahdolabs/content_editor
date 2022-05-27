@@ -1,6 +1,6 @@
 #include "register_types.h"
 
-#include <core/engine.h>
+#include "core/engine.h"
 
 #include "icons_cache.h"
 #include "core/class_db.h"

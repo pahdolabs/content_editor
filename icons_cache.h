@@ -1,7 +1,7 @@
 #ifndef ICONS_CACHE_H
 #define ICONS_CACHE_H
 
-#include <scene/resources/texture.h>
+#include "scene/resources/texture.h"
 
 class IconsCache : public Object {
 	GDCLASS(IconsCache, Object);

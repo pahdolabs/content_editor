@@ -1,6 +1,6 @@
 #include "view_panner.h"
 
-#include <core/os/input_event.h>
+#include "core/os/input_event.h"
 
 #include "core/os/input.h"
 #include "scene/gui/shortcut.h"

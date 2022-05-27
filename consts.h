@@ -1,6 +1,7 @@
 #ifndef CONSTS_H
 #define CONSTS_H
-#include <core/color.h>
+
+#include "core/color.h"
 
 class Colors {
 public:

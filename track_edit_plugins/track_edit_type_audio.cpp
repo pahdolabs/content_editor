@@ -2,16 +2,13 @@
 
 #include "../track_editor/track_editor.h"
 #include "../track_editor/timeline_edit.h"
-#include <core/undo_redo.h>
-#include <core/os/input_event.h>
-#include <servers/audio/audio_stream.h>
-#include <scene/2d/sprite.h>
-#include <scene/2d/animated_sprite.h>
-#include <scene/3d/sprite_3d.h>
-#include <scene/animation/animation_player.h>
+#include "core/undo_redo.h"
+#include "core/os/input_event.h"
+#include "servers/audio/audio_stream.h"
+#include "scene/2d/sprite.h"
+#include "scene/2d/animated_sprite.h"
 
 #include "../consts.h"
-#include "../icons_cache.h"
 
 void TrackEditTypeAudio::_preview_changed(ObjectID p_which) {
 	for (int i = 0; i < get_animation()->track_get_key_count(get_track()); i++) {

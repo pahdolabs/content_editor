@@ -1,7 +1,7 @@
 #include "track_edit_plugin.h"
 #include "track_edit.h"
 
-#include <core/script_language.h>
+#include "core/script_language.h"
 
 TrackEdit* TrackEditPlugin::create_value_track_edit(Object* p_object, Variant::Type p_type, const String& p_property, PropertyHint p_hint, const String& p_hint_string, int p_usage) {
 	if (get_script_instance()) {

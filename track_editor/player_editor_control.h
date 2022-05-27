@@ -2,14 +2,13 @@
 #define PLAYER_EDITOR_CONTROL_H
 
 #include "scene/gui/box_container.h"
-#include <core/undo_redo.h>
-#include <scene/gui/file_dialog.h>
-#include <scene/gui/option_button.h>
+#include "core/undo_redo.h"
+#include "scene/gui/file_dialog.h"
+#include "scene/gui/option_button.h"
 
 #include "scene/animation/animation_player.h"
 #include "scene/gui/dialogs.h"
 #include "scene/gui/spin_box.h"
-#include "scene/gui/tree.h"
 
 class TrackEditor;
 class MenuButton;
