@@ -572,6 +572,19 @@ String TrackEdit::get_tooltip(const Point2& p_pos) const {
 		if (key_idx != -1) {
 			String text = "Time (s): " + rtos(animation->track_get_key_time(track, key_idx)) + "\n";
 			switch (animation->track_get_type(track)) {
+			case Animation::TYPE_TRANSFORM: {
+				Dictionary d = animation->track_get_key_value(track, key_idx);
+				if (d.has("location")) {
+					text += "Pos: " + String(d["location"]) + "\n";
+				}
+				if (d.has("rotation")) {
+					text += "Rot: " + String(d["rotation"]) + "\n";
+				}
+				if (d.has("scale")) {
+					text += "Scale: " + String(d["scale"]) + "\n";
+				}
+			} break;
+
 			case Animation::TYPE_VALUE: {
 				const Variant& v = animation->track_get_key_value(track, key_idx);
 				text += "Type: " + Variant::get_type_name(v.get_type()) + "\n";
@@ -585,6 +598,7 @@ String TrackEdit::get_tooltip(const Point2& p_pos) const {
 				text += "Easing: " + rtos(animation->track_get_key_transition(track, key_idx));
 
 			} break;
+			case Animation::TYPE_BEZIER: break;
 			case Animation::TYPE_METHOD: {
 				Dictionary d = animation->track_get_key_value(track, key_idx);
 				if (d.has("method")) {

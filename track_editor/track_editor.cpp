@@ -1351,6 +1351,28 @@ void TrackEditor::_insert_key_from_track(float p_ofs, int p_track) {
 	}
 
 	switch (animation->track_get_type(p_track)) {
+	case Animation::TYPE_TRANSFORM: {
+		if (!root->has_node(animation->track_get_path(p_track))) {
+			return;
+		}
+		Spatial* base = Object::cast_to<Spatial>(root->get_node(animation->track_get_path(p_track)));
+
+		if (!base) {
+			return;
+		}
+
+		Transform xf = base->get_transform();
+
+		Vector3 loc = xf.get_origin();
+		Vector3 scale = xf.basis.get_scale_local();
+		Quat rot = xf.basis;
+
+		undo_redo->create_action(TTR("Add Transform Track Key"));
+		undo_redo->add_do_method(animation.ptr(), "transform_track_insert_key", p_track, p_ofs, loc, rot, scale);
+		undo_redo->add_undo_method(animation.ptr(), "track_remove_key_at_position", p_track, p_ofs);
+		undo_redo->commit_action();
+
+	} break;
 	case Animation::TYPE_VALUE: {
 		NodePath bp;
 		Variant value;
