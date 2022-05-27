@@ -24,6 +24,7 @@ class ViewPanner;
 class TrackKeyEdit;
 class MultiTrackKeyEdit;
 class TrackEditPlugin;
+class Spatial;
 
 class TrackEditor : public VBoxContainer {
 	GDCLASS(TrackEditor, VBoxContainer);

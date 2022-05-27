@@ -71,10 +71,10 @@ class TrackEdit : public Control {
 protected:
 	static void _bind_methods();
 	void _notification(int p_what);
-
+	
+public:
 	void _gui_input(const Ref<InputEvent>& p_event);
 
-public:
 	virtual Variant get_drag_data(const Point2& p_point) override;
 	virtual bool can_drop_data(const Point2& p_point, const Variant& p_data) const override;
 	virtual void drop_data(const Point2& p_point, const Variant& p_data) override;

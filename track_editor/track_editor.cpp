@@ -8,6 +8,7 @@
 #include "scene/gui/scroll_container.h"
 #include "scene/gui/panel_container.h"
 #include "scene/gui/separator.h"
+#include "scene/3d/spatial.h"
 
 #include "../consts.h"
 #include "../icons_cache.h"
