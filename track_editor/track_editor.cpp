@@ -12,10 +12,10 @@
 #include "../consts.h"
 #include "../icons_cache.h"
 #include "player_editor_control.h"
-#include "track_edit.h"
+#include "../track_edit_plugins/track_edit.h"
 #include "timeline_edit.h"
 #include "../track_edit_plugins/track_edit_default_plugin.h"
-#include "track_edit_plugin.h"
+#include "../track_edit_plugins/track_edit_plugin.h"
 #include "track_key_edit.h"
 #include "view_panner.h"
 

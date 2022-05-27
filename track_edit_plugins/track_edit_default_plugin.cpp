@@ -10,6 +10,16 @@
 #include <scene/3d/sprite_3d.h>
 #include <scene/animation/animation_player.h>
 
+#include "track_edit.h"
+#include "track_edit_audio.h"
+#include "track_edit_bool.h"
+#include "track_edit_color.h"
+#include "track_edit_type_animation.h"
+#include "track_edit_type_audio.h"
+#include "track_edit_type_sprite_frame.h"
+#include "track_edit_type_sub_anim.h"
+#include "track_edit_volume_db.h"
+
 #include "../consts.h"
 #include "../icons_cache.h"
 

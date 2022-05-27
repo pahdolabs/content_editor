@@ -4,7 +4,7 @@
 
 #include "../consts.h"
 #include "../icons_cache.h"
-#include "track_edit.h"
+#include "../track_edit_plugins/track_edit.h"
 #include "track_editor.h"
 #include "view_panner.h"
 

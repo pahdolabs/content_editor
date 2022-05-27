@@ -3,6 +3,8 @@
 
 #include "track_edit_plugin.h"
 
+class TrackEdit;
+
 class TrackEditDefaultPlugin : public TrackEditPlugin {
 	GDCLASS(TrackEditDefaultPlugin, TrackEditPlugin);
 
