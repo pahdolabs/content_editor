@@ -85,9 +85,11 @@ public:
 	virtual Rect2 get_key_rect(int p_index, float p_pixels_sec);
 	virtual bool is_key_selectable_by_distance() const;
 	virtual void draw_key_link(int p_index, float p_pixels_sec, int p_x, int p_next_x, int p_clip_left, int p_clip_right);
+	virtual void draw_last_key_link(int p_index, float p_pixels_sec, int p_x, int p_clip_left, int p_clip_right);
 	virtual void draw_key(int p_index, float p_pixels_sec, int p_x, bool p_selected, int p_clip_left, int p_clip_right);
 	virtual void draw_bg(int p_clip_left, int p_clip_right);
 	virtual void draw_fg(int p_clip_left, int p_clip_right);
+	virtual void draw_names_and_icons(int limit, Ref<Font> font, Color color, int hsep, Color linecolor);
 
 	//helper
 	void draw_texture_region_clipped(const Ref<Texture>& p_texture, const Rect2& p_rect, const Rect2& p_region);

@@ -41,7 +41,7 @@ void TrackEditor::set_animation(const Ref<Animation>& p_anim) {
 	}
 	animation = p_anim;
 	timeline->set_animation(p_anim);
-	
+
 	_update_tracks();
 
 	if (animation.is_valid()) {
@@ -55,7 +55,7 @@ void TrackEditor::set_animation(const Ref<Animation>& p_anim) {
 		//step->set_read_only(false);
 		snap->set_disabled(false);
 		snap_mode->set_disabled(false);
-		
+
 		imported_anim_warning->hide();
 		bool import_warning_done = false;
 		bool bezier_done = false;
@@ -971,6 +971,18 @@ void TrackEditor::_update_tracks() {
 			}
 		}
 
+		if (animation->track_get_type(i) == Animation::TYPE_METHOD) {
+			StringName method_name = animation->method_track_get_name(i, 0);
+			if (method_name == "add_tag" || method_name == "remove_tag") {
+				for (int j = 0; j < track_edit_plugins.size(); ++j) {
+					track_edit = track_edit_plugins.write[j]->create_tag_track_edit();
+					if (track_edit) {
+						break;
+					}
+				}
+			}
+		}
+
 		if (track_edit == nullptr) {
 			// No valid plugin_found.
 			track_edit = memnew(TrackEdit);
@@ -1012,8 +1024,8 @@ void TrackEditor::_update_tracks() {
 
 		//}
 		//else {
-			track_edit->set_in_group(false);
-			track_vbox->add_child(track_edit);
+		track_edit->set_in_group(false);
+		track_vbox->add_child(track_edit);
 		//}
 
 		track_edit->set_undo_redo(undo_redo);
@@ -1137,7 +1149,7 @@ void TrackEditor::_notification(int p_what) {
 		//panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/animation_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EditorSettings::get_singleton()->get("editors/panning/simple_panning")));
 	}
 	case NOTIFICATION_THEME_CHANGED: {
-		IconsCache *icons = IconsCache::get_singleton();
+		IconsCache* icons = IconsCache::get_singleton();
 		zoom_icon->set_texture(icons->get_icon("Zoom"));
 		snap->set_icon(icons->get_icon("Snap"));
 		view_group->set_icon(icons->get_icon(view_group->is_pressed() ? "AnimationTrackList" : "AnimationTrackGroup"));
@@ -1203,14 +1215,14 @@ void TrackEditor::_new_track_node_selected(NodePath p_path) {
 	Node* node = get_node(p_path);
 	ERR_FAIL_COND(!node);
 	NodePath path_to = root->get_path_to(node);
-	
+
 	switch (adding_track_type) {
 	case Animation::TYPE_VALUE: {
 		adding_track_path = path_to;
 		//prop_selector->set_type_filter(Vector<Variant::Type>());
 		//prop_selector->select_property_from_instance(node);
 	} break;
-	
+
 	case Animation::TYPE_AUDIO: {
 		if (!node->is_class("AudioStreamPlayer") && !node->is_class("AudioStreamPlayer2D") && !node->is_class("AudioStreamPlayer3D")) {
 			//EditorNode::get_singleton()->show_warning(TTR("Audio tracks can only point to nodes of type:\n-AudioStreamPlayer\n-AudioStreamPlayer2D\n-AudioStreamPlayer3D"));
@@ -1273,7 +1285,7 @@ void TrackEditor::_new_track_property_selected(String p_name) {
 				h.type == Variant::RECT2 ||
 				h.type == Variant::VECTOR3 ||
 				h.type == Variant::AABB ||
-				h.type == Variant::QUAT||
+				h.type == Variant::QUAT ||
 				h.type == Variant::COLOR ||
 				h.type == Variant::PLANE ||
 				h.type == Variant::TRANSFORM2D ||
@@ -1883,7 +1895,7 @@ void TrackEditor::_anim_duplicate_keys(bool transpose) {
 		// Reselect duplicated.
 
 		Map<SelectedKey, KeyInfo> new_selection;
-		for (List<Pair<int, float>>::Element *E = new_selection_values.front(); E; E = E->next()) {
+		for (List<Pair<int, float>>::Element* E = new_selection_values.front(); E; E = E->next()) {
 			int track = E->get().first;
 			float time = E->get().second;
 
@@ -1965,7 +1977,7 @@ void TrackEditor::goto_next_step(bool p_from_mouse_event) {
 
 void TrackEditor::_edit_menu_pressed(int p_option) {
 	last_menu_track_opt = p_option;
-	IconsCache *icons = IconsCache::get_singleton();
+	IconsCache* icons = IconsCache::get_singleton();
 	switch (p_option) {
 	case EDIT_COPY_TRACKS: {
 		track_copy_select->clear();
@@ -2399,7 +2411,7 @@ void TrackEditor::_selection_changed() {
 		for (int i = 0; i < track_edits.size(); i++) {
 			track_edits[i]->update();
 		}
-		
+
 	}
 }
 
@@ -2468,7 +2480,7 @@ void TrackEditor::_bind_methods() {
 	ClassDB::bind_method("_key_selected", &TrackEditor::_key_selected); // Still used by some connect_compat.
 	ClassDB::bind_method("_key_deselected", &TrackEditor::_key_deselected); // Still used by some connect_compat.
 	ClassDB::bind_method("_clear_selection", &TrackEditor::_clear_selection); // Still used by some connect_compat.
-	
+
 	ClassDB::bind_method(D_METHOD("has_keying"), &TrackEditor::has_keying);
 
 	ClassDB::bind_method(D_METHOD("_animation_changed"), &TrackEditor::_animation_changed);
@@ -2712,7 +2724,7 @@ TrackEditor::TrackEditor() {
 	zoom->set_v_size_flags(SIZE_SHRINK_CENTER);
 	bottom_hb->add_child(zoom);
 	timeline->set_zoom(zoom);
-	
+
 	insert_confirm = memnew(ConfirmationDialog);
 	add_child(insert_confirm);
 	insert_confirm->connect("confirmed", this, "_confirm_insert_list");
@@ -2840,7 +2852,7 @@ TrackEditor::TrackEditor() {
 }
 
 TrackEditor::~TrackEditor() {
-	if(undo_redo) {
+	if (undo_redo) {
 		memdelete(undo_redo);
 	}
 	if (key_edit) {

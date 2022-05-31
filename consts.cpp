@@ -6,3 +6,4 @@ const Color Colors::DARK_COLOR_2 = BASE_COLOR.linear_interpolate(Color(0, 0, 0),
 const Color Colors::ACCENT_COLOR = Color(0.41, 0.61, 0.91);
 const Color Colors::BOX_SELECTION_FILL_COLOR(ACCENT_COLOR * Color(1, 1, 1, 0.3));
 const Color Colors::BOX_SELECTION_STROKE_COLOR(ACCENT_COLOR * Color(1, 1, 1, 0.8));
+const Color Colors::TAG_TIMELINE_COLOR(Color(0.7, 0.7, 0.7));

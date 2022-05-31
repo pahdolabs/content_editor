@@ -42,3 +42,10 @@ TrackEdit* TrackEditPlugin::create_animation_track_edit(Object* p_object) {
 	}
 	return nullptr;
 }
+
+TrackEdit* TrackEditPlugin::create_tag_track_edit() {
+	if(get_script_instance()) {
+		return Object::cast_to<TrackEdit>(get_script_instance()->call("create_tag_track_edit").operator Object * ());
+	}
+	return nullptr;
+}

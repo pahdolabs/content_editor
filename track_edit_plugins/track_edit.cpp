@@ -11,6 +11,88 @@
 #include "../track_editor/timeline_edit.h"
 #include "../track_editor/track_editor.h"
 
+void TrackEdit::draw_names_and_icons(int limit, Ref<Font> font, Color color, int hsep, Color linecolor) {
+	IconsCache* icons = IconsCache::get_singleton();
+	Ref<Texture> check = animation->track_is_enabled(track) ? icons->get_icon("checked") : icons->get_icon("unchecked");
+
+	int ofs = in_group ? (check != nullptr ? check->get_width() : 0) : 0; // Not the best reference for margin but..
+
+	check_rect = Rect2(Point2(ofs, int(get_size().height - (check != nullptr ? check->get_height() : 0)) / 2), (check != nullptr ? check->get_size() : Size2(0, 0)));
+	if (check != nullptr) {
+		draw_texture(check, check_rect.position);
+
+		ofs += check->get_width() + hsep;
+	}
+	else {
+		ofs += hsep;
+	}
+
+	Ref<Texture> type_icon = _get_key_type_icon();
+	if (type_icon != nullptr) {
+		draw_texture(type_icon, Point2(ofs, int(get_size().height - type_icon->get_height()) / 2));
+		ofs += type_icon->get_width() + hsep;
+	}
+	else {
+		ofs += hsep;
+	}
+
+	NodePath path = animation->track_get_path(track);
+	Node* node = nullptr;
+	if (root && root->has_node(path)) {
+		node = root->get_node(path);
+	}
+
+	String text;
+	Color text_color = color;
+	if (node) {
+		text_color = Colors::ACCENT_COLOR;
+	}
+
+	if (in_group) {
+		if (animation->track_get_type(track) == Animation::TYPE_METHOD) {
+			text = TTR("Functions:");
+		}
+		else if (animation->track_get_type(track) == Animation::TYPE_AUDIO) {
+			text = TTR("Audio Clips:");
+		}
+		else if (animation->track_get_type(track) == Animation::TYPE_ANIMATION) {
+			text = TTR("Anim Clips:");
+		}
+		else {
+			text += path.get_concatenated_subnames();
+		}
+		text_color.a *= 0.7;
+	}
+	else if (node) {
+		Ref<Texture> icon = icons->get_icon("Node");
+
+		if (icon != nullptr) {
+			draw_texture(icon, Point2(ofs, int(get_size().height - icon->get_height()) / 2));
+		}
+		icon_cache = icon;
+
+		text = String() + node->get_name() + ":" + path.get_concatenated_subnames();
+		ofs += hsep;
+		ofs += icon != nullptr ? icon->get_width() : 0;
+
+	}
+	else {
+		icon_cache = type_icon;
+
+		text = path;
+	}
+
+	path_cache = text;
+
+	path_rect = Rect2(ofs, 0, limit - ofs - hsep, get_size().height);
+
+	Vector2 string_pos = Point2(ofs, (get_size().height - font->get_height()) / 2 + font->get_ascent());
+	string_pos = string_pos.floor();
+	draw_string(font, string_pos, text, text_color);
+
+	draw_line(Point2(limit, 0), Point2(limit, get_size().height), linecolor, Math::round(1.0));
+}
+
 void TrackEdit::_notification(int p_what) {
 	switch (p_what) {
 	case NOTIFICATION_THEME_CHANGED: {
@@ -58,91 +140,12 @@ void TrackEdit::_notification(int p_what) {
 
 		// NAMES AND ICONS //
 
-		{
-			Ref<Texture> check = animation->track_is_enabled(track) ? icons->get_icon("checked") : icons->get_icon("unchecked");
-
-			int ofs = in_group ? (check != nullptr ? check->get_width() : 0) : 0; // Not the best reference for margin but..
-
-			check_rect = Rect2(Point2(ofs, int(get_size().height - (check != nullptr ? check->get_height() : 0)) / 2), (check != nullptr ? check->get_size() : Size2(0, 0)));
-			if (check != nullptr) {
-				draw_texture(check, check_rect.position);
-
-				ofs += check->get_width() + hsep;
-			}
-			else {
-				ofs += hsep;
-			}
-
-			Ref<Texture> type_icon = _get_key_type_icon();
-			if (type_icon != nullptr) {
-				draw_texture(type_icon, Point2(ofs, int(get_size().height - type_icon->get_height()) / 2));
-				ofs += type_icon->get_width() + hsep;
-			}
-			else {
-				ofs += hsep;
-			}
-
-			NodePath path = animation->track_get_path(track);
-			Node* node = nullptr;
-			if (root && root->has_node(path)) {
-				node = root->get_node(path);
-			}
-
-			String text;
-			Color text_color = color;
-			if (node) {
-				text_color = Colors::ACCENT_COLOR;
-			}
-
-			if (in_group) {
-				if (animation->track_get_type(track) == Animation::TYPE_METHOD) {
-					text = TTR("Functions:");
-				}
-				else if (animation->track_get_type(track) == Animation::TYPE_AUDIO) {
-					text = TTR("Audio Clips:");
-				}
-				else if (animation->track_get_type(track) == Animation::TYPE_ANIMATION) {
-					text = TTR("Anim Clips:");
-				}
-				else {
-					text += path.get_concatenated_subnames();
-				}
-				text_color.a *= 0.7;
-			}
-			else if (node) {
-				Ref<Texture> icon = icons->get_icon("Node");
-
-				if (icon != nullptr) {
-					draw_texture(icon, Point2(ofs, int(get_size().height - icon->get_height()) / 2));
-				}
-				icon_cache = icon;
-
-				text = String() + node->get_name() + ":" + path.get_concatenated_subnames();
-				ofs += hsep;
-				ofs += icon != nullptr ? icon->get_width() : 0;
-
-			}
-			else {
-				icon_cache = type_icon;
-
-				text = path;
-			}
-
-			path_cache = text;
-
-			path_rect = Rect2(ofs, 0, limit - ofs - hsep, get_size().height);
-
-			Vector2 string_pos = Point2(ofs, (get_size().height - font->get_height()) / 2 + font->get_ascent());
-			string_pos = string_pos.floor();
-			draw_string(font, string_pos, text, text_color);
-
-			draw_line(Point2(limit, 0), Point2(limit, get_size().height), linecolor, Math::round(1.0));
-		}
+		draw_names_and_icons(limit, font, color, hsep, linecolor);
 
 		// KEYFRAMES //
 
 		draw_bg(limit, get_size().width - timeline->get_buttons_width());
-
+		
 		{
 			float scale = timeline->get_zoom_scale();
 			int limit_end = get_size().width - timeline->get_buttons_width();
@@ -161,6 +164,9 @@ void TrackEdit::_notification(int p_what) {
 					offset_n = offset_n * scale + limit;
 
 					draw_key_link(i, scale, int(offset), int(offset_n), limit, limit_end);
+				}
+				else {
+					draw_last_key_link(i, scale, int(offset), limit, limit_end);
 				}
 
 				draw_key(i, scale, int(offset), editor->is_key_selected(track, i), limit, limit_end);
@@ -271,6 +277,10 @@ void TrackEdit::draw_key_link(int p_index, float p_pixels_sec, int p_x, int p_ne
 	int to_x = MIN(p_next_x, p_clip_right);
 
 	draw_line(Point2(from_x + 1, get_size().height / 2), Point2(to_x, get_size().height / 2), color, Math::round(2 * 1.0));
+}
+
+void TrackEdit::draw_last_key_link(int p_index, float p_pixels_sec, int p_x, int p_clip_left, int p_clip_right) {
+	return;
 }
 
 void TrackEdit::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_selected, int p_clip_left, int p_clip_right) {

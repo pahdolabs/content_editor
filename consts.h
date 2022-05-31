@@ -11,6 +11,7 @@ public:
 	static const Color ACCENT_COLOR;
 	static const Color BOX_SELECTION_FILL_COLOR;
 	static const Color BOX_SELECTION_STROKE_COLOR;
+	static const Color TAG_TIMELINE_COLOR;
 };
 
 #endif
