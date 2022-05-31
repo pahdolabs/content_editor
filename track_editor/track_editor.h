@@ -46,6 +46,8 @@ class TrackEditor : public VBoxContainer {
 	Button* snap = nullptr;
 	OptionButton* snap_mode = nullptr;
 
+	Map<TrackEdit*, Vector<int>> headers;
+
 	Button* imported_anim_warning = nullptr;
 	void _show_imported_anim_warning();
 
@@ -231,6 +233,8 @@ class TrackEditor : public VBoxContainer {
 	void _pick_track_filter_input(const Ref<InputEvent>& p_ie);
 
 	void _icons_cache_changed();
+
+	void add_track_edit(TrackEdit* p_track_edit, int p_track, bool p_is_header);
 
 protected:
 	static void _bind_methods();
