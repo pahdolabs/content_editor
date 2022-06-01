@@ -10,7 +10,6 @@ class IconsCache : public Object {
 
 	static IconsCache *singleton;
 
-
 protected:
 	static void _bind_methods();
 

@@ -4,6 +4,7 @@
 #include "scene/animation/animation_player.h"
 #include "scene/main/viewport.h"
 #include "modules/svg/image_loader_svg.h"
+#include "core/method_bind_ext.gen.inc"
 
 #include "../consts.h"
 #include "../icons_cache.h"
@@ -11,7 +12,10 @@
 #include "../track_editor/timeline_edit.h"
 #include "../track_editor/track_editor.h"
 
-void TrackEdit::draw_names_and_icons(int limit, Ref<Font> font, Color color, int hsep, Color linecolor) {
+void TrackEdit::draw_names_and_icons(int limit, const Ref<Font> p_font, Color color, int hsep, Color linecolor) {
+	
+	ERR_FAIL_COND(p_font.is_null());
+	
 	IconsCache* icons = IconsCache::get_singleton();
 	Ref<Texture> check = animation->track_is_enabled(track) ? icons->get_icon("checked") : icons->get_icon("unchecked");
 
@@ -86,9 +90,9 @@ void TrackEdit::draw_names_and_icons(int limit, Ref<Font> font, Color color, int
 
 	path_rect = Rect2(ofs, 0, limit - ofs - hsep, get_size().height);
 
-	Vector2 string_pos = Point2(ofs, (get_size().height - font->get_height()) / 2 + font->get_ascent());
+	Vector2 string_pos = Point2(ofs, (get_size().height - p_font->get_height()) / 2 + p_font->get_ascent());
 	string_pos = string_pos.floor();
-	draw_string(font, string_pos, text, text_color);
+	draw_string(p_font, string_pos, text, text_color);
 
 	draw_line(Point2(limit, 0), Point2(limit, get_size().height), linecolor, Math::round(1.0));
 }
@@ -140,12 +144,12 @@ void TrackEdit::_notification(int p_what) {
 
 		// NAMES AND ICONS //
 
-		draw_names_and_icons(limit, font, color, hsep, linecolor);
+		call(_draw_names_and_icons, limit, font, color, hsep, linecolor);
 
 		// KEYFRAMES //
 
-		draw_bg(limit, get_size().width - timeline->get_buttons_width());
-		
+		call(_draw_bg, limit, get_size().width - timeline->get_buttons_width());
+
 		{
 			float scale = timeline->get_zoom_scale();
 			int limit_end = get_size().width - timeline->get_buttons_width();
@@ -163,18 +167,61 @@ void TrackEdit::_notification(int p_what) {
 					}
 					offset_n = offset_n * scale + limit;
 
-					draw_key_link(i, scale, int(offset), int(offset_n), limit, limit_end);
+
+					Variant args[6] = {
+						i,
+						scale,
+						int(offset),
+						int(offset_n),
+						limit,
+						limit_end
+					};
+
+					Variant* argptrs[6] = {
+						&args[0],
+						&args[1],
+						&args[2],
+						&args[3],
+						&args[4],
+						&args[5]
+					};
+					Variant::CallError ce;
+					call(_draw_key_link, (const Variant**)&argptrs, 6, ce);
+
 				}
 				else {
-					draw_last_key_link(i, scale, int(offset), limit, limit_end);
+					call(_draw_last_key_link, i, scale, int(offset), limit, limit_end);
 				}
 
-				draw_key(i, scale, int(offset), editor->is_key_selected(track, i), limit, limit_end);
+				if (get_script_instance()) {
+					Variant args[6] = {
+						i,
+						scale,
+						int(offset),
+						editor->is_key_selected(track, i),
+						limit,
+						limit_end
+					};
+
+					Variant* argptrs[6] = {
+						&args[0],
+						&args[1],
+						&args[2],
+						&args[3],
+						&args[4],
+						&args[5]
+					};
+					Variant::CallError ce;
+					get_script_instance()->call(_draw_key, (const Variant**)&argptrs, 6, ce);
+				}
+				else {
+					draw_key(i, scale, int(offset), editor->is_key_selected(track, i), limit, limit_end);
+				}
 			}
 		}
 
-		draw_fg(limit, get_size().width - timeline->get_buttons_width());
-
+		call(_draw_fg, limit, get_size().width - timeline->get_buttons_width());
+		
 		// BUTTONS //
 
 		{
@@ -438,7 +485,8 @@ Size2 TrackEdit::get_minimum_size() const {
 	int separation = get_constant("vseparation", "ItemList");
 
 	int max_h = MAX((texture != nullptr ? texture->get_height() : 0), font->get_height());
-	max_h = MAX(max_h, get_key_height());
+	int key_height = const_cast<TrackEdit*>(this)->call(_get_key_height);
+	max_h = MAX(max_h, key_height);
 
 	return Vector2(1, max_h + separation);
 }
@@ -559,13 +607,14 @@ String TrackEdit::get_tooltip(const Point2& p_pos) const {
 
 		// Select should happen in the opposite order of drawing for more accurate overlap select.
 		for (int i = animation->track_get_key_count(track) - 1; i >= 0; i--) {
-			Rect2 rect = const_cast<TrackEdit*>(this)->get_key_rect(i, timeline->get_zoom_scale());
+			Rect2 rect = const_cast<TrackEdit*>(this)->call(_get_key_rect, i, timeline->get_zoom_scale());
 			float offset = animation->track_get_key_time(track, i) - timeline->get_value();
 			offset = offset * timeline->get_zoom_scale() + limit;
 			rect.position.x += offset;
 
 			if (rect.has_point(p_pos)) {
-				if (const_cast<TrackEdit*>(this)->is_key_selectable_by_distance()) {
+				bool key_is_selectable_by_distance = const_cast<TrackEdit*>(this)->call(_is_key_selectable_by_distance);
+				if (key_is_selectable_by_distance) {
 					float distance = ABS(offset - p_pos.x);
 					if (key_idx == -1 || distance < key_distance) {
 						key_idx = i;
@@ -722,13 +771,14 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 
 			// Select should happen in the opposite order of drawing for more accurate overlap select.
 			for (int i = animation->track_get_key_count(track) - 1; i >= 0; i--) {
-				Rect2 rect = get_key_rect(i, scale);
+				Rect2 rect = call(_get_key_rect, i, scale);
 				float offset = animation->track_get_key_time(track, i) - timeline->get_value();
 				offset = offset * scale + limit;
 				rect.position.x += offset;
 
 				if (rect.has_point(pos)) {
-					if (is_key_selectable_by_distance()) {
+					bool key_is_selectable_by_distance = call(_is_key_selectable_by_distance);
+					if (key_is_selectable_by_distance) {
 						float distance = ABS(offset - pos.x);
 						if (key_idx == -1 || distance < key_distance) {
 							key_idx = i;
@@ -849,13 +899,14 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 
 			// Hovering should happen in the opposite order of drawing for more accurate overlap hovering.
 			for (int i = animation->track_get_key_count(track) - 1; i >= 0; i--) {
-				Rect2 rect = get_key_rect(i, scale);
+				Rect2 rect = call(_get_key_rect, i, scale);
 				float offset = animation->track_get_key_time(track, i) - timeline->get_value();
 				offset = offset * scale + limit;
 				rect.position.x += offset;
 
 				if (rect.has_point(pos)) {
-					if (is_key_selectable_by_distance()) {
+					bool key_is_selectable_by_distance = call(_is_key_selectable_by_distance);
+					if (key_is_selectable_by_distance) {
 						const float distance = ABS(offset - pos.x);
 						if (key_idx == -1 || distance < key_distance) {
 							key_idx = i;
@@ -1015,7 +1066,7 @@ void TrackEdit::append_to_selection(const Rect2& p_box, bool p_deselection) {
 
 	// Select should happen in the opposite order of drawing for more accurate overlap select.
 	for (int i = animation->track_get_key_count(track) - 1; i >= 0; i--) {
-		Rect2 rect = const_cast<TrackEdit*>(this)->get_key_rect(i, timeline->get_zoom_scale());
+		Rect2 rect = call(_get_key_rect, i, timeline->get_zoom_scale());
 		float offset = animation->track_get_key_time(track, i) - timeline->get_value();
 		offset = offset * timeline->get_zoom_scale() + timeline->get_name_limit();
 		rect.position.x += offset;
@@ -1036,7 +1087,26 @@ void TrackEdit::_icons_cache_changed() {
 	update();
 }
 
+bool TrackEdit::does_track_belong_to_header(int p_track) {
+	return false;
+}
+
 void TrackEdit::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("does_track_belong_to_header", "track"), &TrackEdit::does_track_belong_to_header);
+	ClassDB::bind_method("get_animation", &TrackEdit::get_animation);
+	ClassDB::bind_method("get_track", &TrackEdit::get_track);
+	ClassDB::bind_method(D_METHOD("draw_rect_clipped", "rect", "color", "filled"), &TrackEdit::draw_rect_clipped);
+	
+	ClassDB::bind_method("get_key_height", &TrackEdit::get_key_height);
+	ClassDB::bind_method(D_METHOD("get_key_rect", "index", "pixels_sec"), &TrackEdit::get_key_rect);
+	ClassDB::bind_method("is_key_selectable_by_distance", &TrackEdit::is_key_selectable_by_distance);
+	ClassDB::bind_method(D_METHOD("draw_key_link", "index", "pixels_sec", "x", "next_x", "clip_left", "clip_right"), &TrackEdit::draw_key_link);
+	ClassDB::bind_method(D_METHOD("draw_last_key_link", "index", "pixels_sec", "x", "clip_left", "clip_right"), &TrackEdit::draw_last_key_link);
+	ClassDB::bind_method(D_METHOD("draw_key", "index", "pixels_sec", "x", "selected", "clip_left", "clip_right"), &TrackEdit::draw_key);
+	ClassDB::bind_method(D_METHOD("draw_bg", "clip_left", "clip_right"), &TrackEdit::draw_bg);
+	ClassDB::bind_method(D_METHOD("draw_fg", "clip_left", "clip_right"), &TrackEdit::draw_fg);
+	ClassDB::bind_method(D_METHOD("draw_names_and_icons", "limit", "font", "color", "hsep", "linecolor"), &TrackEdit::draw_names_and_icons);
+
 	ClassDB::bind_method(D_METHOD("_zoom_changed"), &TrackEdit::_zoom_changed);
 	ClassDB::bind_method(D_METHOD("_menu_selected"), &TrackEdit::_menu_selected);
 	ClassDB::bind_method(D_METHOD("_play_position_draw"), &TrackEdit::_play_position_draw);

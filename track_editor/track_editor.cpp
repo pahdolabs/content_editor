@@ -19,7 +19,6 @@
 #include "../track_edit_plugins/track_edit_plugin.h"
 #include "track_key_edit.h"
 #include "view_panner.h"
-#include "content_editor/track_edit_plugins/track_edit_type_tags_header.h"
 
 void TrackEditor::add_track_edit_plugin(const Ref<TrackEditPlugin>& p_plugin) {
 	if (track_edit_plugins.find(p_plugin) != -1) {
@@ -892,41 +891,39 @@ void TrackEditor::_update_tracks() {
 		return;
 	}
 
+	Vector<int> completed_tracks;
+
 	Map<String, VBoxContainer*> group_sort;
 
 	bool use_grouping = !view_group->is_pressed();
 	bool use_filter = selected_filter->is_pressed();
 
-	//TrackEditTypeTagsHeader* tags_header = memnew(TrackEditTypeTagsHeader);
-	//headers[tags_header] = Vector<int>();
-
-	add_track_edit(memnew(TrackEditTypeTagsHeader), 0, true);
-
-	Vector<int> created_indices;
-
-	for (int i = 0; i < animation->get_track_count(); i++) {
-		TrackEdit* track_edit = nullptr;
-		if (animation->track_get_type(i) == Animation::TYPE_METHOD) {
-			StringName method_name = animation->method_track_get_name(i, 0);
-			if (method_name == "add_tag" || method_name == "remove_tag") {
-				for (int j = 0; j < track_edit_plugins.size(); ++j) {
-					track_edit = track_edit_plugins.write[j]->create_tag_track_edit();
-					if (track_edit) {
-						created_indices.push_back(i);
-						//headers[tags_header].push_back(i);
-						break;
-					}
+	for (Map<Ref<Script>, Ref<Script>>::Element* E = track_edit_groups.front(); E; E = E->next()) {
+		Ref<Script> track_header_class = E->key();
+		TrackEdit* track_edit_header = memnew(TrackEdit);
+		ScriptInstance* track_edit_header_script_instance = track_header_class->instance_create(track_edit_header);
+		track_edit_header->set_script_instance(track_edit_header_script_instance);
+		add_track_edit(track_edit_header, 0);
+		
+		for (int i = 0; i < animation->get_track_count(); i++) {
+			const bool track_belongs_to_header = track_edit_header->call(_does_track_belong_to_header, i);
+			if (track_belongs_to_header) {
+				Ref<Script> track_edit_script = E->value();
+				TrackEdit *track_edit = memnew(TrackEdit);
+				ScriptInstance* track_edit_script_instance = track_edit_script->instance_create(track_edit);
+				
+				if (track_edit_script_instance) {
+					track_edit->set_script_instance(track_edit_script_instance);
+					add_track_edit(track_edit, i);
+					completed_tracks.push_back(i);
 				}
 			}
 		}
-
-		if (track_edit) {
-			add_track_edit(track_edit, i, false);
-		}
 	}
 
+
 	for (int i = 0; i < animation->get_track_count(); i++) {
-		if (created_indices.find(i) > -1) {
+		if (completed_tracks.find(i) > -1) {
 			continue;
 		}
 		TrackEdit* track_edit = nullptr;
@@ -1008,7 +1005,7 @@ void TrackEditor::_update_tracks() {
 			track_edit = memnew(TrackEdit);
 		}
 
-		add_track_edit(track_edit, i, false);
+		add_track_edit(track_edit, i);
 		if (selected == i) {
 			track_edit->grab_focus();
 		}
@@ -1017,7 +1014,11 @@ void TrackEditor::_update_tracks() {
 	}
 }
 
-void TrackEditor::add_track_edit(TrackEdit* p_track_edit, int p_track, bool p_is_header) {
+void TrackEditor::set_track_edit_type(const Ref<Script> p_header_class, const Ref<Script> p_track_edit_class) {
+	track_edit_groups[p_header_class] = p_track_edit_class;
+}
+
+void TrackEditor::add_track_edit(TrackEdit* p_track_edit, int p_track) {
 	track_edits.push_back(p_track_edit);
 
 	p_track_edit->set_in_group(false);
@@ -1031,21 +1032,21 @@ void TrackEditor::add_track_edit(TrackEdit* p_track_edit, int p_track, bool p_is
 	p_track_edit->set_editor(this);
 
 	p_track_edit->connect("timeline_changed", this, "_timeline_changed");
-	if (!p_is_header) {
-		p_track_edit->connect("remove_request", this, "_track_remove_request", varray(), CONNECT_DEFERRED);
-		p_track_edit->connect("dropped", this, "_dropped_track", varray(), CONNECT_DEFERRED);
-		p_track_edit->connect("insert_key", this, "_insert_key_from_track", varray(p_track), CONNECT_DEFERRED);
-		p_track_edit->connect("select_key", this, "_key_selected", varray(p_track), CONNECT_DEFERRED);
-		p_track_edit->connect("deselect_key", this, "_key_deselected", varray(p_track), CONNECT_DEFERRED);
-		p_track_edit->connect("move_selection_begin", this, "_move_selection_begin");
-		p_track_edit->connect("move_selection", this, "_move_selection");
-		p_track_edit->connect("move_selection_commit", this, "_move_selection_commit");
-		p_track_edit->connect("move_selection_cancel", this, "_move_selection_cancel");
-		p_track_edit->connect("duplicate_request", this, "_edit_menu_pressed", varray(EDIT_DUPLICATE_SELECTION), CONNECT_DEFERRED);
-		p_track_edit->connect("duplicate_transpose_request", this, "_edit_menu_pressed", varray(EDIT_DUPLICATE_TRANSPOSED), CONNECT_DEFERRED);
-		p_track_edit->connect("create_reset_request", this, "_edit_menu_pressed", varray(EDIT_ADD_RESET_KEY), CONNECT_DEFERRED);
-		p_track_edit->connect("delete_request", this, "_edit_menu_pressed", varray(EDIT_DELETE_SELECTION), CONNECT_DEFERRED);
-	}
+
+	p_track_edit->connect("remove_request", this, "_track_remove_request", varray(), CONNECT_DEFERRED);
+	p_track_edit->connect("dropped", this, "_dropped_track", varray(), CONNECT_DEFERRED);
+	p_track_edit->connect("insert_key", this, "_insert_key_from_track", varray(p_track), CONNECT_DEFERRED);
+	p_track_edit->connect("select_key", this, "_key_selected", varray(p_track), CONNECT_DEFERRED);
+	p_track_edit->connect("deselect_key", this, "_key_deselected", varray(p_track), CONNECT_DEFERRED);
+	p_track_edit->connect("move_selection_begin", this, "_move_selection_begin");
+	p_track_edit->connect("move_selection", this, "_move_selection");
+	p_track_edit->connect("move_selection_commit", this, "_move_selection_commit");
+	p_track_edit->connect("move_selection_cancel", this, "_move_selection_cancel");
+	p_track_edit->connect("duplicate_request", this, "_edit_menu_pressed", varray(EDIT_DUPLICATE_SELECTION), CONNECT_DEFERRED);
+	p_track_edit->connect("duplicate_transpose_request", this, "_edit_menu_pressed", varray(EDIT_DUPLICATE_TRANSPOSED), CONNECT_DEFERRED);
+	p_track_edit->connect("create_reset_request", this, "_edit_menu_pressed", varray(EDIT_ADD_RESET_KEY), CONNECT_DEFERRED);
+	p_track_edit->connect("delete_request", this, "_edit_menu_pressed", varray(EDIT_DELETE_SELECTION), CONNECT_DEFERRED);
+
 
 }
 
@@ -2463,6 +2464,8 @@ void TrackEditor::_select_all_tracks_for_copy() {
 }
 
 void TrackEditor::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_track_edit_type", "header", "track_edit_class"), &TrackEditor::set_track_edit_type);
+
 	ClassDB::bind_method("_animation_update", &TrackEditor::_animation_update);
 	ClassDB::bind_method("_track_grab_focus", &TrackEditor::_track_grab_focus);
 	ClassDB::bind_method("_update_tracks", &TrackEditor::_update_tracks);

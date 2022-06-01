@@ -1,6 +1,7 @@
 #ifndef TRACK_EDITOR_H
 #define TRACK_EDITOR_H
 
+#include "modules/gdscript/gdscript.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/check_box.h"
 #include "scene/gui/dialogs.h"
@@ -46,13 +47,14 @@ class TrackEditor : public VBoxContainer {
 	Button* snap = nullptr;
 	OptionButton* snap_mode = nullptr;
 
-	Map<TrackEdit*, Vector<int>> headers;
+	Map<Ref<Script>, Ref<Script>> track_edit_groups;
+
+	Vector<TrackEdit*> track_edits;
 
 	Button* imported_anim_warning = nullptr;
 	void _show_imported_anim_warning();
 
 	void _snap_mode_changed(int p_mode);
-	Vector<TrackEdit*> track_edits;
 
 	bool animation_changing_awaiting_update = false;
 	void _animation_update();
@@ -234,7 +236,9 @@ class TrackEditor : public VBoxContainer {
 
 	void _icons_cache_changed();
 
-	void add_track_edit(TrackEdit* p_track_edit, int p_track, bool p_is_header);
+	void add_track_edit(TrackEdit *p_track_edit, int p_track);
+
+	const StringName _does_track_belong_to_header = "does_track_belong_to_header";
 
 protected:
 	static void _bind_methods();
@@ -263,6 +267,8 @@ public:
 
 	void add_track_edit_plugin(const Ref<TrackEditPlugin>& p_plugin);
 	void remove_track_edit_plugin(const Ref<TrackEditPlugin>& p_plugin);
+
+	void set_track_edit_type(const Ref<Script> p_header_class, const Ref<Script> p_track_edit_class);
 
 	void set_animation(const Ref<Animation>& p_anim);
 	Ref<Animation> get_current_animation() const;

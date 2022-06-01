@@ -71,6 +71,20 @@ class TrackEdit : public Control {
 protected:
 	static void _bind_methods();
 	void _notification(int p_what);
+
+	const StringName _get_drag_data = "get_drag_data";
+	const StringName _can_drop_data = "can_drop_data";
+	const StringName _drop_data = "drop_data";
+	const StringName _get_tooltip = "get_tooltip";
+	const StringName _get_key_height = "get_key_height";
+	const StringName _get_key_rect = "get_key_rect";
+	const StringName _is_key_selectable_by_distance = "is_key_selectable_by_distance";
+	const StringName _draw_key_link = "draw_key_link";
+	const StringName _draw_last_key_link = "draw_last_key_link";
+	const StringName _draw_key = "draw_key";
+	const StringName _draw_bg = "draw_bg";
+	const StringName _draw_fg = "draw_fg";
+	const StringName _draw_names_and_icons = "draw_names_and_icons";
 	
 public:
 	void _gui_input(const Ref<InputEvent>& p_event);
@@ -89,7 +103,8 @@ public:
 	virtual void draw_key(int p_index, float p_pixels_sec, int p_x, bool p_selected, int p_clip_left, int p_clip_right);
 	virtual void draw_bg(int p_clip_left, int p_clip_right);
 	virtual void draw_fg(int p_clip_left, int p_clip_right);
-	virtual void draw_names_and_icons(int limit, Ref<Font> font, Color color, int hsep, Color linecolor);
+	virtual void draw_names_and_icons(int limit, const Ref<Font> font, Color color, int hsep, Color linecolor);
+	virtual bool does_track_belong_to_header(int p_track);
 
 	//helper
 	void draw_texture_region_clipped(const Ref<Texture>& p_texture, const Rect2& p_rect, const Rect2& p_region);
@@ -115,7 +130,9 @@ public:
 	void set_in_group(bool p_enable);
 	void append_to_selection(const Rect2& p_box, bool p_deselection);
 
+
 	TrackEdit();
+	~TrackEdit() {}
 };
 
 #endif
