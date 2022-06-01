@@ -1037,15 +1037,14 @@ void TrackEditor::add_track_edit(TrackEdit* p_track_edit, int p_track, bool p_is
 	}
 
 	p_track_edit->set_in_group(false);
-	track_vbox->add_child(p_track_edit);
-
-	p_track_edit->set_undo_redo(undo_redo);
+	p_track_edit->set_editor(this);
 	p_track_edit->set_timeline(timeline);
+	p_track_edit->set_undo_redo(undo_redo);
 	p_track_edit->set_root(root);
 	p_track_edit->set_animation_and_track(animation, p_track);
 	p_track_edit->set_play_position(timeline->get_play_position());
-	p_track_edit->set_editor(this);
-
+	track_vbox->add_child(p_track_edit);
+	
 	p_track_edit->connect("timeline_changed", this, "_timeline_changed");
 
 	if (!p_is_header) {
@@ -2478,8 +2477,13 @@ void TrackEditor::_select_all_tracks_for_copy() {
 	}
 }
 
+PlayerEditorControl* TrackEditor::get_control() {
+	return PlayerEditorControl::get_singleton();
+}
+
 void TrackEditor::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_track_edit_type", "header", "track_edit_class"), &TrackEditor::set_track_edit_type);
+	ClassDB::bind_method("get_control", &TrackEditor::get_control);
 
 	ClassDB::bind_method("_animation_update", &TrackEditor::_animation_update);
 	ClassDB::bind_method("_track_grab_focus", &TrackEditor::_track_grab_focus);

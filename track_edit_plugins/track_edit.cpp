@@ -101,8 +101,6 @@ void TrackEdit::draw_buttons(Color linecolor) {
 	IconsCache* icons = IconsCache::get_singleton();
 	int ofs = get_size().width - timeline->get_buttons_width();
 
-	Ref<Texture> down_icon = icons->get_icon("select_arrow");
-
 	draw_line(Point2(ofs, 0), Point2(ofs, get_size().height), linecolor, Math::round(1.0));
 
 	{
@@ -713,6 +711,41 @@ String TrackEdit::get_tooltip(const Point2& p_pos) const {
 	return Control::get_tooltip(p_pos);
 }
 
+void TrackEdit::do_right_click(Ref<InputEventMouseButton> mb) {
+	IconsCache* icons = IconsCache::get_singleton();
+	Point2 pos = mb->get_position();
+	if (pos.x >= timeline->get_name_limit() && pos.x <= get_size().width - timeline->get_buttons_width()) {
+		// Can do something with menu too! show insert key.
+		float offset = (pos.x - timeline->get_name_limit()) / timeline->get_zoom_scale();
+		if (!menu) {
+			menu = memnew(PopupMenu);
+			add_child(menu);
+			menu->connect("id_pressed", this, "_menu_selected");
+		}
+
+		menu->clear();
+		menu->add_icon_item(icons->get_icon("Key"), TTR("Insert Key"), MENU_KEY_INSERT);
+		if (editor->is_selection_active()) {
+			menu->add_separator();
+			menu->add_icon_item(icons->get_icon("Duplicate"), TTR("Duplicate Key(s)"), MENU_KEY_DUPLICATE);
+
+			AnimationPlayer* player = PlayerEditorControl::get_singleton()->get_player();
+			if (!player->has_animation("RESET") || animation != player->get_animation("RESET")) {
+				menu->add_icon_item(icons->get_icon("Reload"), TTR("Add RESET Value(s)"), MENU_KEY_ADD_RESET);
+			}
+
+			menu->add_separator();
+			menu->add_icon_item(icons->get_icon("Remove"), TTR("Delete Key(s)"), MENU_KEY_DELETE);
+		}
+
+		menu->set_position(get_viewport()->get_canvas_transform().xform(get_global_position()) + get_local_mouse_position());
+		menu->popup();
+
+		insert_at_pos = offset + timeline->get_value();
+		accept_event();
+	}
+}
+
 void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 	ERR_FAIL_COND(p_event.is_null());
 
@@ -827,37 +860,7 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 	}
 
 	if (mb.is_valid() && mb->is_pressed() && mb->get_button_index() == BUTTON_RIGHT) {
-		Point2 pos = mb->get_position();
-		if (pos.x >= timeline->get_name_limit() && pos.x <= get_size().width - timeline->get_buttons_width()) {
-			// Can do something with menu too! show insert key.
-			float offset = (pos.x - timeline->get_name_limit()) / timeline->get_zoom_scale();
-			if (!menu) {
-				menu = memnew(PopupMenu);
-				add_child(menu);
-				menu->connect("id_pressed", this, "_menu_selected");
-			}
-
-			menu->clear();
-			menu->add_icon_item(icons->get_icon("Key"), TTR("Insert Key"), MENU_KEY_INSERT);
-			if (editor->is_selection_active()) {
-				menu->add_separator();
-				menu->add_icon_item(icons->get_icon("Duplicate"), TTR("Duplicate Key(s)"), MENU_KEY_DUPLICATE);
-
-				AnimationPlayer* player = PlayerEditorControl::get_singleton()->get_player();
-				if (!player->has_animation("RESET") || animation != player->get_animation("RESET")) {
-					menu->add_icon_item(icons->get_icon("Reload"), TTR("Add RESET Value(s)"), MENU_KEY_ADD_RESET);
-				}
-
-				menu->add_separator();
-				menu->add_icon_item(icons->get_icon("Remove"), TTR("Delete Key(s)"), MENU_KEY_DELETE);
-			}
-
-			menu->set_position(get_viewport()->get_canvas_transform().xform(get_global_position()) + get_local_mouse_position());
-			menu->popup();
-
-			insert_at_pos = offset + timeline->get_value();
-			accept_event();
-		}
+		call(_do_right_click, mb);
 	}
 
 	if (mb.is_valid() && moving_selection_attempt) {
@@ -1095,12 +1098,15 @@ bool TrackEdit::does_track_belong_to_header(int p_track) {
 }
 
 void TrackEdit::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("do_right_click", "event"), &TrackEdit::do_right_click);
 	ClassDB::bind_method(D_METHOD("does_track_belong_to_header", "track"), &TrackEdit::does_track_belong_to_header);
 	ClassDB::bind_method("get_animation", &TrackEdit::get_animation);
 	ClassDB::bind_method("get_track", &TrackEdit::get_track);
 	ClassDB::bind_method(D_METHOD("draw_rect_clipped", "rect", "color", "filled"), &TrackEdit::draw_rect_clipped);
+	ClassDB::bind_method("get_timeline", &TrackEdit::get_timeline);
+	ClassDB::bind_method("get_editor", &TrackEdit::get_editor);
 
-	ClassDB::bind_method("draw_buttons", &TrackEdit::draw_buttons);
+	ClassDB::bind_method(D_METHOD("draw_buttons", "linecolor"), &TrackEdit::draw_buttons);
 	ClassDB::bind_method("get_key_height", &TrackEdit::get_key_height);
 	ClassDB::bind_method(D_METHOD("get_key_rect", "index", "pixels_sec"), &TrackEdit::get_key_rect);
 	ClassDB::bind_method("is_key_selectable_by_distance", &TrackEdit::is_key_selectable_by_distance);

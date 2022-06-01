@@ -13,6 +13,7 @@
 #include "scene/gui/texture_rect.h"
 #include "scene/resources/animation.h"
 
+class PlayerEditorControl;
 class UndoRedo;
 class TreeItem;
 class Tree;
@@ -265,6 +266,8 @@ public:
 		EDIT_CLEAN_UP_ANIMATION,
 		EDIT_CLEAN_UP_ANIMATION_CONFIRM
 	};
+
+	PlayerEditorControl *get_control();
 
 	void add_track_edit_plugin(const Ref<TrackEditPlugin>& p_plugin);
 	void remove_track_edit_plugin(const Ref<TrackEditPlugin>& p_plugin);

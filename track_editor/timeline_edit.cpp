@@ -456,6 +456,9 @@ void TimelineEdit::_icons_cache_changed() {
 
 
 void TimelineEdit::_bind_methods() {
+	ClassDB::bind_method("get_name_limit", &TimelineEdit::get_name_limit);
+	ClassDB::bind_method("get_buttons_width", &TimelineEdit::get_buttons_width);
+	ClassDB::bind_method("get_zoom_scale", &TimelineEdit::get_zoom_scale);
 	ClassDB::bind_method(D_METHOD("_zoom_changed"), &TimelineEdit::_zoom_changed);
 	ClassDB::bind_method(D_METHOD("_play_position_draw"), &TimelineEdit::_play_position_draw);
 	ClassDB::bind_method(D_METHOD("_anim_length_changed"), &TimelineEdit::_anim_length_changed);

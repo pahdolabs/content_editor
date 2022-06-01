@@ -86,6 +86,7 @@ protected:
 	const StringName _draw_fg = "draw_fg";
 	const StringName _draw_buttons = "draw_buttons";
 	const StringName _draw_names_and_icons = "draw_names_and_icons";
+	const StringName _do_right_click = "do_right_click";
 	
 public:
 	void _gui_input(const Ref<InputEvent>& p_event);
@@ -95,6 +96,7 @@ public:
 	virtual void drop_data(const Point2& p_point, const Variant& p_data) override;
 
 	virtual String get_tooltip(const Point2& p_pos) const override;
+	void do_right_click(Ref<InputEventMouseButton> mb);
 
 	virtual int get_key_height() const;
 	virtual Rect2 get_key_rect(int p_index, float p_pixels_sec);

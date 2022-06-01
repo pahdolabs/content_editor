@@ -516,6 +516,7 @@ void PlayerEditorControl::_unhandled_key_input(const Ref<InputEvent> &p_ev) {
 }
 
 void PlayerEditorControl::_bind_methods() {
+	ClassDB::bind_method("get_player", &PlayerEditorControl::get_player);
 	ClassDB::bind_method(D_METHOD("_unhandled_key_input", "key_input_event"), &PlayerEditorControl::_unhandled_key_input);
 	ClassDB::bind_method(D_METHOD("edit", "animation_player"), &PlayerEditorControl::edit);
 	ClassDB::bind_method(D_METHOD("get_undo_redo"), &PlayerEditorControl::get_undo_redo);

@@ -64,7 +64,3 @@ TrackEdit* TrackEditDefaultPlugin::create_animation_track_edit(Object* p_object)
 	an->set_node(p_object);
 	return an;
 }
-
-TrackEdit* TrackEditDefaultPlugin::create_tag_track_edit() {
-	return memnew(TrackEditTypeTags);
-}
