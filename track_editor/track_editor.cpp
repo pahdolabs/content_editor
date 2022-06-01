@@ -2483,6 +2483,7 @@ PlayerEditorControl* TrackEditor::get_control() {
 
 void TrackEditor::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_track_edit_type", "header", "track_edit_class"), &TrackEditor::set_track_edit_type);
+	ClassDB::bind_method("is_selection_active", &TrackEditor::is_selection_active);
 	ClassDB::bind_method("get_control", &TrackEditor::get_control);
 
 	ClassDB::bind_method("_animation_update", &TrackEditor::_animation_update);
