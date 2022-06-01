@@ -49,6 +49,7 @@ class TrackEditor : public VBoxContainer {
 
 	Map<Ref<Script>, Ref<Script>> track_edit_groups;
 
+	Vector<TrackEdit*> track_edit_headers;
 	Vector<TrackEdit*> track_edits;
 
 	Button* imported_anim_warning = nullptr;
@@ -236,7 +237,7 @@ class TrackEditor : public VBoxContainer {
 
 	void _icons_cache_changed();
 
-	void add_track_edit(TrackEdit *p_track_edit, int p_track);
+	void add_track_edit(TrackEdit *p_track_edit, int p_track, bool p_is_header);
 
 	const StringName _does_track_belong_to_header = "does_track_belong_to_header";
 

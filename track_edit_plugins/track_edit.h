@@ -84,6 +84,7 @@ protected:
 	const StringName _draw_key = "draw_key";
 	const StringName _draw_bg = "draw_bg";
 	const StringName _draw_fg = "draw_fg";
+	const StringName _draw_buttons = "draw_buttons";
 	const StringName _draw_names_and_icons = "draw_names_and_icons";
 	
 public:
@@ -103,8 +104,9 @@ public:
 	virtual void draw_key(int p_index, float p_pixels_sec, int p_x, bool p_selected, int p_clip_left, int p_clip_right);
 	virtual void draw_bg(int p_clip_left, int p_clip_right);
 	virtual void draw_fg(int p_clip_left, int p_clip_right);
-	virtual void draw_names_and_icons(int limit, const Ref<Font> font, Color color, int hsep, Color linecolor);
+	virtual void draw_names_and_icons(int limit, const Ref<Font> p_font, Color color, int hsep, Color linecolor);
 	virtual bool does_track_belong_to_header(int p_track);
+	virtual void draw_buttons(Color linecolor);
 
 	//helper
 	void draw_texture_region_clipped(const Ref<Texture>& p_texture, const Rect2& p_rect, const Rect2& p_region);

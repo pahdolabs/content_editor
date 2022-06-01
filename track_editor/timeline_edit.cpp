@@ -62,8 +62,9 @@ void TimelineEdit::_anim_loop_pressed() {
 int TimelineEdit::get_buttons_width() const {
 	IconsCache* icons = IconsCache::get_singleton();
 	Ref<Texture> remove_icon = icons->get_icon("Remove");
+	int hsep = get_constant("hseparation", "ItemList");
 	
-	int total_w = (remove_icon != nullptr ? remove_icon->get_width() : 0);
+	int total_w = (remove_icon != nullptr ? remove_icon->get_width() : 0) + hsep;
 
 	return total_w;
 }

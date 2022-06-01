@@ -97,6 +97,29 @@ void TrackEdit::draw_names_and_icons(int limit, const Ref<Font> p_font, Color co
 	draw_line(Point2(limit, 0), Point2(limit, get_size().height), linecolor, Math::round(1.0));
 }
 
+void TrackEdit::draw_buttons(Color linecolor) {
+	IconsCache* icons = IconsCache::get_singleton();
+	int ofs = get_size().width - timeline->get_buttons_width();
+
+	Ref<Texture> down_icon = icons->get_icon("select_arrow");
+
+	draw_line(Point2(ofs, 0), Point2(ofs, get_size().height), linecolor, Math::round(1.0));
+
+	{
+		// Erase.
+
+		Ref<Texture> icon = icons->get_icon("Remove");
+
+		remove_rect.position.x = ofs + ((get_size().width - ofs) - (icon != nullptr ? icon->get_width() : 0));
+		remove_rect.position.y = int(get_size().height - (icon != nullptr ? icon->get_height() : 0)) / 2;
+		remove_rect.size = icon != nullptr ? icon->get_size() : Size2(0, 0);
+
+		if (icon != nullptr) {
+			draw_texture(icon, remove_rect.position);
+		}
+	}
+}
+
 void TrackEdit::_notification(int p_what) {
 	switch (p_what) {
 	case NOTIFICATION_THEME_CHANGED: {
@@ -224,27 +247,7 @@ void TrackEdit::_notification(int p_what) {
 		
 		// BUTTONS //
 
-		{
-			int ofs = get_size().width - timeline->get_buttons_width();
-
-			Ref<Texture> down_icon = icons->get_icon("select_arrow");
-
-			draw_line(Point2(ofs, 0), Point2(ofs, get_size().height), linecolor, Math::round(1.0));
-
-			{
-				// Erase.
-
-				Ref<Texture> icon = icons->get_icon("Remove");
-
-				remove_rect.position.x = ofs + ((get_size().width - ofs) - (icon != nullptr ? icon->get_width() : 0));
-				remove_rect.position.y = int(get_size().height - (icon != nullptr ? icon->get_height() : 0)) / 2;
-				remove_rect.size = icon != nullptr ? icon->get_size() : Size2(0, 0);
-
-				if (icon != nullptr) {
-					draw_texture(icon, remove_rect.position);
-				}
-			}
-		}
+		call(_draw_buttons, linecolor);
 
 		if (in_group) {
 			draw_line(Vector2(timeline->get_name_limit(), get_size().height), get_size(), linecolor, Math::round(1.0));
@@ -1096,7 +1099,8 @@ void TrackEdit::_bind_methods() {
 	ClassDB::bind_method("get_animation", &TrackEdit::get_animation);
 	ClassDB::bind_method("get_track", &TrackEdit::get_track);
 	ClassDB::bind_method(D_METHOD("draw_rect_clipped", "rect", "color", "filled"), &TrackEdit::draw_rect_clipped);
-	
+
+	ClassDB::bind_method("draw_buttons", &TrackEdit::draw_buttons);
 	ClassDB::bind_method("get_key_height", &TrackEdit::get_key_height);
 	ClassDB::bind_method(D_METHOD("get_key_rect", "index", "pixels_sec"), &TrackEdit::get_key_rect);
 	ClassDB::bind_method("is_key_selectable_by_distance", &TrackEdit::is_key_selectable_by_distance);
