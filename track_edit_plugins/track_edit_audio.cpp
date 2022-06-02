@@ -134,8 +134,6 @@ void TrackEditAudio::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_s
 		//preview_len = preview->get_length();
 
 		for (int i = from_x; i < to_x; i++) {
-			float ofs = (i - pixel_begin) * preview_len / pixel_len;
-			float ofs_n = ((i + 1) - pixel_begin) * preview_len / pixel_len;
 			float max = 0.0;// preview->get_max(ofs, ofs_n) * 0.5 + 0.5;
 			float min = 0.0; // preview->get_min(ofs, ofs_n) * 0.5 + 0.5;
 

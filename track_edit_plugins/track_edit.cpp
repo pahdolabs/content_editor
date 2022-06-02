@@ -136,8 +136,6 @@ void TrackEdit::_notification(int p_what) {
 		}
 		ERR_FAIL_INDEX(track, animation->get_track_count());
 
-		IconsCache* icons = IconsCache::get_singleton();
-
 		int limit = timeline->get_name_limit();
 
 		if (track % 2 == 1) {
@@ -765,8 +763,6 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 			accept_event();
 		}*/
 	}
-
-	IconsCache* icons = IconsCache::get_singleton();
 
 	Ref<InputEventMouseButton> mb = p_event;
 	if (mb.is_valid() && mb->is_pressed() && mb->get_button_index() == BUTTON_LEFT) {
