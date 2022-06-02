@@ -11,7 +11,6 @@
 #include "track_edit_type_audio.h"
 #include "track_edit_type_sprite_frame.h"
 #include "track_edit_type_sub_anim.h"
-#include "track_edit_type_tags.h"
 #include "track_edit_volume_db.h"
 
 TrackEdit* TrackEditDefaultPlugin::create_value_track_edit(Object* p_object, Variant::Type p_type, const String& p_property, PropertyHint p_hint, const String& p_hint_string, int p_usage) {
