@@ -306,6 +306,9 @@ public:
 				return true;
 			}
 		} break;
+
+		case Animation::TYPE_BEZIER:
+			break;
 		}
 
 		return false;
@@ -410,6 +413,9 @@ public:
 			}
 
 		} break;
+
+		case Animation::TYPE_BEZIER:
+			break;
 		}
 
 		return false;
@@ -845,6 +851,9 @@ public:
 						update_obj = true;
 					}
 				} break;
+
+				case Animation::TYPE_BEZIER:
+					break;
 				}
 			}
 		}

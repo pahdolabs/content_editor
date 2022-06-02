@@ -1409,8 +1409,6 @@ void TrackEditor::_insert_key_from_track(float p_ofs, int p_track) {
 			//EditorNode::get_singleton()->show_warning(TTR("Track path is invalid, so can't add a method key."));
 			return;
 		}
-		Node* base = root->get_node(animation->track_get_path(p_track));
-
 		//method_selector->select_method_from_instance(base);
 
 		insert_key_from_track_call_ofs = p_ofs;
@@ -1928,7 +1926,6 @@ void TrackEditor::_anim_duplicate_keys(bool transpose) {
 }
 
 void TrackEditor::_edit_menu_about_to_popup() {
-	AnimationPlayer* player = PlayerEditorControl::get_singleton()->get_player();
 	//edit->get_popup()->set_item_disabled(edit->get_popup()->get_item_index(EDIT_APPLY_RESET), !player->has_animation("RESET") || player->get_assigned_animation() != "RESET");
 }
 
