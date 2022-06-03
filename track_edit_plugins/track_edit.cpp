@@ -1089,6 +1089,14 @@ int TrackEdit::get_index_of_track_edit_belonging_to_header(int p_track) {
 	return -1;
 }
 
+void TrackEdit::set_remove_rect(const Rect2 &rect) {
+	remove_rect = rect;
+}
+
+Rect2 TrackEdit::get_remove_rect() const {
+	return remove_rect;
+}
+
 void TrackEdit::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("do_right_click", "event"), &TrackEdit::do_right_click);
 	ClassDB::bind_method(D_METHOD("get_index_of_track_edit_belonging_to_header", "track"), &TrackEdit::get_index_of_track_edit_belonging_to_header);
@@ -1097,6 +1105,8 @@ void TrackEdit::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("draw_rect_clipped", "rect", "color", "filled"), &TrackEdit::draw_rect_clipped);
 	ClassDB::bind_method("get_timeline", &TrackEdit::get_timeline);
 	ClassDB::bind_method("get_editor", &TrackEdit::get_editor);
+	ClassDB::bind_method("get_remove_rect", &TrackEdit::get_remove_rect);
+	ClassDB::bind_method(D_METHOD("set_remove_rect", "rect"), &TrackEdit::set_remove_rect);
 
 	ClassDB::bind_method(D_METHOD("draw_buttons", "linecolor"), &TrackEdit::draw_buttons);
 	ClassDB::bind_method("get_key_height", &TrackEdit::get_key_height);
@@ -1132,6 +1142,8 @@ void TrackEdit::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("create_reset_request"));
 	ADD_SIGNAL(MethodInfo("duplicate_transpose_request"));
 	ADD_SIGNAL(MethodInfo("delete_request"));
+
+	ADD_PROPERTY(PropertyInfo(Variant::RECT2, "remove_rect"), "set_remove_rect", "get_remove_rect");
 }
 
 TrackEdit::TrackEdit() {

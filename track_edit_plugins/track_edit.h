@@ -110,6 +110,9 @@ public:
 	virtual int get_index_of_track_edit_belonging_to_header(int p_track);
 	virtual void draw_buttons(Color linecolor);
 
+	void set_remove_rect(const Rect2& rect);
+	Rect2 get_remove_rect() const;
+
 	//helper
 	void draw_texture_region_clipped(const Ref<Texture>& p_texture, const Rect2& p_rect, const Rect2& p_region);
 	void draw_rect_clipped(const Rect2& p_rect, const Color& p_color, bool p_filled = true);
