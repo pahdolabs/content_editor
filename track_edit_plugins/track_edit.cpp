@@ -13,9 +13,9 @@
 #include "../track_editor/track_editor.h"
 
 void TrackEdit::draw_names_and_icons(int limit, const Ref<Font> p_font, Color color, int hsep, Color linecolor) {
-	
+
 	ERR_FAIL_COND(p_font.is_null());
-	
+
 	IconsCache* icons = IconsCache::get_singleton();
 	Ref<Texture> check = animation->track_is_enabled(track) ? icons->get_icon("checked") : icons->get_icon("unchecked");
 
@@ -212,35 +212,31 @@ void TrackEdit::_notification(int p_what) {
 					call(_draw_last_key_link, i, scale, int(offset), limit, limit_end);
 				}
 
-				if (get_script_instance()) {
-					Variant args[6] = {
-						i,
-						scale,
-						int(offset),
-						editor->is_key_selected(track, i),
-						limit,
-						limit_end
-					};
+				Variant args[6] = {
+					i,
+					scale,
+					int(offset),
+					editor->is_key_selected(track, i),
+					limit,
+					limit_end
+				};
 
-					Variant* argptrs[6] = {
-						&args[0],
-						&args[1],
-						&args[2],
-						&args[3],
-						&args[4],
-						&args[5]
-					};
-					Variant::CallError ce;
-					get_script_instance()->call(_draw_key, (const Variant**)&argptrs, 6, ce);
-				}
-				else {
-					draw_key(i, scale, int(offset), editor->is_key_selected(track, i), limit, limit_end);
-				}
+				Variant* argptrs[6] = {
+					&args[0],
+					&args[1],
+					&args[2],
+					&args[3],
+					&args[4],
+					&args[5]
+				};
+				Variant::CallError ce;
+				call(_draw_key, (const Variant**)&argptrs, 6, ce);
+
 			}
 		}
 
 		call(_draw_fg, limit, get_size().width - timeline->get_buttons_width());
-		
+
 		// BUTTONS //
 
 		call(_draw_buttons, linecolor);
