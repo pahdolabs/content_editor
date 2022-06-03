@@ -14,7 +14,7 @@ void register_content_editor_types() {
 	ClassDB::register_class<PlayerEditorControl>();
 	ClassDB::register_class<TrackEditor>();
 	ClassDB::register_class<TimelineEdit>();
-	ClassDB::register_virtual_class<TrackEdit>();
+	ClassDB::register_class<TrackEdit>();
 	Engine::get_singleton()->add_singleton(Engine::Singleton("IconsCache", IconsCache::get_singleton()));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("Colors", Colors::get_singleton()));
 }

@@ -48,7 +48,7 @@ class TrackEditor : public VBoxContainer {
 	Button* snap = nullptr;
 	OptionButton* snap_mode = nullptr;
 
-	Map<Ref<Script>, Ref<Script>> track_edit_groups;
+	Map<Ref<Script>, Vector<Ref<Script>>> track_edit_groups;
 
 	Vector<TrackEdit*> track_edit_headers;
 	Vector<TrackEdit*> track_edits;
@@ -240,7 +240,7 @@ class TrackEditor : public VBoxContainer {
 
 	void add_track_edit(TrackEdit *p_track_edit, int p_track, bool p_is_header);
 
-	const StringName _does_track_belong_to_header = "does_track_belong_to_header";
+	const StringName _get_index_of_track_edit_belonging_to_header = "get_index_of_track_edit_belonging_to_header";
 
 protected:
 	static void _bind_methods();
@@ -272,7 +272,7 @@ public:
 	void add_track_edit_plugin(const Ref<TrackEditPlugin>& p_plugin);
 	void remove_track_edit_plugin(const Ref<TrackEditPlugin>& p_plugin);
 
-	void set_track_edit_type(const Ref<Script> p_header_class, const Ref<Script> p_track_edit_class);
+	void set_track_edit_type(const Ref<Script> &p_header_class, const Array &p_track_edit_classes);
 
 	void set_animation(const Ref<Animation>& p_anim);
 	Ref<Animation> get_current_animation() const;

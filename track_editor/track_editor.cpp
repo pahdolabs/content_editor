@@ -900,7 +900,7 @@ void TrackEditor::_update_tracks() {
 
 	bool use_filter = selected_filter->is_pressed();
 
-	for (Map<Ref<Script>, Ref<Script>>::Element* E = track_edit_groups.front(); E; E = E->next()) {
+	for (Map<Ref<Script>, Vector<Ref<Script>>>::Element* E = track_edit_groups.front(); E; E = E->next()) {
 		Ref<Script> track_header_class = E->key();
 		TrackEdit* track_edit_header = memnew(TrackEdit);
 		ScriptInstance* track_edit_header_script_instance = track_header_class->instance_create(track_edit_header);
@@ -914,9 +914,10 @@ void TrackEditor::_update_tracks() {
 		}
 
 		for (int i = 0; i < animation->get_track_count(); i++) {
-			const bool track_belongs_to_header = track_edit_header->call(_does_track_belong_to_header, i);
-			if (track_belongs_to_header) {
-				Ref<Script> track_edit_script = E->value();
+			const int track_edit_index = track_edit_header->call(_get_index_of_track_edit_belonging_to_header, i);
+			if (track_edit_index > -1) {
+				Vector<Ref<Script>> track_edit_scripts = E->value();
+				Ref<Script> track_edit_script = track_edit_scripts[track_edit_index];
 				TrackEdit* track_edit = memnew(TrackEdit);
 				ScriptInstance* track_edit_script_instance = track_edit_script->instance_create(track_edit);
 
@@ -1024,8 +1025,15 @@ void TrackEditor::_update_tracks() {
 	}
 }
 
-void TrackEditor::set_track_edit_type(const Ref<Script> p_header_class, const Ref<Script> p_track_edit_class) {
-	track_edit_groups[p_header_class] = p_track_edit_class;
+void TrackEditor::set_track_edit_type(const Ref<Script> &p_header_class, const Array &p_track_edit_classes) {
+	Vector<Ref<Script>> track_edit_classes;
+	for(int i=0; i<p_track_edit_classes.size(); ++i) {
+		Ref<Script> track_edit_class = p_track_edit_classes[i];
+		if(!track_edit_class.is_null()) {
+			track_edit_classes.push_back(track_edit_class);
+		}
+	}
+	track_edit_groups[p_header_class] = track_edit_classes;
 }
 
 void TrackEditor::add_track_edit(TrackEdit* p_track_edit, int p_track, bool p_is_header) {
@@ -2479,7 +2487,7 @@ PlayerEditorControl* TrackEditor::get_control() {
 }
 
 void TrackEditor::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("set_track_edit_type", "header", "track_edit_class"), &TrackEditor::set_track_edit_type);
+	ClassDB::bind_method(D_METHOD("set_track_edit_type", "header", "track_edit_classes"), &TrackEditor::set_track_edit_type);
 	ClassDB::bind_method("is_selection_active", &TrackEditor::is_selection_active);
 	ClassDB::bind_method("get_control", &TrackEditor::get_control);
 

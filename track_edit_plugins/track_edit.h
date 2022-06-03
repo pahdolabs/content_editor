@@ -107,7 +107,7 @@ public:
 	virtual void draw_bg(int p_clip_left, int p_clip_right);
 	virtual void draw_fg(int p_clip_left, int p_clip_right);
 	virtual void draw_names_and_icons(int limit, const Ref<Font> p_font, Color color, int hsep, Color linecolor);
-	virtual bool does_track_belong_to_header(int p_track);
+	virtual int get_index_of_track_edit_belonging_to_header(int p_track);
 	virtual void draw_buttons(Color linecolor);
 
 	//helper

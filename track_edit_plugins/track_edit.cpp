@@ -1089,13 +1089,13 @@ void TrackEdit::_icons_cache_changed() {
 	update();
 }
 
-bool TrackEdit::does_track_belong_to_header(int p_track) {
-	return false;
+int TrackEdit::get_index_of_track_edit_belonging_to_header(int p_track) {
+	return -1;
 }
 
 void TrackEdit::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("do_right_click", "event"), &TrackEdit::do_right_click);
-	ClassDB::bind_method(D_METHOD("does_track_belong_to_header", "track"), &TrackEdit::does_track_belong_to_header);
+	ClassDB::bind_method(D_METHOD("get_index_of_track_edit_belonging_to_header", "track"), &TrackEdit::get_index_of_track_edit_belonging_to_header);
 	ClassDB::bind_method("get_animation", &TrackEdit::get_animation);
 	ClassDB::bind_method("get_track", &TrackEdit::get_track);
 	ClassDB::bind_method(D_METHOD("draw_rect_clipped", "rect", "color", "filled"), &TrackEdit::draw_rect_clipped);
