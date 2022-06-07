@@ -6,7 +6,7 @@
 #include "scene/2d/sprite.h"
 #include "scene/2d/animated_sprite.h"
 
-#include "../consts.h"
+#include "../EditorConsts.h"
 #include "../icons_cache.h"
 
 int TrackEditBool::get_key_height() const {
@@ -42,7 +42,7 @@ void TrackEditBool::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_se
 	}
 
 	if (p_selected) {
-		Color color = Colors::ACCENT_COLOR;
+		Color color = EditorConsts::ACCENT_COLOR;
 		draw_rect_clipped(Rect2(ofs, icon->get_size()), color, false);
 	}
 }

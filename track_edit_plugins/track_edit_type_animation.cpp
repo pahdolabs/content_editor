@@ -8,7 +8,7 @@
 #include "scene/3d/sprite_3d.h"
 #include "scene/animation/animation_player.h"
 
-#include "../consts.h"
+#include "../EditorConsts.h"
 
 int TrackEditTypeAnimation::get_key_height() const {
 	if (!ObjectDB::get_instance(id)) {
@@ -146,7 +146,7 @@ void TrackEditTypeAnimation::draw_key(int p_index, float p_pixels_sec, int p_x, 
 		}
 
 		if (p_selected) {
-			Color accent = Colors::ACCENT_COLOR;
+			Color accent = EditorConsts::ACCENT_COLOR;
 			draw_rect(rect, accent, false);
 		}
 	}
@@ -159,7 +159,7 @@ void TrackEditTypeAnimation::draw_key(int p_index, float p_pixels_sec, int p_x, 
 		draw_rect_clipped(rect, color);
 
 		if (p_selected) {
-			Color accent = Colors::ACCENT_COLOR;
+			Color accent = EditorConsts::ACCENT_COLOR;
 			draw_rect_clipped(rect, accent, false);
 		}
 	}

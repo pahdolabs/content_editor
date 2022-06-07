@@ -6,7 +6,7 @@
 #include "scene/2d/sprite.h"
 #include "scene/2d/animated_sprite.h"
 
-#include "../consts.h"
+#include "../EditorConsts.h"
 #include "../icons_cache.h"
 
 int TrackEditVolumeDB::get_key_height() const {

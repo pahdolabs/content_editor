@@ -10,7 +10,7 @@
 #include "scene/gui/separator.h"
 #include "scene/3d/spatial.h"
 
-#include "../consts.h"
+#include "../EditorConsts.h"
 #include "../icons_cache.h"
 #include "player_editor_control.h"
 #include "../track_edit_plugins/track_edit.h"
@@ -1737,8 +1737,8 @@ float TrackEditor::get_moving_selection_offset() const {
 
 void TrackEditor::_box_selection_draw() {
 	const Rect2 selection_rect = Rect2(Point2(), box_selection->get_size());
-	box_selection->draw_rect(selection_rect, Colors::BOX_SELECTION_FILL_COLOR);
-	box_selection->draw_rect(selection_rect, Colors::BOX_SELECTION_STROKE_COLOR, false, Math::round(1.0));
+	box_selection->draw_rect(selection_rect, EditorConsts::BOX_SELECTION_FILL_COLOR);
+	box_selection->draw_rect(selection_rect, EditorConsts::BOX_SELECTION_STROKE_COLOR, false, Math::round(1.0));
 }
 
 void TrackEditor::_scroll_input(const Ref<InputEvent>& p_event) {

@@ -6,7 +6,7 @@
 #include "modules/svg/image_loader_svg.h"
 #include "core/method_bind_ext.gen.inc"
 
-#include "../consts.h"
+#include "../EditorConsts.h"
 #include "../icons_cache.h"
 #include "../track_editor/player_editor_control.h"
 #include "../track_editor/timeline_edit.h"
@@ -49,7 +49,7 @@ void TrackEdit::draw_names_and_icons(int limit, const Ref<Font> p_font, Color co
 	String text;
 	Color text_color = color;
 	if (node) {
-		text_color = Colors::ACCENT_COLOR;
+		text_color = EditorConsts::ACCENT_COLOR;
 	}
 
 	if (in_group) {
@@ -149,7 +149,7 @@ void TrackEdit::_notification(int p_what) {
 		}
 
 		if (has_focus()) {
-			Color accent = Colors::ACCENT_COLOR;
+			Color accent = EditorConsts::ACCENT_COLOR;
 			accent.a *= 0.7;
 			// Offside so the horizontal sides aren't cutoff.
 			draw_style_box(get_stylebox("Focus", "EditorStyles"), Rect2(Point2(1 * 1.0, 0), get_size() - Size2(1 * 1.0, 0)));
@@ -249,7 +249,7 @@ void TrackEdit::_notification(int p_what) {
 		}
 
 		if (dropping_at != 0) {
-			Color drop_color = Colors::ACCENT_COLOR;
+			Color drop_color = EditorConsts::ACCENT_COLOR;
 			if (dropping_at < 0) {
 				draw_line(Vector2(0, 0), Vector2(get_size().width, 0), drop_color, Math::round(1.0));
 			}
@@ -512,7 +512,7 @@ void TrackEdit::_play_position_draw() {
 	int px = (-timeline->get_value() + play_position_pos) * scale + timeline->get_name_limit();
 
 	if (px >= timeline->get_name_limit() && px < (get_size().width - timeline->get_buttons_width())) {
-		Colors colors;
+		EditorConsts colors;
 		Color color = colors.ACCENT_COLOR;
 		play_position->draw_line(Point2(px, 0), Point2(px, h), color, Math::round(2 * 1.0));
 	}

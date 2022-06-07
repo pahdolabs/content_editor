@@ -2,7 +2,7 @@
 
 #include "core/undo_redo.h"
 
-#include "../consts.h"
+#include "../EditorConsts.h"
 #include "../icons_cache.h"
 #include "../track_edit_plugins/track_edit.h"
 #include "track_editor.h"
@@ -153,7 +153,7 @@ void TimelineEdit::_notification(int p_what) {
 
 		int end_px = (l - get_value()) * scale;
 		int begin_px = -get_value() * scale;
-		Color notimecol = Colors::DARK_COLOR_2;
+		Color notimecol = EditorConsts::DARK_COLOR_2;
 		Color timecolor = color;
 		timecolor.a = 0.2;
 		Color linecolor = color;
@@ -322,7 +322,7 @@ void TimelineEdit::_play_position_draw() {
 	int px = (-get_value() + play_position_pos) * scale + get_name_limit();
 
 	if (px >= get_name_limit() && px < (play_position->get_size().width - get_buttons_width())) {
-		Color color = Colors::ACCENT_COLOR;
+		Color color = EditorConsts::ACCENT_COLOR;
 		play_position->draw_line(Point2(px, 0), Point2(px, h), color, Math::round(2 * 1.0));
 
 		IconsCache* icons = IconsCache::get_singleton();

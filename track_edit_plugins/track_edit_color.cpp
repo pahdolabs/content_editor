@@ -6,7 +6,7 @@
 #include "scene/2d/sprite.h"
 #include "scene/2d/animated_sprite.h"
 
-#include "../consts.h"
+#include "../EditorConsts.h"
 
 int TrackEditColor::get_key_height() const {
 	Ref<Font> font = get_font("font", "Label");
@@ -104,7 +104,7 @@ void TrackEditColor::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_s
 	draw_rect_clipped(rect, color);
 
 	if (p_selected) {
-		Color accent = Colors::ACCENT_COLOR;
+		Color accent = EditorConsts::ACCENT_COLOR;
 		draw_rect_clipped(rect, accent, false);
 	}
 }
