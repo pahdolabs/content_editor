@@ -77,14 +77,17 @@ Variant PahdoSpatialGizmo::get_handle_value(int p_idx) {
 	return gizmo_plugin->get_handle_value(this, p_idx);
 }
 
-void PahdoSpatialGizmo::set_handle(int p_idx, Camera* p_camera, const Point2& p_point) {
+void PahdoSpatialGizmo::set_handle(int p_idx, const Object* p_camera, const Point2& p_point) {
+	const Camera* camera = cast_to<Camera>(p_camera);
+	ERR_FAIL_COND(!camera);
+
 	if (get_script_instance() && get_script_instance()->has_method("set_handle")) {
-		get_script_instance()->call("set_handle", p_idx, p_camera, p_point);
+		get_script_instance()->call("set_handle", p_idx, const_cast<Camera*>(camera), p_point);
 		return;
 	}
 
 	ERR_FAIL_COND(!gizmo_plugin);
-	gizmo_plugin->set_handle(this, p_idx, p_camera, p_point);
+	gizmo_plugin->set_handle(this, p_idx, const_cast<Camera*>(camera), p_point);
 }
 
 void PahdoSpatialGizmo::commit_handle(int p_idx, const Variant& p_restore, bool p_cancel) {
@@ -482,18 +485,28 @@ bool PahdoSpatialGizmo::intersect_frustum(const Camera* p_camera, const Vector<P
 	return false;
 }
 
-bool PahdoSpatialGizmo::intersect_ray(Camera* p_camera, const Point2& p_point, Vector3& r_pos, Vector3& r_normal, int* r_gizmo_handle, bool p_sec_first) {
-	ERR_FAIL_COND_V(!spatial_node, false);
-	ERR_FAIL_COND_V(!valid, false);
+Dictionary PahdoSpatialGizmo::intersect_ray(const Object* p_camera, const Vector2& p_point, bool p_sec_first) const {
+	ERR_FAIL_COND_V(!spatial_node, {});
+	ERR_FAIL_COND_V(!valid, {});
 
 	if (hidden && !gizmo_plugin->is_selectable_when_hidden()) {
-		return false;
+		return {};
 	}
 
-	if (r_gizmo_handle && !hidden) {
+	const Camera* camera_obj = cast_to<Camera>(p_camera);
+
+	ERR_FAIL_COND_V(!camera_obj, {});
+
+	Camera* camera = const_cast<Camera*>(camera_obj);
+
+	int r_gizmo_handle = -1;
+	Vector3 r_pos;
+	Vector3 r_normal;
+
+	if (!hidden) {
 		Transform t = spatial_node->get_global_transform();
 		if (billboard_handle) {
-			t.set_look_at(t.origin, t.origin - p_camera->get_transform().basis.get_axis(2), p_camera->get_transform().basis.get_axis(1));
+			t.set_look_at(t.origin, t.origin - camera->get_transform().basis.get_axis(2), camera->get_transform().basis.get_axis(1));
 		}
 
 		float min_d = 1e20;
@@ -501,13 +514,13 @@ bool PahdoSpatialGizmo::intersect_ray(Camera* p_camera, const Point2& p_point, V
 
 		for (int i = 0; i < secondary_handles.size(); i++) {
 			Vector3 hpos = t.xform(secondary_handles[i]);
-			Vector2 p = p_camera->unproject_position(hpos);
+			Vector2 p = camera->unproject_position(hpos);
 
 			if (p.distance_to(p_point) < HANDLE_HALF_SIZE) {
-				real_t dp = p_camera->get_transform().origin.distance_to(hpos);
+				real_t dp = camera->get_transform().origin.distance_to(hpos);
 				if (dp < min_d) {
 					r_pos = t.xform(hpos);
-					r_normal = p_camera->get_transform().basis.get_axis(2);
+					r_normal = camera->get_transform().basis.get_axis(2);
 					min_d = dp;
 					idx = i + handles.size();
 				}
@@ -515,21 +528,27 @@ bool PahdoSpatialGizmo::intersect_ray(Camera* p_camera, const Point2& p_point, V
 		}
 
 		if (p_sec_first && idx != -1) {
-			*r_gizmo_handle = idx;
-			return true;
+			r_gizmo_handle = idx;
+
+			Dictionary output;
+			output["pos"] = r_pos;
+			output["normal"] = r_normal;
+			output["handle"] = r_gizmo_handle;
+
+			return output;
 		}
 
 		min_d = 1e20;
 
 		for (int i = 0; i < handles.size(); i++) {
 			Vector3 hpos = t.xform(handles[i]);
-			Vector2 p = p_camera->unproject_position(hpos);
+			Vector2 p = camera->unproject_position(hpos);
 
 			if (p.distance_to(p_point) < HANDLE_HALF_SIZE) {
-				real_t dp = p_camera->get_transform().origin.distance_to(hpos);
+				real_t dp = camera->get_transform().origin.distance_to(hpos);
 				if (dp < min_d) {
 					r_pos = t.xform(hpos);
-					r_normal = p_camera->get_transform().basis.get_axis(2);
+					r_normal = camera->get_transform().basis.get_axis(2);
 					min_d = dp;
 					idx = i;
 				}
@@ -537,42 +556,48 @@ bool PahdoSpatialGizmo::intersect_ray(Camera* p_camera, const Point2& p_point, V
 		}
 
 		if (idx >= 0) {
-			*r_gizmo_handle = idx;
-			return true;
+			r_gizmo_handle = idx;
+
+			Dictionary output;
+			output["pos"] = r_pos;
+			output["normal"] = r_normal;
+			output["handle"] = r_gizmo_handle;
+
+			return output;
 		}
 	}
 
 	if (selectable_icon_size > 0.0f) {
 		Transform t = spatial_node->get_global_transform();
-		Vector3 camera_position = p_camera->get_camera_transform().origin;
+		Vector3 camera_position = camera->get_camera_transform().origin;
 		if (camera_position.distance_squared_to(t.origin) > 0.01) {
 			t.set_look_at(t.origin, camera_position, Vector3(0, 1, 0));
 		}
 
-		float scale = t.origin.distance_to(p_camera->get_camera_transform().origin);
+		float scale = t.origin.distance_to(camera->get_camera_transform().origin);
 
-		if (p_camera->get_projection() == Camera::PROJECTION_ORTHOGONAL) {
-			float aspect = p_camera->get_viewport()->get_visible_rect().size.aspect();
-			float size = p_camera->get_size();
+		if (camera->get_projection() == Camera::PROJECTION_ORTHOGONAL) {
+			float aspect = camera->get_viewport()->get_visible_rect().size.aspect();
+			float size = camera->get_size();
 			scale = size / aspect;
 		}
 
-		Point2 center = p_camera->unproject_position(t.origin);
+		Point2 center = camera->unproject_position(t.origin);
 
-		Transform orig_camera_transform = p_camera->get_camera_transform();
+		Transform orig_camera_transform = camera->get_camera_transform();
 
 		if (orig_camera_transform.origin.distance_squared_to(t.origin) > 0.01 &&
 			ABS(orig_camera_transform.basis.get_axis(Vector3::AXIS_Z).dot(Vector3(0, 1, 0))) < 0.99) {
-			p_camera->look_at(t.origin, Vector3(0, 1, 0));
+			camera->look_at(t.origin, Vector3(0, 1, 0));
 		}
 
 		Vector3 c0 = t.xform(Vector3(selectable_icon_size, selectable_icon_size, 0) * scale);
 		Vector3 c1 = t.xform(Vector3(-selectable_icon_size, -selectable_icon_size, 0) * scale);
 
-		Point2 p0 = p_camera->unproject_position(c0);
-		Point2 p1 = p_camera->unproject_position(c1);
+		Point2 p0 = camera->unproject_position(c0);
+		Point2 p1 = camera->unproject_position(c1);
 
-		p_camera->set_global_transform(orig_camera_transform);
+		camera->set_global_transform(orig_camera_transform);
 
 		Rect2 rect(p0, (p1 - p0).abs());
 
@@ -580,19 +605,25 @@ bool PahdoSpatialGizmo::intersect_ray(Camera* p_camera, const Point2& p_point, V
 
 		if (rect.has_point(p_point)) {
 			r_pos = t.origin;
-			r_normal = -p_camera->project_ray_normal(p_point);
-			return true;
+			r_normal = -camera->project_ray_normal(p_point);
+
+			Dictionary output;
+			output["pos"] = r_pos;
+			output["normal"] = r_normal;
+			output["handle"] = r_gizmo_handle;
+
+			return output;
 		}
 	}
 
-	if (collision_segments.size()) {
-		Plane camp(p_camera->get_transform().origin, (-p_camera->get_transform().basis.get_axis(2)).normalized());
+	if (!collision_segments.empty()) {
+		Plane camp(camera->get_transform().origin, (-camera->get_transform().basis.get_axis(2)).normalized());
 
 		int vc = collision_segments.size();
 		const Vector3* vptr = collision_segments.ptr();
 		Transform t = spatial_node->get_global_transform();
 		if (billboard_handle) {
-			t.set_look_at(t.origin, t.origin - p_camera->get_transform().basis.get_axis(2), p_camera->get_transform().basis.get_axis(1));
+			t.set_look_at(t.origin, t.origin - camera->get_transform().basis.get_axis(2), camera->get_transform().basis.get_axis(1));
 		}
 
 		Vector3 cp;
@@ -602,8 +633,8 @@ bool PahdoSpatialGizmo::intersect_ray(Camera* p_camera, const Point2& p_point, V
 			Vector3 a = t.xform(vptr[i * 2 + 0]);
 			Vector3 b = t.xform(vptr[i * 2 + 1]);
 			Vector2 s[2];
-			s[0] = p_camera->unproject_position(a);
-			s[1] = p_camera->unproject_position(b);
+			s[0] = camera->unproject_position(a);
+			s[1] = camera->unproject_position(b);
 
 			Vector2 p = Geometry::get_closest_point_to_segment_2d(p_point, s);
 
@@ -621,7 +652,7 @@ bool PahdoSpatialGizmo::intersect_ray(Camera* p_camera, const Point2& p_point, V
 					tcp = a;
 				}
 
-				if (camp.distance_to(tcp) < p_camera->get_znear()) {
+				if (camp.distance_to(tcp) < camera->get_znear()) {
 					continue;
 				}
 				cp = tcp;
@@ -631,8 +662,14 @@ bool PahdoSpatialGizmo::intersect_ray(Camera* p_camera, const Point2& p_point, V
 
 		if (cpd < 8) {
 			r_pos = cp;
-			r_normal = -p_camera->project_ray_normal(p_point);
-			return true;
+			r_normal = -camera->project_ray_normal(p_point);
+
+			Dictionary output;
+			output["pos"] = r_pos;
+			output["normal"] = r_normal;
+			output["handle"] = r_gizmo_handle;
+
+			return output;
 		}
 	}
 
@@ -640,22 +677,28 @@ bool PahdoSpatialGizmo::intersect_ray(Camera* p_camera, const Point2& p_point, V
 		Transform gt = spatial_node->get_global_transform();
 
 		if (billboard_handle) {
-			gt.set_look_at(gt.origin, gt.origin - p_camera->get_transform().basis.get_axis(2), p_camera->get_transform().basis.get_axis(1));
+			gt.set_look_at(gt.origin, gt.origin - camera->get_transform().basis.get_axis(2), camera->get_transform().basis.get_axis(1));
 		}
 
 		Transform ai = gt.affine_inverse();
-		Vector3 ray_from = ai.xform(p_camera->project_ray_origin(p_point));
-		Vector3 ray_dir = ai.basis.xform(p_camera->project_ray_normal(p_point)).normalized();
+		Vector3 ray_from = ai.xform(camera->project_ray_origin(p_point));
+		Vector3 ray_dir = ai.basis.xform(camera->project_ray_normal(p_point)).normalized();
 		Vector3 rpos, rnorm;
 
 		if (collision_mesh->intersect_ray(ray_from, ray_dir, rpos, rnorm)) {
 			r_pos = gt.xform(rpos);
 			r_normal = gt.basis.xform(rnorm).normalized();
-			return true;
+
+			Dictionary output;
+			output["pos"] = r_pos;
+			output["normal"] = r_normal;
+			output["handle"] = r_gizmo_handle;
+
+			return output;
 		}
 	}
 
-	return false;
+	return {};
 }
 
 void PahdoSpatialGizmo::create() {
@@ -723,18 +766,12 @@ void PahdoSpatialGizmo::_bind_methods() {
 	ClassDB::bind_method("clear", &PahdoSpatialGizmo::clear);
 	ClassDB::bind_method("redraw", &PahdoSpatialGizmo::redraw);
 	ClassDB::bind_method(D_METHOD("set_hidden", "hidden"), &PahdoSpatialGizmo::set_hidden);
-	
-	BIND_VMETHOD(MethodInfo(Variant::STRING, "get_handle_name", PropertyInfo(Variant::INT, "index")));
-	BIND_VMETHOD(MethodInfo(Variant::BOOL, "is_handle_highlighted", PropertyInfo(Variant::INT, "index")));
-
-	MethodInfo hvget(Variant::NIL, "get_handle_value", PropertyInfo(Variant::INT, "index"));
-	hvget.return_val.usage |= PROPERTY_USAGE_NIL_IS_VARIANT;
-	BIND_VMETHOD(hvget);
-
-	BIND_VMETHOD(MethodInfo("set_handle", PropertyInfo(Variant::INT, "index"), PropertyInfo(Variant::OBJECT, "camera", PROPERTY_HINT_RESOURCE_TYPE, "Camera"), PropertyInfo(Variant::VECTOR2, "point")));
-	MethodInfo cm = MethodInfo("commit_handle", PropertyInfo(Variant::INT, "index"), PropertyInfo(Variant::NIL, "restore"), PropertyInfo(Variant::BOOL, "cancel"));
-	cm.default_arguments.push_back(false);
-	BIND_VMETHOD(cm);
+	ClassDB::bind_method(D_METHOD("intersect_ray", "camera", "point", "sec_first"), &PahdoSpatialGizmo::intersect_ray, DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("get_handle_name", "index"), &PahdoSpatialGizmo::get_handle_name);
+	ClassDB::bind_method(D_METHOD("is_handle_highlighted", "index"), &PahdoSpatialGizmo::is_handle_highlighted);
+	ClassDB::bind_method(D_METHOD("get_handle_value", "index"), &PahdoSpatialGizmo::get_handle_value);
+	ClassDB::bind_method(D_METHOD("set_handle", "index", "camera", "point"), &PahdoSpatialGizmo::set_handle);
+	ClassDB::bind_method(D_METHOD("commit_handle", "index", "restore", "cancel"), &PahdoSpatialGizmo::commit_handle, DEFVAL(false));
 }
 
 PahdoSpatialGizmo::PahdoSpatialGizmo() {

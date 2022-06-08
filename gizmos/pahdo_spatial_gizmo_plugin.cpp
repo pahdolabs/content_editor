@@ -4,6 +4,7 @@
 #include "content_editor/EditorConsts.h"
 #include "content_editor/icons_cache.h"
 #include "scene/resources/material.h"
+#include "scene/3d/camera.h"
 
 void PahdoSpatialGizmoPlugin::create_material(const String& p_name, const Color& p_color, bool p_billboard, bool p_on_top, bool p_use_vertex_color) {
 	Color instanced_color = EditorConsts::get_singleton()->named_color("instanced", Color(0.7, 0.7, 0.7, 0.6));
@@ -196,7 +197,7 @@ void PahdoSpatialGizmoPlugin::_bind_methods() {
 	hvget.return_val.usage |= PROPERTY_USAGE_NIL_IS_VARIANT;
 	BIND_VMETHOD(hvget);
 
-	BIND_VMETHOD(MethodInfo("set_handle", GIZMO_REF, PropertyInfo(Variant::INT, "index"), PropertyInfo(Variant::OBJECT, "camera", PROPERTY_HINT_RESOURCE_TYPE, "Camera"), PropertyInfo(Variant::VECTOR2, "point")));
+	ClassDB::bind_method(D_METHOD("set_handle", "gizmo", "camera", "point"), &PahdoSpatialGizmoPlugin::set_handle);
 	MethodInfo cm = MethodInfo("commit_handle", GIZMO_REF, PropertyInfo(Variant::INT, "index"), PropertyInfo(Variant::NIL, "restore"), PropertyInfo(Variant::BOOL, "cancel"));
 	cm.default_arguments.push_back(false);
 	BIND_VMETHOD(cm);
@@ -260,13 +261,15 @@ Variant PahdoSpatialGizmoPlugin::get_handle_value(PahdoSpatialGizmo* p_gizmo, in
 	return Variant();
 }
 
-void PahdoSpatialGizmoPlugin::set_handle(PahdoSpatialGizmo* p_gizmo, int p_idx, Camera* p_camera, const Point2& p_point) {
+void PahdoSpatialGizmoPlugin::set_handle(const Ref<PahdoSpatialGizmo> p_gizmo, int p_idx, const Object* p_camera, const Point2& p_point) {
+	const Camera* camera = cast_to<Camera>(p_camera);
+	ERR_FAIL_COND(!camera);
 	if (get_script_instance() && get_script_instance()->has_method("set_handle")) {
-		get_script_instance()->call("set_handle", p_gizmo, p_idx, p_camera, p_point);
+		get_script_instance()->call("set_handle", p_gizmo, p_idx, camera, p_point);
 	}
 }
 
-void PahdoSpatialGizmoPlugin::commit_handle(PahdoSpatialGizmo* p_gizmo, int p_idx, const Variant& p_restore, bool p_cancel) {
+void PahdoSpatialGizmoPlugin::commit_handle(PahdoSpatialGizmo *p_gizmo, int p_idx, const Variant& p_restore, bool p_cancel) {
 	if (get_script_instance() && get_script_instance()->has_method("commit_handle")) {
 		get_script_instance()->call("commit_handle", p_gizmo, p_idx, p_restore, p_cancel);
 	}

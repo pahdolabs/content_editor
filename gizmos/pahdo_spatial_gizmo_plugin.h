@@ -42,7 +42,7 @@ public:
 	virtual void redraw(PahdoSpatialGizmo* p_gizmo);
 	virtual String get_handle_name(const PahdoSpatialGizmo* p_gizmo, int p_idx) const;
 	virtual Variant get_handle_value(PahdoSpatialGizmo* p_gizmo, int p_idx) const;
-	virtual void set_handle(PahdoSpatialGizmo* p_gizmo, int p_idx, Camera* p_camera, const Point2& p_point);
+	virtual void set_handle(const Ref<PahdoSpatialGizmo> p_gizmo, int p_idx, const Object* p_camera, const Point2& p_point);
 	virtual void commit_handle(PahdoSpatialGizmo* p_gizmo, int p_idx, const Variant& p_restore, bool p_cancel = false);
 	virtual bool is_handle_highlighted(const PahdoSpatialGizmo* p_gizmo, int p_idx) const;
 
