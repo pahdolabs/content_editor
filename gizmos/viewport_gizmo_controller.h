@@ -92,7 +92,6 @@ class ViewportGizmoController : public Reference {
 	Map<Spatial*, GizmoInfo> gizmos_by_node;
 
 private:
-	void _on_other_transform_changed();
 	void _init_origin();
 	void _init_translate(const Vector3& nivec, const Vector3& ivec, const Ref<SpatialMaterial>& p_mat, int idx);
 	void _init_rotate(const Vector3& ivec, const Vector3& ivec2, const Color& col, const Color& albedo, int idx);
@@ -125,11 +124,11 @@ public:
 	void update_all_gizmos(const Object* p_node = nullptr);
 	void update_transform_gizmo();
 	void gui_input(Ref<InputEvent> p_event);
-	virtual void register_all_gizmos();
 	void set_viewport_controller(const Object* p_controller);
 	void add_gizmo_plugin(const Ref<PahdoSpatialGizmoPlugin> p_plugin);
 	void remove_gizmos_for(const Object* p_node);
 	void edit(const Object* p_node);
+	void _on_other_transform_changed();
 
 	ViewportGizmoController();
 	~ViewportGizmoController();

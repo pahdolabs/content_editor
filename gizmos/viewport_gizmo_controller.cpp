@@ -613,7 +613,7 @@ void ViewportGizmoController::gui_input(const Ref<InputEvent> p_event) {
 						Dictionary inters = seg->intersect_ray(controller->get("camera"), _edit.mouse_pos, mb->get_shift());
 						if (!inters.empty() && static_cast<int>(inters["handle"]) != -1) {
 							_edit.gizmo = seg;
-							_edit.gizmo_handle = inters["hanlde"];
+							_edit.gizmo_handle = inters["handle"];
 							_edit.gizmo_initial_value = seg->get_handle_value(_edit.gizmo_handle);
 							return;
 						}
@@ -833,8 +833,6 @@ void ViewportGizmoController::gui_input(const Ref<InputEvent> p_event) {
 	}
 }
 
-void ViewportGizmoController::register_all_gizmos() {}
-
 void ViewportGizmoController::_init_indicators() {
 	_init_origin();
 	_init_transform();
@@ -865,8 +863,10 @@ void ViewportGizmoController::_init_gizmo_instance() {
 
 void ViewportGizmoController::set_viewport_controller(const Object* p_controller) {
 	controller = const_cast<Node*>(cast_to<Node>(p_controller));
-	if (!controller) {
-		register_all_gizmos();
+	if (controller) {
+		if (get_script_instance() && get_script_instance()->has_method("register_all_gizmos")) {
+			get_script_instance()->call("register_all_gizmos");
+		}
 		_init_indicators();
 		_init_gizmo_instance();
 	}
@@ -1003,7 +1003,8 @@ void ViewportGizmoController::edit(const Object* p_node) {
 }
 
 void ViewportGizmoController::_bind_methods() {
-	ClassDB::bind_method("register_all_gizmos", &ViewportGizmoController::register_all_gizmos);
+	BIND_VMETHOD(MethodInfo("register_all_gizmos"));
+
 	ClassDB::bind_method(D_METHOD("add_gizmo_plugin", "plugin"), &ViewportGizmoController::add_gizmo_plugin);
 	ClassDB::bind_method(D_METHOD("gui_input", "event"), &ViewportGizmoController::gui_input);
 	ClassDB::bind_method(D_METHOD("update_all_gizmos", "spatial"), &ViewportGizmoController::update_all_gizmos);
@@ -1011,6 +1012,7 @@ void ViewportGizmoController::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("edit", "spatial"), &ViewportGizmoController::edit);
 	ClassDB::bind_method(D_METHOD("remove_gizmos_for", "spatial"), &ViewportGizmoController::remove_gizmos_for);
 	ClassDB::bind_method(D_METHOD("set_viewport_controller", "controller"), &ViewportGizmoController::set_viewport_controller);
+	ClassDB::bind_method("_on_other_transform_changed", &ViewportGizmoController::_on_other_transform_changed);
 
 	ClassDB::bind_method(D_METHOD("_update_gizmo", "spatial"), &ViewportGizmoController::_update_gizmo);
 
