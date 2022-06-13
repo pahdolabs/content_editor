@@ -58,13 +58,11 @@ bool ViewportGizmoController::_gizmo_select(const Vector2& p_screenpos, bool p_h
 		float col_d = 1e20;
 
 		for (int i = 0; i < 3; ++i) {
-			Vector3 axis = gt.basis.get_axis(0);
-			Vector3 grabber_pos = gt.origin + axis * gs * (GIZMO_ARROW_OFFSET + (GIZMO_ARROW_SIZE * 0.5));
+			Vector3 grabber_pos = gt.origin + gt.basis.get_axis(i) * gs * (GIZMO_ARROW_OFFSET + (GIZMO_ARROW_SIZE * 0.5));
 			float grabber_radius = gs * GIZMO_ARROW_SIZE;
 
 			Vector3 r_res;
-			Vector3 r_norm;
-			if (Geometry::segment_intersects_sphere(ray_pos, ray_pos + ray * MAX_Z, grabber_pos, grabber_radius, &r_res, &r_norm)) {
+			if (Geometry::segment_intersects_sphere(ray_pos, ray_pos + ray * MAX_Z, grabber_pos, grabber_radius, &r_res)) {
 				float d = r_res.distance_to(ray_pos);
 				if (d < col_d) {
 					col_d = d;
@@ -78,12 +76,11 @@ bool ViewportGizmoController::_gizmo_select(const Vector2& p_screenpos, bool p_h
 			col_d = 1e20;
 
 			for (int i = 0; i < 3; ++i) {
-				Vector3 ivec2 = gt.basis.get_axis(Math::wrapi(i + 1, 0, 3)).normalized();
-				Vector3 ivec3 = gt.basis.get_axis(Math::wrapi(i + 2, 0, 3)).normalized();
-				Vector3 axis = gt.basis.get_axis(i);
+				Vector3 ivec2 = gt.basis.get_axis((i+1) % 3).normalized();
+				Vector3 ivec3 = gt.basis.get_axis((i+2) % 3).normalized();
 
 				Vector3 grabber_pos = gt.origin + (ivec2 + ivec3) * gs * (GIZMO_PLANE_SIZE + GIZMO_PLANE_DST * 0.6667);
-				Plane plane(gt.origin, axis.normalized());
+				Plane plane(gt.origin, gt.basis.get_axis(i).normalized());
 
 				Vector3 inters;
 				if (plane.intersects_ray(ray_pos, ray, &inters)) {
@@ -108,7 +105,7 @@ bool ViewportGizmoController::_gizmo_select(const Vector2& p_screenpos, bool p_h
 			else {
 				_edit.mode = TRANSFORM_TRANSLATE;
 				_compute_edit(p_screenpos);
-				_edit.plane = TRANSFORM_X_AXIS + col_axis + (is_plane_translate ? 3 : 0);
+				_edit.plane = static_cast<TransformPlane>(TRANSFORM_X_AXIS + col_axis + (is_plane_translate ? 3 : 0));
 			}
 			return true;
 		}
@@ -119,8 +116,7 @@ bool ViewportGizmoController::_gizmo_select(const Vector2& p_screenpos, bool p_h
 		float col_d = 1e20;
 
 		for (int i = 0; i < 3; ++i) {
-			Vector3 axis = gt.basis.get_axis(i);
-			Plane plane(gt.origin, axis.normalized());
+			Plane plane(gt.origin, gt.basis.get_axis(i).normalized());
 			Vector3 inters;
 			if (!plane.intersects_ray(ray_pos, ray, &inters)) {
 				continue;
@@ -526,9 +522,9 @@ void ViewportGizmoController::_init_transform() {
 		Ref<SpatialMaterial> mat;
 		mat.instance();
 		mat->set_flag(SpatialMaterial::FLAG_UNSHADED, true);
+		mat->set_on_top_of_alpha();
 		mat->set_feature(SpatialMaterial::FEATURE_TRANSPARENT, true);
 		mat->set_render_priority(Material::RENDER_PRIORITY_MAX);
-		mat->set_flag(SpatialMaterial::FLAG_DISABLE_DEPTH_TEST, true);
 		mat->set_albedo(col);
 		move_gizmo_color[i] = mat;
 
@@ -624,7 +620,7 @@ void ViewportGizmoController::gui_input(const Ref<InputEvent> p_event) {
 					return;
 				}
 
-				if (static_cast<int>(controller->get("current_mode")) & ROTATE_MODE) {
+				/*if (static_cast<int>(controller->get("current_mode")) & ROTATE_MODE) {
 					if (get_selected_count() == 0) {
 						return;
 					}
@@ -640,7 +636,7 @@ void ViewportGizmoController::gui_input(const Ref<InputEvent> p_event) {
 					_edit.mode = TRANSFORM_TRANSLATE;
 					_compute_edit(mb->get_position());
 					return;
-				}
+				}*/
 			}
 			else {
 				if (_edit.gizmo.is_valid()) {
@@ -687,7 +683,7 @@ void ViewportGizmoController::gui_input(const Ref<InputEvent> p_event) {
 			}
 		}
 
-		if (over_gizmo_handle == -1 && (mm->get_button_mask() & 1) == 0 && !_edit.gizmo.is_valid()) {
+		if (over_gizmo_handle == -1 && !(mm->get_button_mask() & 1) && !_edit.gizmo.is_valid()) {
 			_gizmo_select(_edit.mouse_pos, true);
 		}
 
@@ -714,25 +710,28 @@ void ViewportGizmoController::gui_input(const Ref<InputEvent> p_event) {
 					break;
 				case TRANSFORM_X_AXIS:
 					motion_mask = get_gizmo_transform().basis.get_axis(0);
-					plane = Plane(_edit.center, motion_mask.cross(motion_mask.cross(_get_camera_normal())));
+					plane = Plane(_edit.center, motion_mask.cross(motion_mask.cross(_get_camera_normal())).normalized());
 					break;
 				case TRANSFORM_Y_AXIS:
 					motion_mask = get_gizmo_transform().basis.get_axis(1);
-					plane = Plane(_edit.center, motion_mask.cross(motion_mask.cross(_get_camera_normal())));
+					plane = Plane(_edit.center, motion_mask.cross(motion_mask.cross(_get_camera_normal())).normalized());
 					break;
 				case TRANSFORM_Z_AXIS:
 					motion_mask = get_gizmo_transform().basis.get_axis(2);
-					plane = Plane(_edit.center, motion_mask.cross(motion_mask.cross(_get_camera_normal())));
+					plane = Plane(_edit.center, motion_mask.cross(motion_mask.cross(_get_camera_normal())).normalized());
 					break;
 				case TRANSFORM_YZ:
+					motion_mask = get_gizmo_transform().basis.get_axis(2) + get_gizmo_transform().basis.get_axis(1);
 					plane = Plane(_edit.center, get_gizmo_transform().basis.get_axis(0));
 					plane_mv = true;
 					break;
 				case TRANSFORM_XZ:
+					motion_mask = get_gizmo_transform().basis.get_axis(2) + get_gizmo_transform().basis.get_axis(0);
 					plane = Plane(_edit.center, get_gizmo_transform().basis.get_axis(1));
 					plane_mv = true;
 					break;
 				case TRANSFORM_XY:
+					motion_mask = get_gizmo_transform().basis.get_axis(0) + get_gizmo_transform().basis.get_axis(1);
 					plane = Plane(_edit.center, get_gizmo_transform().basis.get_axis(2));
 					plane_mv = true;
 					break;
@@ -760,6 +759,7 @@ void ViewportGizmoController::gui_input(const Ref<InputEvent> p_event) {
 				}
 
 				Transform t = original_transform;
+				t.origin += motion;
 				selected->set_transform(t);
 				update_all_gizmos(selected);
 				update_transform_gizmo();
