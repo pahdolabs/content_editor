@@ -207,13 +207,12 @@ void ViewportGizmoController::_update_all_gizmos(const Object* p_node) {
 }
 
 void ViewportGizmoController::update_transform_gizmo_view() {
-	const ViewportContainer* vp = cast_to<ViewportContainer>(controller);
-	if (!vp->is_visible_in_tree()) {
+	if (!controller->is_visible_in_tree()) {
 		return;
 	}
 
 	Transform xform = get_gizmo_transform();
-	Transform camera_xform = cast_to<Camera>(vp->get("camera"))->get_transform();
+	Transform camera_xform = cast_to<Camera>(controller->get("camera"))->get_transform();
 
 	if (xform.origin.distance_squared_to(camera_xform.origin) < 0.01) {
 		for (int i = 0; i < 3; ++i) {
@@ -229,8 +228,8 @@ void ViewportGizmoController::update_transform_gizmo_view() {
 	Vector3 camy = -camera_xform.basis.get_axis(1).normalized();
 	Plane p(camera_xform.origin, camz);
 	float gizmo_d = MAX(abs(p.distance_to(xform.origin)), 0.00001);
-	float d0 = cast_to<Camera>(vp->get("camera"))->unproject_position(camera_xform.origin + camz * gizmo_d).y;
-	float d1 = cast_to<Camera>(vp->get("camera"))->unproject_position(camera_xform.origin + camz * gizmo_d + camy).y;
+	float d0 = cast_to<Camera>(controller->get("camera"))->unproject_position(camera_xform.origin + camz * gizmo_d).y;
+	float d1 = cast_to<Camera>(controller->get("camera"))->unproject_position(camera_xform.origin + camz * gizmo_d + camy).y;
 	float dd = abs(d0 - d1);
 	if (dd == 0) {
 		dd = 0.0001;
@@ -238,7 +237,7 @@ void ViewportGizmoController::update_transform_gizmo_view() {
 
 	float gizmo_size = EditorConsts::get_singleton()->named_const("gizmo_size", 80);
 	int viewport_base_height = 400;
-	gizmo_scale = gizmo_size / abs(dd) * 1 * MIN(viewport_base_height, vp->get_size().height) / viewport_base_height / vp->get_stretch_shrink();
+	gizmo_scale = gizmo_size / abs(dd) * 1 * MIN(viewport_base_height, controller->get_size().height) / viewport_base_height / static_cast<int>(controller->call("get_stretch_shrink"));
 	Vector3 scale = Vector3(1, 1, 1) * gizmo_scale;
 
 	xform.basis = xform.basis.scaled(scale);
@@ -862,7 +861,7 @@ void ViewportGizmoController::_init_gizmo_instance() {
 }
 
 void ViewportGizmoController::set_viewport_controller(const Object* p_controller) {
-	controller = const_cast<Node*>(cast_to<Node>(p_controller));
+	controller = const_cast<Control*>(cast_to<Control>(p_controller));
 	if (controller) {
 		if (get_script_instance() && get_script_instance()->has_method("register_all_gizmos")) {
 			get_script_instance()->call("register_all_gizmos");
@@ -917,11 +916,11 @@ bool ViewportGizmoController::is_gizmo_visible() {
 }
 
 Vector3 ViewportGizmoController::_get_ray_pos(const Vector2& p_screenpos) {
-	return cast_to<Camera>(controller->get("camera"))->project_ray_origin(p_screenpos / cast_to<ViewportContainer>(controller)->get_stretch_shrink());
+	return cast_to<Camera>(controller->get("camera"))->project_ray_origin(p_screenpos / static_cast<float>(controller->call("get_stretch_shrink")));
 }
 
 Vector3 ViewportGizmoController::_get_ray(const Vector2& p_screenpos) {
-	return cast_to<Camera>(controller->get("camera"))->project_ray_normal(p_screenpos) / static_cast<float>(controller->get("stretch_shrink"));
+	return cast_to<Camera>(controller->get("camera"))->project_ray_normal(p_screenpos) / static_cast<float>(controller->call ("get_stretch_shrink"));
 }
 
 Transform ViewportGizmoController::get_gizmo_transform() {

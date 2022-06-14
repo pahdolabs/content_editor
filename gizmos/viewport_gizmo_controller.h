@@ -61,7 +61,7 @@ class ViewportGizmoController : public Reference {
 		Vector3 gizmo_initial_pos;
 	} _edit;
 
-	Node* controller;
+	Control* controller;
 
 	Transform original_transform;
 
