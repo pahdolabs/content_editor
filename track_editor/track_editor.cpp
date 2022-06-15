@@ -193,6 +193,9 @@ void TrackEditor::_name_limit_changed() {
 	for (int i = 0; i < track_edits.size(); i++) {
 		track_edits[i]->update();
 	}
+	for(int i=0; i<track_edit_headers.size(); ++i) {
+		track_edit_headers[i]->update();
+	}
 }
 
 void TrackEditor::_timeline_changed(float p_new_pos, bool p_drag, bool p_timeline_only) {
@@ -238,6 +241,9 @@ void TrackEditor::set_anim_pos(float p_pos) {
 	timeline->set_play_position(p_pos);
 	for (int i = 0; i < track_edits.size(); i++) {
 		track_edits[i]->set_play_position(p_pos);
+	}
+	for(int i=0; i< track_edit_headers.size(); ++i) {
+		track_edit_headers[i]->set_play_position(p_pos);
 	}
 }
 
@@ -1155,6 +1161,9 @@ void TrackEditor::_animation_update() {
 		for (int i = 0; i < track_edits.size(); i++) {
 			track_edits[i]->update();
 		}
+		for (int i = 0; i < track_edit_headers.size(); i++) {
+			track_edit_headers[i]->update();
+		}
 	}
 	else {
 		_update_tracks();
@@ -1195,6 +1204,9 @@ void TrackEditor::_notification(int p_what) {
 void TrackEditor::_update_scroll(double) {
 	for (int i = 0; i < track_edits.size(); i++) {
 		track_edits[i]->update();
+	}
+	for (int i = 0; i < track_edit_headers.size(); i++) {
+		track_edit_headers[i]->update();
 	}
 }
 
@@ -1364,6 +1376,10 @@ void TrackEditor::_timeline_value_changed(double) {
 		track_edits[i]->update();
 		track_edits[i]->update_play_position();
 	}
+	for (int i = 0; i < track_edit_headers.size(); i++) {
+		track_edit_headers[i]->update();
+		track_edit_headers[i]->update_play_position();
+	}
 }
 
 int TrackEditor::_get_track_selected() {
@@ -1492,6 +1508,9 @@ void TrackEditor::_key_selected(int p_key, bool p_single, int p_track) {
 	for (int i = 0; i < track_edits.size(); i++) {
 		track_edits[i]->update();
 	}
+	for (int i = 0; i < track_edit_headers.size(); i++) {
+		track_edit_headers[i]->update();
+	}
 
 	_update_key_edit();
 }
@@ -1509,6 +1528,9 @@ void TrackEditor::_key_deselected(int p_key, int p_track) {
 	for (int i = 0; i < track_edits.size(); i++) {
 		track_edits[i]->update();
 	}
+	for (int i = 0; i < track_edit_headers.size(); i++) {
+		track_edit_headers[i]->update();
+	}
 
 	_update_key_edit();
 }
@@ -1523,6 +1545,9 @@ void TrackEditor::_move_selection(float p_offset) {
 
 	for (int i = 0; i < track_edits.size(); i++) {
 		track_edits[i]->update();
+	}
+	for (int i = 0; i < track_edit_headers.size(); i++) {
+		track_edit_headers[i]->update();
 	}
 }
 
@@ -1562,6 +1587,9 @@ void TrackEditor::_clear_selection(bool p_update) {
 	if (p_update) {
 		for (int i = 0; i < track_edits.size(); i++) {
 			track_edits[i]->update();
+		}
+		for (int i = 0; i < track_edit_headers.size(); i++) {
+			track_edit_headers[i]->update();
 		}
 	}
 
@@ -1725,6 +1753,9 @@ void TrackEditor::_move_selection_commit() {
 	for (int i = 0; i < track_edits.size(); i++) {
 		track_edits[i]->update();
 	}
+	for (int i = 0; i < track_edit_headers.size(); i++) {
+		track_edit_headers[i]->update();
+	}
 
 	_update_key_edit();
 }
@@ -1733,6 +1764,9 @@ void TrackEditor::_move_selection_cancel() {
 	moving_selection = false;
 	for (int i = 0; i < track_edits.size(); i++) {
 		track_edits[i]->update();
+	}
+	for (int i = 0; i < track_edit_headers.size(); i++) {
+		track_edit_headers[i]->update();
 	}
 }
 
@@ -2431,6 +2465,9 @@ void TrackEditor::_selection_changed() {
 	else {
 		for (int i = 0; i < track_edits.size(); i++) {
 			track_edits[i]->update();
+		}
+		for (int i = 0; i < track_edit_headers.size(); i++) {
+			track_edit_headers[i]->update();
 		}
 
 	}

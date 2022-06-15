@@ -440,6 +440,8 @@ void PlayerEditorControl::_seek_value_changed(float p_value, bool p_set, bool p_
 	}
 
 	track_editor->set_anim_pos(pos);
+
+	updating = false;
 };
 
 void PlayerEditorControl::_animation_player_changed(Object *p_pl) {
