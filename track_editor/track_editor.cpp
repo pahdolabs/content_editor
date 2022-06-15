@@ -2490,6 +2490,10 @@ void TrackEditor::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_track_edit_type", "header", "track_edit_classes"), &TrackEditor::set_track_edit_type);
 	ClassDB::bind_method("is_selection_active", &TrackEditor::is_selection_active);
 	ClassDB::bind_method("get_control", &TrackEditor::get_control);
+	ClassDB::bind_method(D_METHOD("is_key_selected", "track", "key"), &TrackEditor::is_key_selected);
+	ClassDB::bind_method("is_moving_selection", &TrackEditor::is_moving_selection);
+	ClassDB::bind_method("get_moving_selection_offset", &TrackEditor::get_moving_selection_offset);
+	ClassDB::bind_method(D_METHOD("set_anim_pos", "pos"), &TrackEditor::set_anim_pos);
 
 	ClassDB::bind_method("_animation_update", &TrackEditor::_animation_update);
 	ClassDB::bind_method("_track_grab_focus", &TrackEditor::_track_grab_focus);
