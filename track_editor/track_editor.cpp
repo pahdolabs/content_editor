@@ -180,6 +180,15 @@ void TrackEditor::cleanup() {
 	set_animation(Ref<Animation>());
 }
 
+TrackEdit* TrackEditor::get_track_edit_for(int p_track) const {
+	for(int i=0; i<track_edits.size(); ++i) {
+		if(track_edits[i]->get_track() == p_track) {
+			return track_edits[i];
+		}
+	}
+	return nullptr;
+}
+
 void TrackEditor::_name_limit_changed() {
 	for (int i = 0; i < track_edits.size(); i++) {
 		track_edits[i]->update();
@@ -2487,6 +2496,7 @@ PlayerEditorControl* TrackEditor::get_control() {
 }
 
 void TrackEditor::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("snap_time", "value", "relative"), &TrackEditor::snap_time, DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("set_track_edit_type", "header", "track_edit_classes"), &TrackEditor::set_track_edit_type);
 	ClassDB::bind_method("is_selection_active", &TrackEditor::is_selection_active);
 	ClassDB::bind_method("get_control", &TrackEditor::get_control);

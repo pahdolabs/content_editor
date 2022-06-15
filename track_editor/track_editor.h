@@ -286,6 +286,8 @@ public:
 
 	void cleanup();
 
+	TrackEdit* get_track_edit_for(int p_track) const;
+
 	void set_anim_pos(float p_pos);
 	void insert_node_value_key(Node* p_node, const String& p_property, const Variant& p_value, bool p_only_if_exists = false);
 	void insert_transform_key(Spatial* p_node, const String& p_sub, const Animation::TrackType p_type, const Variant p_value);

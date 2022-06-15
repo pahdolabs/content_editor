@@ -859,7 +859,24 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 		if (!mb->is_pressed() && mb->get_button_index() == BUTTON_LEFT) {
 			moving_selection_attempt = false;
 			if (moving_selection) {
+				for (int t = 0; t < get_animation()->get_track_count(); ++t) {
+					if(t == get_track()) {
+						continue;
+					}
+					bool track_selected = false;
+					for (int k = 0; k < get_animation()->track_get_key_count(t); ++k) {
+						if(get_editor()->is_key_selected(t, k)) {
+							track_selected = true;
+							break;
+						}
+					}
+					if(track_selected) {
+						TrackEdit* target = get_editor()->get_track_edit_for(t);
+						target->emit_signal("move_selection_commit");
+					}
+				}
 				emit_signal("move_selection_commit");
+
 			}
 			else if (select_single_attempt != -1) {
 				emit_signal("select_key", select_single_attempt, true);
@@ -871,6 +888,22 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 		if (moving_selection && mb->is_pressed() && mb->get_button_index() == BUTTON_RIGHT) {
 			moving_selection_attempt = false;
 			moving_selection = false;
+			for (int t = 0; t < get_animation()->get_track_count(); ++t) {
+				if (t == get_track()) {
+					continue;
+				}
+				bool track_selected = false;
+				for (int k = 0; k < get_animation()->track_get_key_count(t); ++k) {
+					if (get_editor()->is_key_selected(t, k)) {
+						track_selected = true;
+						break;
+					}
+				}
+				if (track_selected) {
+					TrackEdit* target = get_editor()->get_track_edit_for(t);
+					target->emit_signal("move_selection_cancel");
+				}
+			}
 			emit_signal("move_selection_cancel");
 		}
 	}
@@ -931,10 +964,42 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 	if (mm.is_valid() && (mm->get_button_mask() & BUTTON_MASK_LEFT) != 0 && moving_selection_attempt) {
 		if (!moving_selection) {
 			moving_selection = true;
+			for (int t = 0; t < get_animation()->get_track_count(); ++t) {
+				if (t == get_track()) {
+					continue;
+				}
+				bool track_selected = false;
+				for (int k = 0; k < get_animation()->track_get_key_count(t); ++k) {
+					if (get_editor()->is_key_selected(t, k)) {
+						track_selected = true;
+						break;
+					}
+				}
+				if (track_selected) {
+					TrackEdit* target = get_editor()->get_track_edit_for(t);
+					target->emit_signal("move_selection_begin");
+				}
+			}
 			emit_signal("move_selection_begin");
 		}
 
 		float new_ofs = (mm->get_position().x - timeline->get_name_limit()) / timeline->get_zoom_scale();
+		for (int t = 0; t < get_animation()->get_track_count(); ++t) {
+			if (t == get_track()) {
+				continue;
+			}
+			bool track_selected = false;
+			for (int k = 0; k < get_animation()->track_get_key_count(t); ++k) {
+				if (get_editor()->is_key_selected(t, k)) {
+					track_selected = true;
+					break;
+				}
+			}
+			if (track_selected) {
+				TrackEdit* target = get_editor()->get_track_edit_for(t);
+				target->emit_signal("move_selection", new_ofs - moving_selection_from_ofs);
+			}
+		}
 		emit_signal("move_selection", new_ofs - moving_selection_from_ofs);
 	}
 }
@@ -1089,7 +1154,7 @@ int TrackEdit::get_index_of_track_edit_belonging_to_header(int p_track) {
 	return -1;
 }
 
-void TrackEdit::set_remove_rect(const Rect2 &rect) {
+void TrackEdit::set_remove_rect(const Rect2& rect) {
 	remove_rect = rect;
 }
 
