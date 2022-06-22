@@ -1,7 +1,7 @@
 #include "viewport_gizmo_controller.h"
 
 #include "pahdo_spatial_gizmo_plugin.h"
-#include "content_editor/EditorConsts.h"
+#include "content_editor/editor_consts.h"
 #include "scene/3d/camera.h"
 #include "scene/gui/viewport_container.h"
 #include "scene/resources/surface_tool.h"
@@ -235,7 +235,7 @@ void ViewportGizmoController::update_transform_gizmo_view() {
 		dd = 0.0001;
 	}
 
-	float gizmo_size = EditorConsts::get_singleton()->named_const("gizmo_size", 80);
+	float gizmo_size = _EditorConsts::get_singleton()->named_const("gizmo_size", 80);
 	int viewport_base_height = 400;
 	gizmo_scale = gizmo_size / abs(dd) * 1 * MIN(viewport_base_height, controller->get_size().height) / viewport_base_height / static_cast<int>(controller->call("get_stretch_shrink"));
 	Vector3 scale = Vector3(1, 1, 1) * gizmo_scale;
@@ -291,13 +291,13 @@ void ViewportGizmoController::_init_origin() {
 		Color origin_color;
 		switch (i) {
 		case 0:
-			origin_color = EditorConsts::get_singleton()->named_color("axis_x_color", Color(1, 0, 0));
+			origin_color = _EditorConsts::get_singleton()->named_color("axis_x_color", Color(1, 0, 0));
 			break;
 		case 1:
-			origin_color = EditorConsts::get_singleton()->named_color("axis_y_color", Color(0, 1, 0));
+			origin_color = _EditorConsts::get_singleton()->named_color("axis_y_color", Color(0, 1, 0));
 			break;
 		case 2:
-			origin_color = EditorConsts::get_singleton()->named_color("axis_z_color", Color(0, 0, 1));
+			origin_color = _EditorConsts::get_singleton()->named_color("axis_z_color", Color(0, 0, 1));
 			break;
 		}
 
@@ -502,16 +502,16 @@ void ViewportGizmoController::_init_transform() {
 		Color col;
 		switch (i) {
 		case 0:
-			col = EditorConsts::get_singleton()->named_color("axis_x_color", Color(1, 0, 0));
+			col = _EditorConsts::get_singleton()->named_color("axis_x_color", Color(1, 0, 0));
 			break;
 		case 1:
-			col = EditorConsts::get_singleton()->named_color("axis_y_color", Color(0, 1, 0));
+			col = _EditorConsts::get_singleton()->named_color("axis_y_color", Color(0, 1, 0));
 			break;
 		case 2:
-			col = EditorConsts::get_singleton()->named_color("axis_z_color", Color(0, 0, 1));
+			col = _EditorConsts::get_singleton()->named_color("axis_z_color", Color(0, 0, 1));
 			break;
 		}
-		col.a = EditorConsts::get_singleton()->named_const("gizmo_opacity", 0.9);
+		col.a = _EditorConsts::get_singleton()->named_const("gizmo_opacity", 0.9);
 
 		move_gizmo[i] = Ref<ArrayMesh>();
 		move_gizmo[i].instance();

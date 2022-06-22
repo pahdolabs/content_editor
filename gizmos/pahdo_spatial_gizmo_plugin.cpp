@@ -1,13 +1,13 @@
 #include "pahdo_spatial_gizmo_plugin.h"
 
 #include "pahdo_spatial_gizmo.h"
-#include "content_editor/EditorConsts.h"
+#include "content_editor/editor_consts.h"
 #include "content_editor/icons_cache.h"
 #include "scene/resources/material.h"
 #include "scene/3d/camera.h"
 
 void PahdoSpatialGizmoPlugin::create_material(const String& p_name, const Color& p_color, bool p_billboard, bool p_on_top, bool p_use_vertex_color) {
-	Color instanced_color = EditorConsts::get_singleton()->named_color("instanced", Color(0.7, 0.7, 0.7, 0.6));
+	Color instanced_color = _EditorConsts::get_singleton()->named_color("instanced", Color(0.7, 0.7, 0.7, 0.6));
 
 	Vector<Ref<SpatialMaterial>> mats;
 
@@ -48,7 +48,7 @@ void PahdoSpatialGizmoPlugin::create_material(const String& p_name, const Color&
 }
 
 void PahdoSpatialGizmoPlugin::create_icon_material(const String& p_name, const Ref<Texture>& p_texture, bool p_on_top, const Color& p_albedo) {
-	Color instanced_color = EditorConsts::get_singleton()->named_color("instanced", Color(0.7, 0.7, 0.7, 0.6));
+	Color instanced_color = _EditorConsts::get_singleton()->named_color("instanced", Color(0.7, 0.7, 0.7, 0.6));
 
 	Vector<Ref<SpatialMaterial>> icons;
 
@@ -93,7 +93,7 @@ void PahdoSpatialGizmoPlugin::create_handle_material(const String& p_name, bool 
 	handle_material->set_flag(SpatialMaterial::FLAG_UNSHADED, true);
 	handle_material->set_flag(SpatialMaterial::FLAG_USE_POINT_SIZE, true);
 
-	Ref<Texture> handle_t = p_icon != nullptr ? p_icon : IconsCache::get_singleton()->get_icon("Editor3DHandle");
+	Ref<Texture> handle_t = p_icon != nullptr ? p_icon : _IconsCache::get_singleton()->get_icon("Editor3DHandle");
 	handle_material->set_point_size(handle_t->get_width());
 	handle_material->set_texture(SpatialMaterial::TEXTURE_ALBEDO, handle_t);
 	handle_material->set_albedo(Color(1, 1, 1));

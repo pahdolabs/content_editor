@@ -6,16 +6,16 @@
 #include "scene/2d/sprite.h"
 #include "scene/2d/animated_sprite.h"
 
-#include "../EditorConsts.h"
+#include "../editor_consts.h"
 #include "../icons_cache.h"
 
 int TrackEditVolumeDB::get_key_height() const {
-	Ref<Texture> volume_texture = IconsCache::get_singleton()->get_icon("ColorTrackVu");
+	Ref<Texture> volume_texture = _IconsCache::get_singleton()->get_icon("ColorTrackVu");
 	return volume_texture->get_height() * 1.2;
 }
 
 void TrackEditVolumeDB::draw_bg(int p_clip_left, int p_clip_right) {
-	Ref<Texture> volume_texture = IconsCache::get_singleton()->get_icon("ColorTrackVu");
+	Ref<Texture> volume_texture = _IconsCache::get_singleton()->get_icon("ColorTrackVu");
 	int tex_h = volume_texture != nullptr ? volume_texture->get_height() : 0;
 
 	int y_from = (get_size().height - tex_h) / 2;
@@ -28,7 +28,7 @@ void TrackEditVolumeDB::draw_bg(int p_clip_left, int p_clip_right) {
 }
 
 void TrackEditVolumeDB::draw_fg(int p_clip_left, int p_clip_right) {
-	Ref<Texture> volume_texture = IconsCache::get_singleton()->get_icon("ColorTrackVu");
+	Ref<Texture> volume_texture = _IconsCache::get_singleton()->get_icon("ColorTrackVu");
 	int tex_h = volume_texture->get_height();
 	int y_from = (get_size().height - tex_h) / 2;
 	int db0 = y_from + (24 / 80.0) * tex_h;
@@ -63,7 +63,7 @@ void TrackEditVolumeDB::draw_key_link(int p_index, float p_pixels_sec, int p_x, 
 		to_x = p_clip_right;
 	}
 
-	Ref<Texture> volume_texture = IconsCache::get_singleton()->get_icon("ColorTrackVu");
+	Ref<Texture> volume_texture = _IconsCache::get_singleton()->get_icon("ColorTrackVu");
 	int tex_h = volume_texture->get_height();
 
 	int y_from = (get_size().height - tex_h) / 2;

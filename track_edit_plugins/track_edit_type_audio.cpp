@@ -8,7 +8,7 @@
 #include "scene/2d/sprite.h"
 #include "scene/2d/animated_sprite.h"
 
-#include "../EditorConsts.h"
+#include "../editor_consts.h"
 
 void TrackEditTypeAudio::_preview_changed(ObjectID p_which) {
 	for (int i = 0; i < get_animation()->track_get_key_count(get_track()); i++) {
@@ -161,7 +161,7 @@ void TrackEditTypeAudio::draw_key(int p_index, float p_pixels_sec, int p_x, bool
 
 	VisualServer::get_singleton()->canvas_item_add_multiline(get_canvas_item(), lines, color);
 
-	Color cut_color = EditorConsts::ACCENT_COLOR;
+	Color cut_color = _EditorConsts::ACCENT_COLOR;
 	cut_color.a = 0.7;
 	if (start_ofs > 0 && pixel_begin > p_clip_left) {
 		draw_rect(Rect2(pixel_begin, rect.position.y, 1, rect.size.y), cut_color);
@@ -171,7 +171,7 @@ void TrackEditTypeAudio::draw_key(int p_index, float p_pixels_sec, int p_x, bool
 	}
 
 	if (p_selected) {
-		Color accent = EditorConsts::ACCENT_COLOR;
+		Color accent = _EditorConsts::ACCENT_COLOR;
 		draw_rect(rect, accent, false);
 	}
 }

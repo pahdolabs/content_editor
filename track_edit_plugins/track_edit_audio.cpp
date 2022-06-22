@@ -6,7 +6,7 @@
 #include "scene/2d/sprite.h"
 #include "scene/2d/animated_sprite.h"
 
-#include "../EditorConsts.h"
+#include "../editor_consts.h"
 
 void TrackEditAudio::_preview_changed(ObjectID p_which) {
 	Object* object = ObjectDB::get_instance(id);
@@ -148,7 +148,7 @@ void TrackEditAudio::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_s
 		VisualServer::get_singleton()->canvas_item_add_multiline(get_canvas_item(), lines, color);
 
 		if (p_selected) {
-			Color accent = EditorConsts::ACCENT_COLOR;
+			Color accent = _EditorConsts::ACCENT_COLOR;
 			draw_rect(rect, accent, false);
 		}
 	}
@@ -161,7 +161,7 @@ void TrackEditAudio::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_s
 		draw_rect_clipped(rect, color);
 
 		if (p_selected) {
-			Color accent = EditorConsts::ACCENT_COLOR;
+			Color accent = _EditorConsts::ACCENT_COLOR;
 			draw_rect_clipped(rect, accent, false);
 		}
 	}

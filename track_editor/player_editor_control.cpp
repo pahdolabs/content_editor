@@ -71,7 +71,7 @@ void PlayerEditorControl::_notification(int p_what) {
 			
 		case NOTIFICATION_TRANSLATION_CHANGED:
 		case NOTIFICATION_THEME_CHANGED: {
-			IconsCache* icons = IconsCache::get_singleton();
+			_IconsCache* icons = _IconsCache::get_singleton();
 
 			play->set_icon(icons->get_icon("PlayStart"));
 			play_from->set_icon(icons->get_icon("Play"));
@@ -632,7 +632,7 @@ PlayerEditorControl::PlayerEditorControl() {
 
 	_update_player();
 
-	IconsCache::get_singleton()->connect("icons_changed", this, "_icons_cache_changed");
+	_IconsCache::get_singleton()->connect("icons_changed", this, "_icons_cache_changed");
 
 	set_process(true);
 	ensure_visibility();

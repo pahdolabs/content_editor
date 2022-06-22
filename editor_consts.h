@@ -4,19 +4,19 @@
 #include "core/color.h"
 #include "core/reference.h"
 
-class EditorConsts : public Object {
-	GDCLASS(EditorConsts, Object);
+class _EditorConsts : public Object {
+	GDCLASS(_EditorConsts, Object);
 
 	Map<String, Color> colors;
 	Map<String, float> consts;
 
-	static EditorConsts *singleton;
+	static _EditorConsts *singleton;
 
 protected:
 	static void _bind_methods();
 
 public:
-	static EditorConsts* get_singleton();
+	static _EditorConsts* get_singleton();
 
 	static const float CONTRAST;
 	static const Color BASE_COLOR;
@@ -34,7 +34,7 @@ public:
 	Color named_color(const String &p_name, const Color &p_default = Color(1,1,1));
 	float named_const(const String& p_name, float p_default = 0);
 
-	EditorConsts();
+	_EditorConsts();
 };
 
 #endif

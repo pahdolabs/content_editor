@@ -10,7 +10,7 @@
 #include "scene/gui/separator.h"
 #include "scene/3d/spatial.h"
 
-#include "../EditorConsts.h"
+#include "../editor_consts.h"
 #include "../icons_cache.h"
 #include "player_editor_control.h"
 #include "../track_edit_plugins/track_edit.h"
@@ -1182,7 +1182,7 @@ void TrackEditor::_notification(int p_what) {
 		//panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/animation_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EditorSettings::get_singleton()->get("editors/panning/simple_panning")));
 	}
 	case NOTIFICATION_THEME_CHANGED: {
-		IconsCache* icons = IconsCache::get_singleton();
+		_IconsCache* icons = _IconsCache::get_singleton();
 		zoom_icon->set_texture(icons->get_icon("Zoom"));
 		snap->set_icon(icons->get_icon("Snap"));
 		view_group->set_icon(icons->get_icon(view_group->is_pressed() ? "AnimationTrackList" : "AnimationTrackGroup"));
@@ -1780,8 +1780,8 @@ float TrackEditor::get_moving_selection_offset() const {
 
 void TrackEditor::_box_selection_draw() {
 	const Rect2 selection_rect = Rect2(Point2(), box_selection->get_size());
-	box_selection->draw_rect(selection_rect, EditorConsts::BOX_SELECTION_FILL_COLOR);
-	box_selection->draw_rect(selection_rect, EditorConsts::BOX_SELECTION_STROKE_COLOR, false, Math::round(1.0));
+	box_selection->draw_rect(selection_rect, _EditorConsts::BOX_SELECTION_FILL_COLOR);
+	box_selection->draw_rect(selection_rect, _EditorConsts::BOX_SELECTION_STROKE_COLOR, false, Math::round(1.0));
 }
 
 void TrackEditor::_scroll_input(const Ref<InputEvent>& p_event) {
@@ -2032,7 +2032,7 @@ void TrackEditor::goto_next_step(bool p_from_mouse_event) {
 
 void TrackEditor::_edit_menu_pressed(int p_option) {
 	last_menu_track_opt = p_option;
-	IconsCache* icons = IconsCache::get_singleton();
+	_IconsCache* icons = _IconsCache::get_singleton();
 	switch (p_option) {
 	case EDIT_COPY_TRACKS: {
 		track_copy_select->clear();
@@ -2447,7 +2447,7 @@ void TrackEditor::_cleanup_animation(Ref<Animation> p_animation) {
 
 void TrackEditor::_view_group_toggle() {
 	_update_tracks();
-	view_group->set_icon(IconsCache::get_singleton()->get_icon(view_group->is_pressed() ? "AnimationTrackList" : "AnimationTrackGroup"));
+	view_group->set_icon(_IconsCache::get_singleton()->get_icon(view_group->is_pressed() ? "AnimationTrackList" : "AnimationTrackGroup"));
 }
 
 bool TrackEditor::is_grouping_tracks() {
@@ -2919,7 +2919,7 @@ TrackEditor::TrackEditor() {
 	track_vbox->add_child(track_copy_select);
 	track_copy_dialog->connect("confirmed", this, "_edit_menu_pressed", varray(EDIT_COPY_TRACKS_CONFIRM));
 
-	IconsCache::get_singleton()->connect("icons_changed", this, "_icons_cache_changed");
+	_IconsCache::get_singleton()->connect("icons_changed", this, "_icons_cache_changed");
 }
 
 TrackEditor::~TrackEditor() {

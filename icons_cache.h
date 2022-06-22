@@ -3,26 +3,26 @@
 
 #include "scene/resources/texture.h"
 
-class IconsCache : public Object {
-	GDCLASS(IconsCache, Object);
+class _IconsCache : public Object {
+	GDCLASS(_IconsCache, Object);
 
 	Map<String, Ref<Texture>> icons;
 
-	static IconsCache *singleton;
+	static _IconsCache *singleton;
 
 protected:
 	static void _bind_methods();
 
-	IconsCache();
+	_IconsCache();
 
 public:
-	static IconsCache *get_singleton();
+	static _IconsCache *get_singleton();
 
 	Ref<Texture> get_icon(const String &p_icon_name);
 	bool has_icon(const String& p_icon_name);
 	void add_icon_path(const String &p_icon_path);
 
-	~IconsCache();
+	~_IconsCache();
 };
 
 #endif

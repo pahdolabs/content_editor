@@ -7,7 +7,7 @@
 #include "scene/2d/animated_sprite.h"
 #include "scene/3d/sprite_3d.h"
 
-#include "../EditorConsts.h"
+#include "../editor_consts.h"
 
 int TrackEditSpriteFrame::get_key_height() const {
 	if (!ObjectDB::get_instance(id)) {
@@ -191,7 +191,7 @@ void TrackEditSpriteFrame::draw_key(int p_index, float p_pixels_sec, int p_x, bo
 		return;
 	}
 
-	Color accent = EditorConsts::ACCENT_COLOR;
+	Color accent = _EditorConsts::ACCENT_COLOR;
 	Color bg = accent;
 	bg.a = 0.15;
 

@@ -4,27 +4,27 @@
 #include "core/os/dir_access.h"
 #include "modules/svg/image_loader_svg.h"
 
-IconsCache *IconsCache::singleton;
+_IconsCache *_IconsCache::singleton;
 
-IconsCache *IconsCache::get_singleton() {
+_IconsCache *_IconsCache::get_singleton() {
 	if(singleton == nullptr) {
-		singleton = memnew(IconsCache);
+		singleton = memnew(_IconsCache);
 	}
 	return singleton;
 }
 
-Ref<Texture> IconsCache::get_icon(const String &p_icon_name) {
+Ref<Texture> _IconsCache::get_icon(const String &p_icon_name) {
 	if(icons.has(p_icon_name)) {
 		return icons[p_icon_name];
 	}
 	return nullptr;
 }
 
-bool IconsCache::has_icon(const String& p_icon_name) {
+bool _IconsCache::has_icon(const String& p_icon_name) {
 	return icons.has(p_icon_name);
 }
 
-void IconsCache::add_icon_path(const String &p_icon_path) {
+void _IconsCache::add_icon_path(const String &p_icon_path) {
 	Error err;
 	DirAccess *da = DirAccess::open(p_icon_path, &err);
 	if(err != OK) {
@@ -58,15 +58,15 @@ void IconsCache::add_icon_path(const String &p_icon_path) {
 	emit_signal("icons_changed");
 }
 
-void IconsCache::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("add_icon_path", "icon_path"), &IconsCache::add_icon_path);
-	ClassDB::bind_method(D_METHOD("get_icon"), &IconsCache::get_icon);
+void _IconsCache::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("add_icon_path", "icon_path"), &_IconsCache::add_icon_path);
+	ClassDB::bind_method(D_METHOD("get_icon"), &_IconsCache::get_icon);
 	ADD_SIGNAL(MethodInfo("icons_changed"));
 }
 
-IconsCache::IconsCache() {
+_IconsCache::_IconsCache() {
 }
 
-IconsCache::~IconsCache() {
+_IconsCache::~_IconsCache() {
 	icons.clear();
 }

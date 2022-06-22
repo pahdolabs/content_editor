@@ -5,10 +5,9 @@
 #include "servers/audio/audio_stream.h"
 #include "scene/2d/sprite.h"
 #include "scene/2d/animated_sprite.h"
-#include "scene/3d/sprite_3d.h"
 #include "scene/animation/animation_player.h"
 
-#include "../EditorConsts.h"
+#include "../editor_consts.h"
 
 int TrackEditTypeAnimation::get_key_height() const {
 	if (!ObjectDB::get_instance(id)) {
@@ -146,7 +145,7 @@ void TrackEditTypeAnimation::draw_key(int p_index, float p_pixels_sec, int p_x, 
 		}
 
 		if (p_selected) {
-			Color accent = EditorConsts::ACCENT_COLOR;
+			Color accent = _EditorConsts::ACCENT_COLOR;
 			draw_rect(rect, accent, false);
 		}
 	}
@@ -159,7 +158,7 @@ void TrackEditTypeAnimation::draw_key(int p_index, float p_pixels_sec, int p_x, 
 		draw_rect_clipped(rect, color);
 
 		if (p_selected) {
-			Color accent = EditorConsts::ACCENT_COLOR;
+			Color accent = _EditorConsts::ACCENT_COLOR;
 			draw_rect_clipped(rect, accent, false);
 		}
 	}

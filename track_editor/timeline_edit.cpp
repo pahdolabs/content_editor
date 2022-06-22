@@ -2,7 +2,7 @@
 
 #include "core/undo_redo.h"
 
-#include "../EditorConsts.h"
+#include "../editor_consts.h"
 #include "../icons_cache.h"
 #include "../track_edit_plugins/track_edit.h"
 #include "track_editor.h"
@@ -60,7 +60,7 @@ void TimelineEdit::_anim_loop_pressed() {
 }
 
 int TimelineEdit::get_buttons_width() const {
-	IconsCache* icons = IconsCache::get_singleton();
+	_IconsCache* icons = _IconsCache::get_singleton();
 	Ref<Texture> remove_icon = icons->get_icon("Remove");
 	int hsep = get_constant("hseparation", "ItemList");
 	
@@ -70,7 +70,7 @@ int TimelineEdit::get_buttons_width() const {
 }
 
 int TimelineEdit::get_name_limit() const {
-	Ref<Texture> hsize_icon = IconsCache::get_singleton()->get_icon("Hsize");
+	Ref<Texture> hsize_icon = _IconsCache::get_singleton()->get_icon("Hsize");
 
 	int limit = MAX(name_limit, (hsize_icon != nullptr ? hsize_icon->get_width() : 0));
 
@@ -105,7 +105,7 @@ void TimelineEdit::_notification(int p_what) {
 			l = 0.001; // Avoid crashor.
 		}
 
-		IconsCache* icons = IconsCache::get_singleton();
+		_IconsCache* icons = _IconsCache::get_singleton();
 
 		Ref<Texture> hsize_icon = icons->get_icon("Hsize");
 		int hsize_width = hsize_icon != nullptr ? hsize_icon->get_width() : 0;
@@ -153,7 +153,7 @@ void TimelineEdit::_notification(int p_what) {
 
 		int end_px = (l - get_value()) * scale;
 		int begin_px = -get_value() * scale;
-		Color notimecol = EditorConsts::DARK_COLOR_2;
+		Color notimecol = _EditorConsts::DARK_COLOR_2;
 		Color timecolor = color;
 		timecolor.a = 0.2;
 		Color linecolor = color;
@@ -280,7 +280,7 @@ Size2 TimelineEdit::get_minimum_size() const {
 	Size2 ms = Size2(0, 0);
 	Ref<Font> font = get_font("font", "Label");
 	ms.height = MAX(ms.height, font->get_height());
-	IconsCache* icons = IconsCache::get_singleton();
+	_IconsCache* icons = _IconsCache::get_singleton();
 	ms.width = get_buttons_width() + (icons->has_icon("Hsize") ? icons->get_icon("Hsize")->get_width() : 0) + 2;
 	return ms;
 }
@@ -322,10 +322,10 @@ void TimelineEdit::_play_position_draw() {
 	int px = (-get_value() + play_position_pos) * scale + get_name_limit();
 
 	if (px >= get_name_limit() && px < (play_position->get_size().width - get_buttons_width())) {
-		Color color = EditorConsts::ACCENT_COLOR;
+		Color color = _EditorConsts::ACCENT_COLOR;
 		play_position->draw_line(Point2(px, 0), Point2(px, h), color, Math::round(2 * 1.0));
 
-		IconsCache* icons = IconsCache::get_singleton();
+		_IconsCache* icons = _IconsCache::get_singleton();
 		if (icons->has_icon("TimelineIndicator")) {
 			play_position->draw_texture(
 				icons->get_icon("TimelineIndicator"),
@@ -501,5 +501,5 @@ TimelineEdit::TimelineEdit() {
 	panner.instance();
 	panner->set_callbacks(this, "_scroll_callback", this, "_pan_callback", this, "_zoom_callback");
 
-	IconsCache::get_singleton()->connect("icons_changed", this, "_icons_cache_changed");
+	_IconsCache::get_singleton()->connect("icons_changed", this, "_icons_cache_changed");
 }

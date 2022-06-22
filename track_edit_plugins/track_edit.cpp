@@ -6,7 +6,7 @@
 #include "modules/svg/image_loader_svg.h"
 #include "core/method_bind_ext.gen.inc"
 
-#include "../EditorConsts.h"
+#include "../editor_consts.h"
 #include "../icons_cache.h"
 #include "../track_editor/player_editor_control.h"
 #include "../track_editor/timeline_edit.h"
@@ -16,7 +16,7 @@ void TrackEdit::draw_names_and_icons(int limit, const Ref<Font> p_font, Color co
 
 	ERR_FAIL_COND(p_font.is_null());
 
-	IconsCache* icons = IconsCache::get_singleton();
+	_IconsCache* icons = _IconsCache::get_singleton();
 	Ref<Texture> check = animation->track_is_enabled(track) ? icons->get_icon("checked") : icons->get_icon("unchecked");
 
 	int ofs = in_group ? (check != nullptr ? check->get_width() : 0) : 0; // Not the best reference for margin but..
@@ -49,7 +49,7 @@ void TrackEdit::draw_names_and_icons(int limit, const Ref<Font> p_font, Color co
 	String text;
 	Color text_color = color;
 	if (node) {
-		text_color = EditorConsts::ACCENT_COLOR;
+		text_color = _EditorConsts::ACCENT_COLOR;
 	}
 
 	if (in_group) {
@@ -98,7 +98,7 @@ void TrackEdit::draw_names_and_icons(int limit, const Ref<Font> p_font, Color co
 }
 
 void TrackEdit::draw_buttons(Color linecolor) {
-	IconsCache* icons = IconsCache::get_singleton();
+	_IconsCache* icons = _IconsCache::get_singleton();
 	int ofs = get_size().width - timeline->get_buttons_width();
 
 	draw_line(Point2(ofs, 0), Point2(ofs, get_size().height), linecolor, Math::round(1.0));
@@ -127,7 +127,7 @@ void TrackEdit::_notification(int p_what) {
 		ERR_FAIL_INDEX(track, animation->get_track_count());
 
 		type_icon = _get_key_type_icon();
-		selected_icon = IconsCache::get_singleton()->get_icon("KeySelected");
+		selected_icon = _IconsCache::get_singleton()->get_icon("KeySelected");
 	} break;
 
 	case NOTIFICATION_DRAW: {
@@ -149,7 +149,7 @@ void TrackEdit::_notification(int p_what) {
 		}
 
 		if (has_focus()) {
-			Color accent = EditorConsts::ACCENT_COLOR;
+			Color accent = _EditorConsts::ACCENT_COLOR;
 			accent.a *= 0.7;
 			// Offside so the horizontal sides aren't cutoff.
 			draw_style_box(get_stylebox("Focus", "EditorStyles"), Rect2(Point2(1 * 1.0, 0), get_size() - Size2(1 * 1.0, 0)));
@@ -249,7 +249,7 @@ void TrackEdit::_notification(int p_what) {
 		}
 
 		if (dropping_at != 0) {
-			Color drop_color = EditorConsts::ACCENT_COLOR;
+			Color drop_color = _EditorConsts::ACCENT_COLOR;
 			if (dropping_at < 0) {
 				draw_line(Vector2(0, 0), Vector2(get_size().width, 0), drop_color, Math::round(1.0));
 			}
@@ -336,7 +336,7 @@ void TrackEdit::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_select
 
 	Ref<Texture> icon_to_draw = p_selected ? selected_icon : type_icon;
 
-	IconsCache* icons = IconsCache::get_singleton();
+	_IconsCache* icons = _IconsCache::get_singleton();
 
 	if (animation->track_get_type(track) == Animation::TYPE_VALUE && !Math::is_equal_approx(animation->track_get_key_transition(track, p_index), real_t(1.0))) {
 		// Use a different icon for keys with non-linear easing.
@@ -471,11 +471,11 @@ void TrackEdit::set_animation_and_track(const Ref<Animation>& p_animation, int p
 
 	node_path = animation->track_get_path(p_track);
 	type_icon = _get_key_type_icon();
-	selected_icon = IconsCache::get_singleton()->get_icon("KeySelected");
+	selected_icon = _IconsCache::get_singleton()->get_icon("KeySelected");
 }
 
 Size2 TrackEdit::get_minimum_size() const {
-	Ref<Texture> texture = IconsCache::get_singleton()->get_icon("Object");
+	Ref<Texture> texture = _IconsCache::get_singleton()->get_icon("Object");
 	Ref<Font> font = get_font("font", "Label");
 	int separation = get_constant("vseparation", "ItemList");
 
@@ -512,7 +512,7 @@ void TrackEdit::_play_position_draw() {
 	int px = (-timeline->get_value() + play_position_pos) * scale + timeline->get_name_limit();
 
 	if (px >= timeline->get_name_limit() && px < (get_size().width - timeline->get_buttons_width())) {
-		EditorConsts colors;
+		_EditorConsts colors;
 		Color color = colors.ACCENT_COLOR;
 		play_position->draw_line(Point2(px, 0), Point2(px, h), color, Math::round(2 * 1.0));
 	}
@@ -562,7 +562,7 @@ bool TrackEdit::_is_value_key_valid(const Variant& p_key_value, Variant::Type& r
 }
 
 Ref<Texture> TrackEdit::_get_key_type_icon() const {
-	IconsCache* icons = IconsCache::get_singleton();
+	_IconsCache* icons = _IconsCache::get_singleton();
 	Ref<Texture> type_icons[9] = {
 		icons->get_icon("KeyValue"),
 		icons->get_icon("KeyTrackPosition"),
@@ -706,7 +706,7 @@ String TrackEdit::get_tooltip(const Point2& p_pos) const {
 }
 
 void TrackEdit::do_right_click(Ref<InputEventMouseButton> mb) {
-	IconsCache* icons = IconsCache::get_singleton();
+	_IconsCache* icons = _IconsCache::get_singleton();
 	Point2 pos = mb->get_position();
 	if (pos.x >= timeline->get_name_limit() && pos.x <= get_size().width - timeline->get_buttons_width()) {
 		// Can do something with menu too! show insert key.
@@ -1229,5 +1229,5 @@ TrackEdit::TrackEdit() {
 	set_focus_mode(FOCUS_CLICK);
 	set_mouse_filter(MOUSE_FILTER_PASS); // Scroll has to work too for selection.
 
-	IconsCache::get_singleton()->connect("icons_changed", this, "_icons_cache_changed");
+	_IconsCache::get_singleton()->connect("icons_changed", this, "_icons_cache_changed");
 }
