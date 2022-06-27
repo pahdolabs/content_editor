@@ -48,6 +48,8 @@ class TrackEditor : public VBoxContainer {
 	Button* snap = nullptr;
 	OptionButton* snap_mode = nullptr;
 
+	PlayerEditorControl* control;
+
 	Map<Ref<Script>, Vector<Ref<Script>>> track_edit_groups;
 
 	Vector<TrackEdit*> track_edit_headers;
@@ -268,6 +270,7 @@ public:
 	};
 
 	PlayerEditorControl *get_control();
+	void set_control(const Object* object);
 
 	void add_track_edit_plugin(const Ref<TrackEditPlugin>& p_plugin);
 	void remove_track_edit_plugin(const Ref<TrackEditPlugin>& p_plugin);

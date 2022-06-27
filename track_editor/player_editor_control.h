@@ -34,7 +34,6 @@ class PlayerEditorControl : public VBoxContainer {
 	float timeline_position;
 	
 	TrackEditor *track_editor = nullptr;
-	static PlayerEditorControl *singleton;
 
 	void _select_anim_by_name(const String &p_anim);
 	double _get_editor_step() const;
@@ -72,8 +71,7 @@ protected:
 
 public:
 	AnimationPlayer *get_player() const;
-
-	static PlayerEditorControl*get_singleton() { return singleton; }
+	
 	TrackEditor *get_track_editor() { return track_editor; }
 	Dictionary get_state() const;
 	void set_state(const Dictionary &p_state);

@@ -191,7 +191,7 @@ void PlayerEditorControl::_animation_selected(int p_which) {
 		track_editor->set_root(nullptr);
 	}
 
-	PlayerEditorControl::get_singleton()->get_track_editor()->update_keying();
+	track_editor->update_keying();
 	_animation_key_editor_seek(timeline_position, false);
 }
 
@@ -327,7 +327,7 @@ void PlayerEditorControl::_update_player() {
 	animation->clear();
 
 	if (!player) {
-		PlayerEditorControl::get_singleton()->get_track_editor()->update_keying();
+		track_editor->update_keying();
 		return;
 	}
 	
@@ -541,8 +541,6 @@ void PlayerEditorControl::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_icons_cache_changed"), &PlayerEditorControl::_icons_cache_changed);
 }
 
-PlayerEditorControl *PlayerEditorControl::singleton = nullptr;
-
 AnimationPlayer *PlayerEditorControl::get_player() const {
 	return player;
 }
@@ -552,8 +550,6 @@ void PlayerEditorControl::_icons_cache_changed() {
 }
 
 PlayerEditorControl::PlayerEditorControl() {
-	singleton = this;
-
 	updating = false;
 
 	undo_redo = memnew(UndoRedo);
@@ -609,6 +605,7 @@ PlayerEditorControl::PlayerEditorControl() {
 	hb->add_child(memnew(VSeparator));
 
 	track_editor = memnew(TrackEditor);
+	track_editor->set_control(this);
 	
 	play->connect("pressed", this, "_play_pressed");
 	play_from->connect("pressed", this, "_play_from_pressed");

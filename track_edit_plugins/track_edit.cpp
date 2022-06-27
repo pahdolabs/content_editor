@@ -723,7 +723,7 @@ void TrackEdit::do_right_click(Ref<InputEventMouseButton> mb) {
 			menu->add_separator();
 			menu->add_icon_item(icons->get_icon("Duplicate"), TTR("Duplicate Key(s)"), MENU_KEY_DUPLICATE);
 
-			AnimationPlayer* player = PlayerEditorControl::get_singleton()->get_player();
+			AnimationPlayer* player = get_editor()->get_control()->get_player();
 			if (!player->has_animation("RESET") || animation != player->get_animation("RESET")) {
 				menu->add_icon_item(icons->get_icon("Reload"), TTR("Add RESET Value(s)"), MENU_KEY_ADD_RESET);
 			}

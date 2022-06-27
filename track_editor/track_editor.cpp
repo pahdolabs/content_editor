@@ -263,7 +263,7 @@ void TrackEditor::make_insert_queue() {
 
 void TrackEditor::commit_insert_queue() {
 	bool reset_allowed = true;
-	AnimationPlayer* player = PlayerEditorControl::get_singleton()->get_player();
+	AnimationPlayer* player = control->get_player();
 	if (player->has_animation("RESET") && player->get_animation("RESET") == animation) {
 		// Avoid messing with the reset animation itself.
 		reset_allowed = false;
@@ -500,7 +500,7 @@ void TrackEditor::insert_node_value_key(Node* p_node, const String& p_property, 
 	String path = root->get_path_to(node);
 
 	if (Object::cast_to<AnimationPlayer>(node) && p_property == "current_animation") {
-		if (node == PlayerEditorControl::get_singleton()->get_player()) {
+		if (node == control->get_player()) {
 			//EditorNode::get_singleton()->show_warning(TTR("AnimationPlayer can't animate itself, only other players."));
 			return;
 		}
@@ -592,7 +592,7 @@ void TrackEditor::insert_node_value_key(Node* p_node, const String& p_property, 
 }
 
 Ref<Animation> TrackEditor::_create_and_get_reset_animation() {
-	AnimationPlayer* player = PlayerEditorControl::get_singleton()->get_player();
+	AnimationPlayer* player = control->get_player();
 	if (player->has_animation("RESET")) {
 		return player->get_animation("RESET");
 	}
@@ -601,9 +601,9 @@ Ref<Animation> TrackEditor::_create_and_get_reset_animation() {
 		reset_anim.instance();
 		reset_anim->set_length(ANIM_MIN_LENGTH);
 		undo_redo->add_do_method(player, "add_animation", "RESET", reset_anim);
-		undo_redo->add_do_method(PlayerEditorControl::get_singleton(), "_animation_player_changed", player);
+		undo_redo->add_do_method(control, "_animation_player_changed", player);
 		undo_redo->add_undo_method(player, "remove_animation", "RESET");
-		undo_redo->add_undo_method(PlayerEditorControl::get_singleton(), "_animation_player_changed", player);
+		undo_redo->add_undo_method(control, "_animation_player_changed", player);
 		return reset_anim;
 	}
 }
@@ -1278,7 +1278,7 @@ void TrackEditor::_new_track_node_selected(NodePath p_path) {
 			return;
 		}
 
-		if (node == PlayerEditorControl::get_singleton()->get_player()) {
+		if (node == control->get_player()) {
 			//EditorNode::get_singleton()->show_warning(TTR("AnimationPlayer can't animate itself, only other players."));
 			return;
 		}
@@ -2381,9 +2381,9 @@ void TrackEditor::_edit_menu_pressed(int p_option) {
 	case EDIT_CLEAN_UP_ANIMATION_CONFIRM: {
 		if (cleanup_all->is_pressed()) {
 			List<StringName> names;
-			PlayerEditorControl::get_singleton()->get_player()->get_animation_list(&names);
+			control->get_player()->get_animation_list(&names);
 			for (List<StringName>::Element* E = names.front(); E; E = E->next()) {
-				_cleanup_animation(PlayerEditorControl::get_singleton()->get_player()->get_animation(E->get()));
+				_cleanup_animation(control->get_player()->get_animation(E->get()));
 			}
 		}
 		else {
@@ -2529,7 +2529,11 @@ void TrackEditor::_select_all_tracks_for_copy() {
 }
 
 PlayerEditorControl* TrackEditor::get_control() {
-	return PlayerEditorControl::get_singleton();
+	return control;
+}
+
+void TrackEditor::set_control(const Object *object) {
+	control = const_cast<PlayerEditorControl*>(cast_to<PlayerEditorControl>(object));
 }
 
 void TrackEditor::_bind_methods() {
@@ -2541,6 +2545,7 @@ void TrackEditor::_bind_methods() {
 	ClassDB::bind_method("is_moving_selection", &TrackEditor::is_moving_selection);
 	ClassDB::bind_method("get_moving_selection_offset", &TrackEditor::get_moving_selection_offset);
 	ClassDB::bind_method(D_METHOD("set_anim_pos", "pos"), &TrackEditor::set_anim_pos);
+	ClassDB::bind_method(D_METHOD("set_control", "control"), &TrackEditor::set_control);
 
 	ClassDB::bind_method("_animation_update", &TrackEditor::_animation_update);
 	ClassDB::bind_method("_track_grab_focus", &TrackEditor::_track_grab_focus);
