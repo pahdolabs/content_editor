@@ -308,6 +308,10 @@ public:
 	float snap_time(float p_value, bool p_relative = false);
 	bool is_grouping_tracks();
 
+	TimelineEdit* get_timeline() const;
+	float get_step() const;
+	void set_step(float p_value);
+
 	/** If `p_from_mouse_event` is `true`, handle Shift key presses for precise snapping. */
 	void goto_prev_step(bool p_from_mouse_event);
 

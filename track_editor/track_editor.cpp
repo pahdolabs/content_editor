@@ -2458,6 +2458,18 @@ bool TrackEditor::is_grouping_tracks() {
 	return !view_group->is_pressed();
 }
 
+TimelineEdit* TrackEditor::get_timeline() const {
+	return timeline;
+}
+
+float TrackEditor::get_step() const {
+	return step->get_value();
+}
+
+void TrackEditor::set_step(float p_value) {
+	step->set_value(p_value);
+}
+
 void TrackEditor::_selection_changed() {
 	if (selected_filter->is_pressed()) {
 		_update_tracks(); // Needs updatin.
@@ -2537,6 +2549,9 @@ void TrackEditor::set_control(const Object *object) {
 }
 
 void TrackEditor::_bind_methods() {
+	ClassDB::bind_method("get_step", &TrackEditor::get_step);
+	ClassDB::bind_method(D_METHOD("set_step", "value"), &TrackEditor::set_step);
+	ClassDB::bind_method("get_timeline", &TrackEditor::get_timeline);
 	ClassDB::bind_method(D_METHOD("snap_time", "value", "relative"), &TrackEditor::snap_time, DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("set_track_edit_type", "header", "track_edit_classes"), &TrackEditor::set_track_edit_type);
 	ClassDB::bind_method("is_selection_active", &TrackEditor::is_selection_active);
@@ -2594,6 +2609,8 @@ void TrackEditor::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("keying_changed"));
 	ADD_SIGNAL(MethodInfo("animation_len_changed", PropertyInfo(Variant::REAL, "len")));
 	ADD_SIGNAL(MethodInfo("animation_step_changed", PropertyInfo(Variant::REAL, "step")));
+
+	ADD_PROPERTY(PropertyInfo(Variant::REAL, "step"), "set_step", "get_step");
 }
 
 void TrackEditor::_icons_cache_changed() {
