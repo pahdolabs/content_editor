@@ -15,7 +15,7 @@
 
 ///////////////////////////////////
 
-void PlayerEditorControl::_node_removed(Node *p_node) {
+void PlayerEditorControl::_node_removed(Node* p_node) {
 	if (player && player == p_node) {
 		player = nullptr;
 
@@ -30,63 +30,65 @@ void PlayerEditorControl::_node_removed(Node *p_node) {
 
 void PlayerEditorControl::_notification(int p_what) {
 	switch (p_what) {
-		case NOTIFICATION_PROCESS: {
-			if (!player) {
-				return;
-			}
+	case NOTIFICATION_PROCESS: {
+		if (!player) {
+			return;
+		}
 
-			updating = true;
+		updating = true;
 
-			if (player->is_playing()) {
-				{
-					String animname = player->get_assigned_animation();
+		if (player->is_playing()) {
+			{
+				String animname = player->get_assigned_animation();
 
-					if (player->has_animation(animname)) {
-						Ref<Animation> anim = player->get_animation(animname);
-						if (!anim.is_null()) {
-							frame->set_max((double)anim->get_length());
-						}
+				if (player->has_animation(animname)) {
+					Ref<Animation> anim = player->get_animation(animname);
+					if (!anim.is_null()) {
+						frame->set_max((double)anim->get_length());
 					}
 				}
-				frame->set_value(player->get_current_animation_position());
-				track_editor->set_anim_pos(player->get_current_animation_position());
-
-			} else if (!player->is_valid()) {
-				// Reset timeline when the player has been stopped externally
-				frame->set_value(0);
-			} else if (last_active) {
-				// Need the last frame after it stopped.
-				frame->set_value(player->get_current_animation_position());
 			}
+			frame->set_value(player->get_current_animation_position());
+			track_editor->set_anim_pos(player->get_current_animation_position());
 
-			last_active = player->is_playing();
-			updating = false;
-		} break;
+		}
+		else if (!player->is_valid()) {
+			// Reset timeline when the player has been stopped externally
+			frame->set_value(0);
+		}
+		else if (last_active) {
+			// Need the last frame after it stopped.
+			frame->set_value(player->get_current_animation_position());
+		}
 
-		case NOTIFICATION_ENTER_TREE: {
-			get_tree()->connect("node_removed", this, "_node_removed");
+		last_active = player->is_playing();
+		updating = false;
+	} break;
 
-			//add_style_override("panel", EditorNode::get_singleton()->get_gui_base()->get_stylebox("panel", "Panel"));
-		} break;
-			
-		case NOTIFICATION_TRANSLATION_CHANGED:
-		case NOTIFICATION_THEME_CHANGED: {
-			_IconsCache* icons = _IconsCache::get_singleton();
+	case NOTIFICATION_ENTER_TREE: {
+		get_tree()->connect("node_removed", this, "_node_removed");
 
-			play->set_icon(icons->get_icon("PlayStart"));
-			play_from->set_icon(icons->get_icon("Play"));
-			play_bw->set_icon(icons->get_icon("PlayStartBackwards"));
-			play_bw_from->set_icon(icons->get_icon("PlayBackwards"));
-			
-			stop->set_icon(icons->get_icon("Stop"));
+		//add_style_override("panel", EditorNode::get_singleton()->get_gui_base()->get_stylebox("panel", "Panel"));
+	} break;
 
-			_update_animation_list_icons();
-		} break;
+	case NOTIFICATION_TRANSLATION_CHANGED:
+	case NOTIFICATION_THEME_CHANGED: {
+		_IconsCache* icons = _IconsCache::get_singleton();
+
+		play->set_icon(icons->get_icon("PlayStart"));
+		play_from->set_icon(icons->get_icon("Play"));
+		play_bw->set_icon(icons->get_icon("PlayStartBackwards"));
+		play_bw_from->set_icon(icons->get_icon("PlayBackwards"));
+
+		stop->set_icon(icons->get_icon("Stop"));
+
+		_update_animation_list_icons();
+	} break;
 	}
 }
 
 void PlayerEditorControl::_play_pressed() {
-	String current = _get_current();
+	String current = get_current();
 
 	if (!current.empty()) {
 		if (current == player->get_assigned_animation()) {
@@ -100,7 +102,7 @@ void PlayerEditorControl::_play_pressed() {
 }
 
 void PlayerEditorControl::_play_from_pressed() {
-	String current = _get_current();
+	String current = get_current();
 
 	if (!current.empty()) {
 		float time = player->get_current_animation_position();
@@ -117,15 +119,39 @@ void PlayerEditorControl::_play_from_pressed() {
 	stop->set_pressed(false);
 }
 
-String PlayerEditorControl::_get_current() const {
+String PlayerEditorControl::get_current() const {
 	String current;
 	if (animation->get_selected() >= 0 && animation->get_selected() < animation->get_item_count()) {
 		current = animation->get_item_text(animation->get_selected());
 	}
 	return current;
 }
+
+void PlayerEditorControl::set_current(const String& p_animation) {
+	for (int i = 0; i < animation->get_item_count(); ++i) {
+		if (animation->get_item_text(i) == p_animation) {
+			animation->select(i);
+
+			String current = get_current();
+			Ref<Animation> anim = player->get_animation(current);
+			{
+				track_editor->set_animation(anim);
+				Node* root = player->get_node(player->get_root());
+				if (root) {
+					track_editor->set_root(root);
+				}
+			}
+			frame->set_max((double)anim->get_length());
+
+			track_editor->update_keying();
+
+			return;
+		}
+	}
+}
+
 void PlayerEditorControl::_play_bw_pressed() {
-	String current = _get_current();
+	String current = get_current();
 	if (!current.empty()) {
 		if (current == player->get_assigned_animation()) {
 			player->stop(); //so it won't blend with itself
@@ -138,7 +164,7 @@ void PlayerEditorControl::_play_bw_pressed() {
 }
 
 void PlayerEditorControl::_play_bw_from_pressed() {
-	String current = _get_current();
+	String current = get_current();
 
 	if (!current.empty()) {
 		float time = player->get_current_animation_position();
@@ -170,7 +196,7 @@ void PlayerEditorControl::_animation_selected(int p_which) {
 	}
 	// when selecting an animation, the idea is that the only interesting behavior
 	// ui-wise is that it should play/blend the next one if currently playing
-	String current = _get_current();
+	String current = get_current();
 
 	if (!current.empty()) {
 		player->set_assigned_animation(current);
@@ -178,7 +204,7 @@ void PlayerEditorControl::_animation_selected(int p_which) {
 		Ref<Animation> anim = player->get_animation(current);
 		{
 			track_editor->set_animation(anim);
-			Node *root = player->get_node(player->get_root());
+			Node* root = player->get_node(player->get_root());
 			if (root) {
 				track_editor->set_root(root);
 			}
@@ -195,7 +221,7 @@ void PlayerEditorControl::_animation_selected(int p_which) {
 	_animation_key_editor_seek(timeline_position, false);
 }
 
-void PlayerEditorControl::_select_anim_by_name(const String &p_anim) {
+void PlayerEditorControl::_select_anim_by_name(const String& p_anim) {
 	int idx = -1;
 	for (int i = 0; i < animation->get_item_count(); i++) {
 		if (animation->get_item_text(i) == p_anim) {
@@ -242,13 +268,13 @@ Dictionary PlayerEditorControl::get_state() const {
 	return d;
 }
 
-void PlayerEditorControl::set_state(const Dictionary &p_state) {
+void PlayerEditorControl::set_state(const Dictionary& p_state) {
 	if (!p_state.has("visible") || !p_state["visible"]) {
 		return;
 	}
 
 	if (p_state.has("player")) {
-		Node *n = get_tree()->get_current_scene()->get_node(p_state["player"]);
+		Node* n = get_tree()->get_current_scene()->get_node(p_state["player"]);
 		if (Object::cast_to<AnimationPlayer>(n)) {
 			player = Object::cast_to<AnimationPlayer>(n);
 			_update_player();
@@ -271,7 +297,7 @@ void PlayerEditorControl::set_state(const Dictionary &p_state) {
 }
 
 void PlayerEditorControl::_animation_resource_edit() {
-	String current = _get_current();
+	String current = get_current();
 	if (current != String()) {
 		Ref<Animation> anim = player->get_animation(current);
 		//EditorNode::get_singleton()->edit_resource(anim);
@@ -279,16 +305,17 @@ void PlayerEditorControl::_animation_resource_edit() {
 }
 
 void PlayerEditorControl::_animation_edit() {
-	String current = _get_current();
+	String current = get_current();
 	if (current != String()) {
 		Ref<Animation> anim = player->get_animation(current);
 		track_editor->set_animation(anim);
 
-		Node *root = player->get_node(player->get_root());
+		Node* root = player->get_node(player->get_root());
 		if (root) {
 			track_editor->set_root(root);
 		}
-	} else {
+	}
+	else {
 		track_editor->set_animation(Ref<Animation>());
 		track_editor->set_root(nullptr);
 	}
@@ -304,7 +331,8 @@ void PlayerEditorControl::_update_animation() {
 		play->set_pressed(true);
 		stop->set_pressed(false);
 
-	} else {
+	}
+	else {
 		play->set_pressed(false);
 		stop->set_pressed(true);
 	}
@@ -330,7 +358,7 @@ void PlayerEditorControl::_update_player() {
 		track_editor->update_keying();
 		return;
 	}
-	
+
 	int active_idx = -1;
 	bool no_anims_found = true;
 
@@ -361,11 +389,13 @@ void PlayerEditorControl::_update_player() {
 	if (active_idx != -1) {
 		animation->select(active_idx);
 		_animation_selected(active_idx);
-	} else if (animation->get_item_count()) {
+	}
+	else if (animation->get_item_count()) {
 		int item = animation->get_item_id(0);
 		animation->select(item);
 		_animation_selected(item);
-	} else {
+	}
+	else {
 		_animation_selected(0);
 	}
 
@@ -373,7 +403,7 @@ void PlayerEditorControl::_update_player() {
 		String current = animation->get_item_text(animation->get_selected());
 		Ref<Animation> anim = player->get_animation(current);
 		track_editor->set_animation(anim);
-		Node *root = player->get_node(player->get_root());
+		Node* root = player->get_node(player->get_root());
 		if (root) {
 			track_editor->set_root(root);
 		}
@@ -395,14 +425,15 @@ void PlayerEditorControl::_update_animation_list_icons() {
 	}
 }
 
-void PlayerEditorControl::edit(Object *p_player) {
+void PlayerEditorControl::edit(Object* p_player) {
 	player = cast_to<AnimationPlayer>(p_player);
 
 	if (player) {
 		_update_player();
-		
+
 		track_editor->show_select_node_warning(false);
-	} else {
+	}
+	else {
 		track_editor->show_select_node_warning(true);
 	}
 }
@@ -433,7 +464,8 @@ void PlayerEditorControl::_seek_value_changed(float p_value, bool p_set, bool p_
 			float cpos = player->get_current_animation_position();
 
 			player->seek_delta(pos, pos - cpos);
-		} else {
+		}
+		else {
 			player->stop(true);
 			player->seek(pos, true);
 		}
@@ -444,7 +476,7 @@ void PlayerEditorControl::_seek_value_changed(float p_value, bool p_set, bool p_
 	updating = false;
 };
 
-void PlayerEditorControl::_animation_player_changed(Object *p_pl) {
+void PlayerEditorControl::_animation_player_changed(Object* p_pl) {
 	if (player == p_pl && is_visible_in_tree()) {
 		_update_player();
 	}
@@ -485,40 +517,44 @@ void PlayerEditorControl::_animation_key_editor_seek(float p_pos, bool p_drag, b
 	_seek_value_changed(p_pos, !p_drag, p_timeline_only);
 }
 
-void PlayerEditorControl::_unhandled_key_input(const Ref<InputEvent> &p_ev) {
+void PlayerEditorControl::_unhandled_key_input(const Ref<InputEvent>& p_ev) {
 	ERR_FAIL_COND(p_ev.is_null());
 
 	Ref<InputEventKey> k = p_ev;
 	if (is_visible_in_tree() && k.is_valid() && k->is_pressed() && !k->is_echo() && !k->get_alt() && !k->get_control() && !k->get_metakey()) {
 		switch (k->get_scancode()) {
-			case KEY_A: {
-				if (!k->get_shift()) {
-					_play_bw_from_pressed();
-				} else {
-					_play_bw_pressed();
-				}
-				accept_event();
-			} break;
-			case KEY_S: {
-				_stop_pressed();
-				accept_event();
-			} break;
-			case KEY_D: {
-				if (!k->get_shift()) {
-					_play_from_pressed();
-				} else {
-					_play_pressed();
-				}
-				accept_event();
-			} break;
-			default:
-				break;
+		case KEY_A: {
+			if (!k->get_shift()) {
+				_play_bw_from_pressed();
+			}
+			else {
+				_play_bw_pressed();
+			}
+			accept_event();
+		} break;
+		case KEY_S: {
+			_stop_pressed();
+			accept_event();
+		} break;
+		case KEY_D: {
+			if (!k->get_shift()) {
+				_play_from_pressed();
+			}
+			else {
+				_play_pressed();
+			}
+			accept_event();
+		} break;
+		default:
+			break;
 		}
 	}
 }
 
 void PlayerEditorControl::_bind_methods() {
 	ClassDB::bind_method("get_player", &PlayerEditorControl::get_player);
+	ClassDB::bind_method("get_current", &PlayerEditorControl::get_current);
+	ClassDB::bind_method(D_METHOD("set_current", "animation"), &PlayerEditorControl::set_current);
 	ClassDB::bind_method(D_METHOD("_unhandled_key_input", "key_input_event"), &PlayerEditorControl::_unhandled_key_input);
 	ClassDB::bind_method(D_METHOD("edit", "animation_player"), &PlayerEditorControl::edit);
 	ClassDB::bind_method(D_METHOD("get_undo_redo"), &PlayerEditorControl::get_undo_redo);
@@ -541,7 +577,7 @@ void PlayerEditorControl::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_icons_cache_changed"), &PlayerEditorControl::_icons_cache_changed);
 }
 
-AnimationPlayer *PlayerEditorControl::get_player() const {
+AnimationPlayer* PlayerEditorControl::get_player() const {
 	return player;
 }
 
@@ -558,7 +594,7 @@ PlayerEditorControl::PlayerEditorControl() {
 
 	player = nullptr;
 
-	HBoxContainer *hb = memnew(HBoxContainer);
+	HBoxContainer* hb = memnew(HBoxContainer);
 	add_child(hb);
 
 	play_bw_from = memnew(Button);
@@ -595,7 +631,7 @@ PlayerEditorControl::PlayerEditorControl() {
 	frame->set_tooltip(TTR("Animation position (in seconds)."));
 
 	hb->add_child(memnew(VSeparator));
-	
+
 	animation = memnew(OptionButton);
 	hb->add_child(animation);
 	animation->set_h_size_flags(SIZE_EXPAND_FILL);
@@ -606,7 +642,7 @@ PlayerEditorControl::PlayerEditorControl() {
 
 	track_editor = memnew(TrackEditor);
 	track_editor->set_control(this);
-	
+
 	play->connect("pressed", this, "_play_pressed");
 	play_from->connect("pressed", this, "_play_from_pressed");
 	play_bw->connect("pressed", this, "_play_bw_pressed");
@@ -636,7 +672,7 @@ PlayerEditorControl::PlayerEditorControl() {
 }
 
 PlayerEditorControl::~PlayerEditorControl() {
-	if(undo_redo) {
+	if (undo_redo) {
 		memfree(undo_redo);
 		undo_redo = nullptr;
 	}

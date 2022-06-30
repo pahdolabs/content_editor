@@ -60,8 +60,6 @@ class PlayerEditorControl : public VBoxContainer {
 
 	void _unhandled_key_input(const Ref<InputEvent> &p_ev);
 	
-	String _get_current() const;
-
 	void _icons_cache_changed();
 
 protected:
@@ -82,6 +80,9 @@ public:
 		return undo_redo;
 	}
 	void edit(Object *p_player);
+
+	String get_current() const;
+	void set_current(const String &p_animation);
 
 	PlayerEditorControl();
 	~PlayerEditorControl();

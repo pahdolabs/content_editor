@@ -917,7 +917,7 @@ void TrackEdit::_gui_input(const Ref<InputEvent>& p_event) {
 		const int limit = timeline->get_name_limit();
 		const int limit_end = get_size().width - timeline->get_buttons_width();
 		// Left Border including space occupied by keyframes on t=0.
-		const int limit_start_hitbox = limit - type_icon->get_width();
+		const int limit_start_hitbox = limit - (type_icon == nullptr ? 0 : type_icon->get_width());
 		const Point2 pos = mm->get_position();
 
 		if (pos.x >= limit_start_hitbox && pos.x <= limit_end) {
