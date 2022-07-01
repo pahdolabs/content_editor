@@ -9,15 +9,15 @@
 
 bool PahdoSpatialGizmo::is_editable() const {
 	ERR_FAIL_COND_V(!spatial_node, false);
-	Node* edited_root = spatial_node->get_tree()->get_edited_scene_root();
-	if (spatial_node == edited_root) {
+	Node* scene_root = spatial_node->get_tree()->get_current_scene();
+	if (spatial_node == scene_root) {
 		return true;
 	}
-	if (spatial_node->get_owner() == edited_root) {
+	if (spatial_node->get_owner() == scene_root) {
 		return true;
 	}
-
-	if (edited_root->is_editable_instance(spatial_node->get_owner())) {
+	
+	if (scene_root->is_a_parent_of(spatial_node)) {
 		return true;
 	}
 
