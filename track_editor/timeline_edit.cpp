@@ -294,6 +294,15 @@ void TimelineEdit::set_zoom(Range* p_zoom) {
 	zoom->connect("value_changed", this, "_zoom_changed");
 }
 
+void TimelineEdit::set_zoom_value(float p_zoom) {
+	zoom->set_value(p_zoom);
+	zoom->connect("value_changed", this, "_zoom_changed");
+}
+
+float TimelineEdit::get_zoom_value() {
+	return (float) zoom->get_value();
+}
+
 void TimelineEdit::set_track_edit(TrackEdit* p_track_edit) {
 	track_edit = p_track_edit;
 }
@@ -459,6 +468,9 @@ void TimelineEdit::_bind_methods() {
 	ClassDB::bind_method("get_name_limit", &TimelineEdit::get_name_limit);
 	ClassDB::bind_method("get_buttons_width", &TimelineEdit::get_buttons_width);
 	ClassDB::bind_method("get_zoom_scale", &TimelineEdit::get_zoom_scale);
+	ClassDB::bind_method(D_METHOD("set_zoom_value", "value"), &TimelineEdit::set_zoom_value);
+	ClassDB::bind_method(D_METHOD("get_zoom_value"), &TimelineEdit::get_zoom_value);
+
 	ClassDB::bind_method(D_METHOD("_zoom_changed"), &TimelineEdit::_zoom_changed);
 	ClassDB::bind_method(D_METHOD("_play_position_draw"), &TimelineEdit::_play_position_draw);
 	ClassDB::bind_method(D_METHOD("_anim_length_changed"), &TimelineEdit::_anim_length_changed);

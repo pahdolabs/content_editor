@@ -877,6 +877,10 @@ void TrackEditor::show_select_node_warning(bool p_show) {
 	info_message->set_visible(p_show);
 }
 
+void TrackEditor::set_empty_state_text(String p_text) {
+	info_message->set_text(TTR(p_text));
+}
+
 bool TrackEditor::is_key_selected(int p_track, int p_key) const {
 	SelectedKey sk;
 	sk.key = p_key;
@@ -2604,6 +2608,7 @@ void TrackEditor::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_select_all_tracks_for_copy"), &TrackEditor::_select_all_tracks_for_copy);
 
 	ClassDB::bind_method("_icons_cache_changed", &TrackEditor::_icons_cache_changed);
+	ClassDB::bind_method(D_METHOD("set_empty_state_text", "new_message"), &TrackEditor::set_empty_state_text);
 
 	ADD_SIGNAL(MethodInfo("timeline_changed", PropertyInfo(Variant::REAL, "position"), PropertyInfo(Variant::BOOL, "drag"), PropertyInfo(Variant::BOOL, "timeline_only")));
 	ADD_SIGNAL(MethodInfo("keying_changed"));

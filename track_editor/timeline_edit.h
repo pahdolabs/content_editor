@@ -66,6 +66,8 @@ public:
 	void set_animation(const Ref<Animation>& p_animation);
 	void set_track_edit(TrackEdit* p_track_edit);
 	void set_zoom(Range* p_zoom);
+	void set_zoom_value(float p_value);
+	float get_zoom_value();
 	Range* get_zoom() const { return zoom; }
 	void set_undo_redo(UndoRedo* p_undo_redo);
 
