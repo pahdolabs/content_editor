@@ -900,8 +900,10 @@ bool TrackEditor::is_snap_enabled() const {
 void TrackEditor::_update_tracks() {
 	int selected = _get_track_selected();
 
-	while (track_vbox->get_child_count()) {
-		memdelete(track_vbox->get_child(0));
+	while(track_vbox->get_child_count() > 0) {
+		Node* child = track_vbox->get_child(0);
+		track_vbox->remove_child(child);
+		child->queue_delete();
 	}
 
 	track_edits.clear();
