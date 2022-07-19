@@ -296,7 +296,6 @@ void TimelineEdit::set_zoom(Range* p_zoom) {
 
 void TimelineEdit::set_zoom_value(float p_zoom) {
 	zoom->set_value(p_zoom);
-	zoom->connect("value_changed", this, "_zoom_changed");
 }
 
 float TimelineEdit::get_zoom_value() {
