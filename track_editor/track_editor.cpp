@@ -2558,6 +2558,7 @@ void TrackEditor::set_control(const Object *object) {
 }
 
 void TrackEditor::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_state", "state"), &TrackEditor::set_state);
 	ClassDB::bind_method(D_METHOD("set_remove_on_remove_request", "remove_enabled"), &TrackEditor::set_remove_on_remove_request);
 	ClassDB::bind_method("get_step", &TrackEditor::get_step);
 	ClassDB::bind_method(D_METHOD("set_step", "value"), &TrackEditor::set_step);
