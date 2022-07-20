@@ -131,6 +131,7 @@ void PlayerEditorControl::set_current(const String& p_animation) {
 	for (int i = 0; i < animation->get_item_count(); ++i) {
 		if (animation->get_item_text(i) == p_animation) {
 			animation->select(i);
+			animation_label->set_text(p_animation);
 
 			String current = get_current();
 			Ref<Animation> anim = player->get_animation(current);
@@ -233,6 +234,7 @@ void PlayerEditorControl::_select_anim_by_name(const String& p_anim) {
 	ERR_FAIL_COND(idx == -1);
 
 	animation->select(idx);
+	animation_label->set_text(animation->get_item_text(idx));
 
 	_animation_selected(idx);
 }
@@ -342,6 +344,7 @@ void PlayerEditorControl::_update_animation() {
 	for (int i = 0; i < animation->get_item_count(); i++) {
 		if (animation->get_item_text(i) == current) {
 			animation->select(i);
+			animation_label->set_text(animation->get_item_text(i));
 			break;
 		}
 	}
@@ -353,6 +356,7 @@ void PlayerEditorControl::_update_player() {
 	updating = true;
 
 	animation->clear();
+	animation_label->set_text("");
 
 	if (!player) {
 		track_editor->update_keying();
@@ -388,11 +392,13 @@ void PlayerEditorControl::_update_player() {
 	updating = false;
 	if (active_idx != -1) {
 		animation->select(active_idx);
+		animation_label->set_text(animation->get_item_text(active_idx));
 		_animation_selected(active_idx);
 	}
 	else if (animation->get_item_count()) {
 		int item = animation->get_item_id(0);
 		animation->select(item);
+		animation_label->set_text(animation->get_item_text(0));
 		_animation_selected(item);
 	}
 	else {
@@ -554,6 +560,7 @@ void PlayerEditorControl::_unhandled_key_input(const Ref<InputEvent>& p_ev) {
 void PlayerEditorControl::_bind_methods() {
 	ClassDB::bind_method("get_player", &PlayerEditorControl::get_player);
 	ClassDB::bind_method("get_current", &PlayerEditorControl::get_current);
+	ClassDB::bind_method(D_METHOD("set_use_dropdown_animation_selector", "use_dropdown"), &PlayerEditorControl::set_use_dropdown_animation_selector);
 	ClassDB::bind_method(D_METHOD("set_current", "animation"), &PlayerEditorControl::set_current);
 	ClassDB::bind_method(D_METHOD("_unhandled_key_input", "key_input_event"), &PlayerEditorControl::_unhandled_key_input);
 	ClassDB::bind_method(D_METHOD("edit", "animation_player"), &PlayerEditorControl::edit);
@@ -583,6 +590,17 @@ AnimationPlayer* PlayerEditorControl::get_player() const {
 
 void PlayerEditorControl::_icons_cache_changed() {
 	_notification(NOTIFICATION_THEME_CHANGED);
+}
+
+void PlayerEditorControl::set_use_dropdown_animation_selector(bool p_use_dropdown) {
+	if(p_use_dropdown) {
+		animation->show();
+		animation_label->hide();
+	}
+	else {
+		animation->hide();
+		animation_label->show();
+	}
 }
 
 PlayerEditorControl::PlayerEditorControl() {
@@ -637,6 +655,13 @@ PlayerEditorControl::PlayerEditorControl() {
 	animation->set_h_size_flags(SIZE_EXPAND_FILL);
 	animation->set_tooltip(TTR("Display list of animations in player."));
 	animation->set_clip_text(true);
+
+	animation_label = memnew(Label);
+	hb->add_child(animation_label);
+	animation_label->set_h_size_flags(SIZE_EXPAND_FILL);
+	animation_label->set_tooltip(TTR("Display current animation in player."));
+	animation_label->set_clip_text(true);
+	animation_label->hide();
 
 	hb->add_child(memnew(VSeparator));
 

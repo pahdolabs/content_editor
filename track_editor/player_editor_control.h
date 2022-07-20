@@ -19,6 +19,7 @@ class PlayerEditorControl : public VBoxContainer {
 	AnimationPlayer *player = nullptr;
 	
 	OptionButton *animation = nullptr;
+	Label* animation_label = nullptr;
 	Button *stop = nullptr;
 	Button *play = nullptr;
 	Button *play_from = nullptr;
@@ -75,6 +76,8 @@ public:
 	void set_state(const Dictionary &p_state);
 
 	void ensure_visibility();
+
+	void set_use_dropdown_animation_selector(bool p_use_dropdown);
 
 	UndoRedo* get_undo_redo() const {
 		return undo_redo;
