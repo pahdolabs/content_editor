@@ -203,6 +203,9 @@ void TrackEditor::_timeline_changed(float p_new_pos, bool p_drag, bool p_timelin
 }
 
 void TrackEditor::_track_remove_request(int p_track) {
+	if(!remove_on_remove_request) {
+		return;
+	}
 	int idx = p_track;
 	if (idx >= 0 && idx < animation->get_track_count()) {
 		undo_redo->create_action(TTR("Remove Anim Track"));
@@ -900,8 +903,8 @@ bool TrackEditor::is_snap_enabled() const {
 void TrackEditor::_update_tracks() {
 	int selected = _get_track_selected();
 
-	while(track_vbox->get_child_count() > 0) {
-		Node* child = track_vbox->get_child(0);
+	while (track_vbox->get_child_count()) {
+		Node *child = track_vbox->get_child(0);
 		track_vbox->remove_child(child);
 		child->queue_delete();
 	}
@@ -2555,6 +2558,7 @@ void TrackEditor::set_control(const Object *object) {
 }
 
 void TrackEditor::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_remove_on_remove_request", "remove_enabled"), &TrackEditor::set_remove_on_remove_request);
 	ClassDB::bind_method("get_step", &TrackEditor::get_step);
 	ClassDB::bind_method(D_METHOD("set_step", "value"), &TrackEditor::set_step);
 	ClassDB::bind_method("get_timeline", &TrackEditor::get_timeline);
@@ -2689,6 +2693,10 @@ void TrackEditor::_pick_track_filter_input(const Ref<InputEvent>& p_ie) {
 			break;
 		}
 	}
+}
+
+void TrackEditor::set_remove_on_remove_request(bool p_remove_enabled) {
+	remove_on_remove_request = p_remove_enabled;
 }
 
 TrackEditor::TrackEditor() {

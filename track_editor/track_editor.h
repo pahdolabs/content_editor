@@ -88,6 +88,8 @@ class TrackEditor : public VBoxContainer {
 	NodePath adding_track_path;
 
 	bool keying = false;
+	
+	bool remove_on_remove_request = true;
 
 	struct InsertData {
 		Animation::TrackType type;
@@ -300,6 +302,8 @@ public:
 
 	void show_select_node_warning(bool p_show);
 	void set_empty_state_text(String p_text);
+	
+	void set_remove_on_remove_request(bool p_remove_enabled);
 
 	bool is_key_selected(int p_track, int p_key) const;
 	bool is_selection_active() const;
