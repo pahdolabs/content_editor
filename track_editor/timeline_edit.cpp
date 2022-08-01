@@ -63,7 +63,7 @@ int TimelineEdit::get_buttons_width() const {
 	_IconsCache* icons = _IconsCache::get_singleton();
 	Ref<Texture> remove_icon = icons->get_icon("Remove");
 	int hsep = get_constant("hseparation", "ItemList");
-	
+
 	int total_w = (remove_icon != nullptr ? remove_icon->get_width() : 0) + hsep;
 
 	return total_w;
@@ -299,7 +299,7 @@ void TimelineEdit::set_zoom_value(float p_zoom) {
 }
 
 float TimelineEdit::get_zoom_value() {
-	return (float) zoom->get_value();
+	return (float)zoom->get_value();
 }
 
 void TimelineEdit::set_track_edit(TrackEdit* p_track_edit) {
@@ -469,6 +469,8 @@ void TimelineEdit::_bind_methods() {
 	ClassDB::bind_method("get_zoom_scale", &TimelineEdit::get_zoom_scale);
 	ClassDB::bind_method(D_METHOD("set_zoom_value", "value"), &TimelineEdit::set_zoom_value);
 	ClassDB::bind_method(D_METHOD("get_zoom_value"), &TimelineEdit::get_zoom_value);
+	ClassDB::bind_method(D_METHOD("get_play_position"), &TimelineEdit::get_play_position);
+	ClassDB::bind_method(D_METHOD("set_play_position", "pos"), &TimelineEdit::set_play_position);
 
 	ClassDB::bind_method(D_METHOD("_zoom_changed"), &TimelineEdit::_zoom_changed);
 	ClassDB::bind_method(D_METHOD("_play_position_draw"), &TimelineEdit::_play_position_draw);
@@ -480,12 +482,14 @@ void TimelineEdit::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_zoom_callback"), &TimelineEdit::_zoom_callback);
 	ClassDB::bind_method(D_METHOD("_icons_cache_changed"), &TimelineEdit::_icons_cache_changed);
 	ClassDB::bind_method(D_METHOD("_gui_input", "event"), &TimelineEdit::_gui_input);
-	
+
 	ADD_SIGNAL(MethodInfo("zoom_changed"));
 	ADD_SIGNAL(MethodInfo("name_limit_changed"));
 	ADD_SIGNAL(MethodInfo("timeline_changed", PropertyInfo(Variant::REAL, "position"), PropertyInfo(Variant::BOOL, "drag"), PropertyInfo(Variant::BOOL, "timeline_only")));
 	ADD_SIGNAL(MethodInfo("track_added", PropertyInfo(Variant::INT, "track")));
 	ADD_SIGNAL(MethodInfo("length_changed", PropertyInfo(Variant::REAL, "size")));
+
+	ADD_PROPERTY(PropertyInfo(Variant::REAL, "play_position"), "set_play_position", "get_play_position");
 }
 
 TimelineEdit::TimelineEdit() {
